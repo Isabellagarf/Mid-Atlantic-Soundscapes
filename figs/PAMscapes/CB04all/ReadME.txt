@@ -1,0 +1,1 @@
+CB04 only has three deployments, none of which cover the first 6 months of the year and one has only ~200 audio files.

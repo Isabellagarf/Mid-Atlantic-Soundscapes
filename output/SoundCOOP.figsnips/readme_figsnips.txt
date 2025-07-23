@@ -1,0 +1,1 @@
+This folder is specifically for screengrabs of figure outputs from Taiki's SoundCOOP code. Gathering the multitude of screengrabs to begin planning more in-depth analysis between sites/seasons. Not final products whatsoever.

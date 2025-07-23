@@ -1,0 +1,52 @@
+2025-05-13T05:52:17.481536+0000 INFO Creating FileHelper:
+    json_base_dir:           /mnt/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202306_DB03/JSON
+    audio_base_dir:          file:///mnt/PassiveAcoustics_Soundfiles/BOTTOM_MOUNTED/NEFSC_DE/NEFSC_DE_202306_DB03/7402_48kHz_UTC
+    segment_size_in_mins:    1
+    s3_client:               None
+    gs_client:               None
+    download_dir:            None
+    assume_downloaded_files: False
+    retain_downloaded_files: False
+    print_downloading_lines: False
+
+2025-05-13T05:52:17.481859+0000 INFO Creating ProcessHelper:
+    output_dir:             /mnt/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202306_DB03/NC
+    output_prefix:          NEFSC_DE_202306_DB03_
+    gen_netcdf:             True
+    global_attrs_uri:       /mnt/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202306_DB03/META/globalAttributes_NEFSC_DE_202306_DB03.yaml
+    set_global_attrs:       None
+    variable_attrs_uri:     /mnt/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202306_DB03/META/variableAttributes_NEFSC_DE_202306_DB03.yaml
+    voltage_multiplier:     None
+    sensitivity_uri:        None
+    sensitivity_flat_value: 176.6
+    subset_to:              (20, 24000)
+
+2025-05-13T05:52:17.481968+0000 INFO Loading global attributes from attrs_uri='/mnt/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202306_DB03/META/globalAttributes_NEFSC_DE_202306_DB03.yaml'
+2025-05-13T05:52:17.493037+0000 INFO Loading variable attributes from attrs_uri='/mnt/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202306_DB03/META/variableAttributes_NEFSC_DE_202306_DB03.yaml'
+2025-05-13T05:52:17.542723+0000 INFO Will use given flat sensitivity value: 176.6
+2025-05-13T05:52:17.543448+0000 INFO Selecting day: 20230928
+2025-05-13T05:52:17.548679+0000 INFO Processing 1440 segments ...
+2025-05-13T05:52:17.704432+0000 INFO Got audio parameters
+2025-05-13T05:55:35.909750+0000 INFO Aggregating results ...
+2025-05-13T05:55:36.003253+0000 INFO Subsetting to [20, 24,000)Hz
+2025-05-13T05:55:36.003957+0000 INFO        bands_c (2157) = [20.0, 21.0, 22.0, ..., 23850.637954651032, 23905.619353446305, 23960.727497455657]
+2025-05-13T05:55:36.004080+0000 INFO   bands_limits (2158) = [19.5, 20.5, 21.5, ..., 23878.112829131765, 23933.157564053876, 23988.329190194883]
+2025-05-13T05:55:36.657629+0000 INFO Resulting milli_psd=<xarray.DataArray 'psd' (time: 1440, frequency_bins: 2157)>
+array([[95.87589 , 95.03441 , 95.855125, ..., 36.37288 , 36.424255,
+        36.328987],
+       [94.864914, 94.846306, 94.93135 , ..., 36.72147 , 36.649628,
+        36.683178],
+       [95.431496, 94.40143 , 94.07222 , ..., 36.5843  , 36.633606,
+        36.621586],
+       ...,
+       [83.01421 , 82.977806, 82.70768 , ..., 35.349197, 35.124218,
+        35.43453 ],
+       [79.79624 , 80.41545 , 80.69776 , ..., 35.75249 , 35.64517 ,
+        35.70932 ],
+       [78.27082 , 80.27957 , 81.20748 , ..., 36.731438, 36.570374,
+        36.52888 ]], dtype=float32)
+Coordinates:
+  * time       (time) int64 1695859200 1695859260 ... 1695945480 1695945540
+    frequency  (frequency_bins) float32 20.0 21.0 22.0 ... 2.391e+04 2.396e+04
+Dimensions without coordinates: frequency_bins
+2025-05-13T05:55:36.662487+0000 INFO   - saving dataset to: /mnt/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202306_DB03/NC/NEFSC_DE_202306_DB03_20230928.nc

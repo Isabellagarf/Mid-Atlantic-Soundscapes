@@ -1,0 +1,8 @@
+ReadMe for Figs Folder
+
+The purpose of this folder is hold all figures generated for the analysis. Your code to create figures should be saved in the code folder, and it should automatically save figure output directly to this figs folder. All figure names should be descriptive not based on the # of the figure (as this may change).
+
+Folders:
+PAMscapes --> ES03
+- entire ES03 deployment (NEFSC_VA_202404_ES03 and NEFSC_VA_202310_ES03)
+- The data to create these figures were subsetted into 1 hr bins

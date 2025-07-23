@@ -1,0 +1,133 @@
+---
+title: "Soundcoop2024 Modified by Bella"
+author: "Taiki Sakai"
+date: "2024-09-25"
+output: html_document
+---
+
+# Modified
+This code does not include weather data. Using to compare soundscapes of multiple deployments
+
+# Install PAMscapes
+
+Version 0.7.0 is available on CRAN, but there is also a 0.7.1 update from yesterday available on GitHub that has some more features. We'll also use the `here` package.
+
+```{r}
+install.packages('here')
+install.packages('pak')
+install.packages('pkgbuild')
+pak::pkg_install('TaikiSan21/PAMscapes')
+# if above doesn't work, then try this next
+# devtools::install_github('TaikiSan21/PAMscapes')
+# if neither of those work, settle for CRAN version
+# install.packages('PAMscapes')
+```
+
+```{r}
+library(here)
+library(PAMscapes)
+library(dbplyr)
+library(tidyverse)
+library(ggplot2)
+```
+
+The `here` package helps us deal with file paths relative to this RMarkown document. If this file is in the same folder as your data, then `here('data1.nc')` will give the correct filepath to the file `'data1.nc'`.
+
+# Load Some Data
+
+The function that handles all the data loading (regardless of format!) is `checkSoundscapeInput`. You can give this a single file or multiple files and it will load them up.
+
+```{r}
+# My data are in a folder NRS11 within another folder called testData
+
+##first deployment
+#nrs11Folder <- ('/Users/isabella.garfield/Documents/GitHub/Mid-Atl-Soundscapes/data/DBs/202306DB03')
+#nrsFiles <- list.files(nrs11Folder, pattern='nc$', full.names=TRUE)
+#nrsData1 <- loadMultiscapeData(nrs11Folder, timeBin = "1minute")
+
+#second deployment
+nrs11Folder2 <- ('//nefscdata/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202306_DB01/NC')
+nrsFiles2 <- list.files(nrs11Folder2, pattern='nc$', full.names=TRUE)
+nrsData2 <- loadMultiscapeData(nrs11Folder2, timeBin = "1hour")
+
+#third deployment
+nrs11Folder3 <- ('//nefscdata/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202301_DB03/NC')
+nrsFiles3 <- list.files(nrs11Folder3, pattern='nc$', full.names=TRUE)
+nrsData3 <- loadMultiscapeData(nrs11Folder3, timeBin = "1hour")
+
+#fourth deployment
+nrs11Folder4 <- ('//nefscdata/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202306_DB03/NC')
+nrsFiles4 <- list.files(nrs11Folder4, pattern='nc$', full.names=TRUE)
+nrsData4 <- loadMultiscapeData(nrs11Folder4, timeBin = "1hour")
+
+#fifth deploymet
+nrs11Folder5 <- ('//nefscdata/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202306_DB02/NC')
+nrsFiles5<- list.files(nrs11Folder5, pattern='nc$', full.names=TRUE)
+nrsData5 <- loadMultiscapeData(nrs11Folder5, timeBin = "1hour")
+
+nrsData <- nrsData2 %>%
+  mutate(UTC = ymd_hms(UTC)) %>%
+  filter(month(UTC) == 10) %>%
+  mutate(hour = hour(UTC)) %>%
+  mutate(day = day(UTC))
+
+plot <- ggplot(nrsData, aes(hour, HMD_1001, color = "day")) +
+  geom_point() +
+  geom_smooth(method = lm)
+
+plot
+
+nrsData <- nrsData2 %>%
+ # full_join(nrsData2) %>%
+ # full_join(nrsData3) %>%
+ # full_join(nrsData4) %>%
+ # full_join(nrsData5) 
+
+```
+
+
+# Plot Exploration
+
+```{r}
+runSoundscapeExplorer(nrsData)
+
+HMD400 <- plotTimeseries(nrsData, column="HMD_400", q=0, style="line", by="platform")
+fall.plat <- plotPSD(nrsData, style="quantile", by="platform", q=0)
+HMD400
+fall.plat
+
+HMD1669 <- plotTimeseries(nrsData, column="HMD_1669", q=0, style="line", by="platform")
+HMD1669
+
+
+
+ggsave(here("figs/PAMscapes/mixed.plat", "202306.400timeseries.DBs.png"), HMD400, width= 14, height= 8, units= "in")
+
+ggsave(here("figs/PAMscapes/mixed.plat", "202306.PSD.DBs.png"), fall.plat, width= 14, height= 8, units= "in")
+
+```
+# AIS Data
+
+This part will download some *very* large files and may take quite a while, so run at your own risk. The `downloadMarCadAIS` function will download a 250mb .zip file and 700mb for *every single day* in your dataset. Marine Cadastre stores their data as one file containing all geographic regions for a single day. So if your dataset covers many days, this download will be a sad time. Giving this function your data it will sort out which files to download, and store them in `outDir`.
+
+```{r}
+# This won't work with Australia data - only US EEZ is available from marine cadastre
+
+marcadFiles <- downloadMarCadAIS(nrsData, outDir = here('AIS'), overwrite = FALSE, unzip=TRUE)
+```
+
+These files are extremely unwieldy to work with, and you probably don't need data covering the entire geographic region for your project. So the `subsetMarCadAIS` funciton will take those full size 700mb files and create a smaller working dataset. In this case lets pretend that all the recorders I work with are on the west coast, so I'll create one working AIS directory that contains AIS data for only the west coast data. This reduces each daily file down to \~130mb instead of 700mb, which is still large but much easier to handle.
+
+```{r}
+subsetMarCadAIS(inDir=here('AIS'), outDir=here('AIS_West'), name='West_', 
+                latRange=c(20,50), lonRange=c(-140,-110),
+                overwrite=FALSE, progress=TRUE)
+```
+
+Now we can match some of this AIS data to our data. We just need to define what counts as a "close" vessel event for our recorder, and we can get some summary information about vessels that pass within a certain distance of our recorders. The `distance` argument here is in meters, so here we'll get information about vessels passing within 10km of our recorder. `ais` is the folder path of our smaller "working" AIS dataset.
+
+This function adds columns: - `nShips` the number of vessels within `distance` at this time - `meanDist` the average distance (meters) to nearby ships (`NA` if `nShips` is 0) - `meanSOG` the average speed (knots) over ground of the nearby ships (`NA` if `nShips` is 0) - `closeDist` the distance (meters) to the closest nearby ship (`NA` if `nShips` is 0) - `closeSOG` the speed over ground (knots) of the closest nearby ship (`NA` if `nShips` is 0)
+
+```{r}
+nrsData <- addAISSummary(nrsData, ais=here('AIS_West'), distance=10e3)
+```
