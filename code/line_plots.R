@@ -255,6 +255,7 @@ plot2000.med <- ggplot(nrsData.medoct, aes(x = hour, y = avg_ol)) + #group = sit
 plot2000.med
 
 
+
 ggsave(here("figs/OL_plots/ES01", "line16000ol.sepES01.png"), plot2000.med, width= 7, height= 4, units= "in")
 
 
