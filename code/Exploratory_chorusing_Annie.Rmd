@@ -1,0 +1,55 @@
+---
+title: "Exploratory_chorusing_Annie"
+author: "Annie Smith"
+date: "2025-08-08"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## load libraries
+```{r}
+library(PAMscapes)
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+library(here)
+library(dplyr)
+library(car)
+library(patchwork)
+library(ggpubr)
+library(rstatix)
+library(PAMmisc)
+library(dunn.test)
+library(smplot2)
+library(tsibble)
+library(scales)
+library(ggpmisc)
+library(paletteer)
+
+```
+
+## load data
+
+```{r}
+#DB01
+DB01_202207_Folder <- (here("//nefscdata/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202207_DB01/NC"))
+DB01_202207_Files <- list.files(DB01_202207_Folder, pattern='nc$', full.names=TRUE)
+DB01_202207 = loadSoundscapeData(DB01_202207_Files, octave = "ol", timeBin= "1hour")
+
+write.csv(DB01_202207, here("data", "DB01_202207_OL.csv")) #saving for now, but will actually load in all of the DB01 deployments and then join them, then do the same for the other sites
+
+
+
+
+
+
+
+
+```
+
+
+
