@@ -35,12 +35,50 @@ library(paletteer)
 ## load data
 
 ```{r}
-#DB01
-DB01_202207_Folder <- (here("//nefscdata/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202207_DB01/NC"))
-DB01_202207_Files <- list.files(DB01_202207_Folder, pattern='nc$', full.names=TRUE)
-DB01_202207 = loadSoundscapeData(DB01_202207_Files, octave = "ol", timeBin= "1hour")
+DB01 <- read.csv(here("data/DB01_OL.csv"))
+DB01 <- DB01[-c(1)]
+DB01$UTC <- as.POSIXct(DB01$UTC, format= "%m/%d/%Y %H", tz = "GMT")
 
-write.csv(DB01_202207, here("data", "DB01_202207_OL.csv")) #saving for now, but will actually load in all of the DB01 deployments and then join them, then do the same for the other sites
+runSoundscapeExplorer(DB01)
+
+```
+
+## DB01 data loading
+
+```{r}
+#DB01
+#  DB01_202405_Folder <- (here("//nefscdata/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202405_DB01/NC"))
+#  DB01_202405_Files <- list.files(DB01_202405_Folder, pattern='nc$', full.names=TRUE)
+#  DB01_202405 = loadSoundscapeData(DB01_202405_Files, octave = "ol", timeBin= "1hour")
+
+#  
+
+#  DB01_202207 <- read.csv(here("data/DB01_202207_OL.csv"))
+#  DB01_202207 <- DB01_202207[-c(1)]
+#  DB01_202207$UTC <- as.POSIXct(DB01_202207$UTC, format= "%m/%d/%Y %H", tz = "GMT")
+
+#  DB01 <- DB01_202207 %>%
+  full_join(DB01_202301)%>%
+  full_join(DB01_202306)%>%
+  full_join(DB01_202311)%>%
+  full_join(DB01_202405)
+
+#  write.csv(DB01, here("data", "DB01_OL.csv"))
+#  write.csv(DB01_202207, here("data", "DB01_202207_OL.csv"))
+#  write.csv(DB01_202301, here("data", "DB01_202301_OL.csv"))
+#  write.csv(DB01_202306, here("data", "DB01_202306_OL.csv"))
+#  write.csv(DB01_202311, here("data", "DB01_202311_OL.csv"))
+#  write.csv(DB01_202405, here("data", "DB01_202405_OL.csv"))
+
+```
+
+#DB02 data loading
+
+```{r}
+#DB02
+  DB02_202207_Folder <- (here("//nefscdata/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202207_DB02/NC"))
+  DB02_202207_Files <- list.files(DB02_202207_Folder, pattern='nc$', full.names=TRUE)
+  DB02_202207 = loadSoundscapeData(DB02_202207_Files, octave = "ol", timeBin= "1hour")
 
 
 
@@ -50,6 +88,3 @@ write.csv(DB01_202207, here("data", "DB01_202207_OL.csv")) #saving for now, but 
 
 
 ```
-
-
-
