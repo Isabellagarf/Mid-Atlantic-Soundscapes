@@ -43,7 +43,7 @@ runSoundscapeExplorer(DB01)
 
 ```
 
-## DB01 data loading
+## Delaware Bay- data loading
 
 ```{r}
 #DB01
@@ -70,21 +70,13 @@ runSoundscapeExplorer(DB01)
 #  write.csv(DB01_202311, here("data", "DB01_202311_OL.csv"))
 #  write.csv(DB01_202405, here("data", "DB01_202405_OL.csv"))
 
-```
 
-#DB02 data loading
-
-```{r}
 #DB02
-  DB02_202207_Folder <- (here("//nefscdata/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202207_DB02/NC"))
-  DB02_202207_Files <- list.files(DB02_202207_Folder, pattern='nc$', full.names=TRUE)
-  DB02_202207 = loadSoundscapeData(DB02_202207_Files, octave = "ol", timeBin= "1hour")
-
-
-
-
-
-
-
+  DB02_202301_Folder <- (here("//nefscdata/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202301_DB02/NC"))
+  DB02_202301_Files <- list.files(DB02_202301_Folder, pattern='nc$', full.names=TRUE)
+  DB02_202301 = loadSoundscapeData(DB02_202301_Files, octave = "ol", timeBin= "1hour")
+  
 
 ```
+
+
