@@ -75,7 +75,9 @@ runSoundscapeExplorer(DB01)
   DB02_202301_Folder <- (here("//nefscdata/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202301_DB02/NC"))
   DB02_202301_Files <- list.files(DB02_202301_Folder, pattern='nc$', full.names=TRUE)
   DB02_202301 = loadSoundscapeData(DB02_202301_Files, octave = "ol", timeBin= "1hour")
-  
+
+write.csv(DB02_202207, here("data", "DB02_202207_OL.csv"))
+write.csv(DB02_202301, here("data", "DB02_202301_OL.csv"))
 
 ```
 
