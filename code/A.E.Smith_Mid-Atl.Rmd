@@ -81,7 +81,9 @@ all_sites <- DB01_HMD%>%
   full_join(CB01_HMD)%>%
   full_join(CB02_HMD)%>%
   full_join(CB03_HMD)
-write.csv(all_sites, here("data", "all_sites.csv")) #need to save after joining all sites again
+
+write.csv(all_sites, here("data", "all_sites_HMD.csv")) #need to save after joining all sites again
+
 ```
 
 #inshore/offshore grouping
