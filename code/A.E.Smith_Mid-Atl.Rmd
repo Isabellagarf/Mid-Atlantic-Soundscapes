@@ -1,0 +1,347 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+title: "A.E.Smith Mid-Atlantic Fish Chorusing"
+author: "Anne E. Smith"
+date: "2025-08-12"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## libraries
+
+```{r}
+library(PAMscapes)
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+library(here)
+library(dplyr)
+library(car)
+library(patchwork)
+library(ggpubr)
+library(rstatix)
+library(PAMmisc)
+library(dunn.test)
+library(smplot2)
+library(tsibble)
+library(scales)
+library(ggpmisc)
+library(paletteer)
+
+
+```
+
+# loading full HMD files per site
+
+```{r}
+DB01_HMD <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB01/HMD/DB01_HMD.csv")
+
+DB02_HMD <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB02/HMD/DB02_HMD.csv")
+
+DB03_HMD <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB03/HMD/DB03_HMD.csv")
+
+ES01_HMD <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/ES01/HMD/ES01_HMD.csv")
+
+ES02_HMD <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/ES02/HMD/ES02_HMD.csv")
+
+ES03_HMD <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/ES03/HMD/ES03_HMD.csv")
+
+CB01_HMD <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/CB01/HMD/CB01_HMD.csv")
+
+CB02_HMD <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/CB02/HMD/CB02_HMD.csv")
+
+CB03_HMD <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/CB03/HMD/CB03_HMD.csv")
+
+all_sites <- DB01_HMD%>%
+  full_join(DB02_HMD)%>%
+  full_join(DB03_HMD)%>%
+  full_join(ES01_HMD)%>%
+  full_join(ES02_HMD)%>%
+  full_join(ES03_HMD)%>%
+  full_join(CB01_HMD)%>%
+  full_join(CB02_HMD)%>%
+  full_join(CB03_HMD)
+```
+
+#inshore/offshore grouping
+
+```{r}
+inshore_sites <- DB01_HMD %>%
+  full_join(ES01_HMD)%>%
+  full_join(CB01_HMD)
+
+midshore_sites <- DB02_HMD %>%
+  full_join(ES02_HMD)%>%
+  full_join(CB02_HMD)%>%
+  full_join(CB03_HMD)
+
+offshore_sites <- DB03_HMD %>%
+  full_join(ES03_HMD)
+
+runSoundscapeExplorer(DB01_HMD)
+```
+
+## DELAWARE BAY- mostly OL
+
+```{r}
+## OL BANDS
+#DB01
+DB01 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB01_OL.csv")
+DB01 <- DB01[-c(1)]
+DB01$UTC <- as.POSIXct(DB01$UTC, format= "%m/%d/%Y %H", tz = "GMT")
+
+#DB02
+DB02 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB02_OL.csv")
+DB02$UTC <- as.POSIXct(DB02$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+
+#DB03
+DB03_missing2022 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB03_OL_missing2022.csv")
+DB03_missing2022$UTC <- as.POSIXct(DB03_missing2022$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+
+
+## HMD FULL FILES
+
+#DB01
+DB01_202306_Folder <- paste0("/home/asmith/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202306_DB01/NC")
+DB01_202306_Files <- list.files(DB01_202306_Folder, pattern='nc$', full.names=TRUE)
+DB01_202306_HMD = loadSoundscapeData(DB01_202306_Files, timeBin = "1hour")
+
+
+write_csv(DB01_202306_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "DB01_202306_HMD.csv")) #saving to personal folder, then need to switch to server so everything is together
+
+DB03 <- DB03_202301%>%
+  full_join(DB03_202306)%>%
+  full_join(DB03_202311)%>%
+  full_join(DB03_202405)
+DB01_202207 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB01/HMD/202207_DB01.csv")
+
+```
+
+## EASTERN SEABOARD
+
+```{r}
+
+## HMD FULL FILES
+#ES01
+ES01_202310_Folder <- paste0("/home/asmith/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_VA/NEFSC_VA_202310_ES01/NC")
+ES01_202310_Files <- list.files(ES01_202310_Folder, pattern='nc$', full.names=TRUE)
+ES01_202310_HMD = loadSoundscapeData(ES01_202310_Files, timeBin = "1hour")
+
+write_csv(ES01_202310_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "ES01_202310.csv"))
+
+#ES02
+ES02_202310_Folder <- paste0("/home/asmith/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_VA/NEFSC_VA_202310_ES02/NC")
+ES02_202310_Files <- list.files(ES02_202310_Folder, pattern='nc$', full.names=TRUE)
+ES02_202310_HMD = loadSoundscapeData(ES02_202310_Files, timeBin = "1hour")
+
+write_csv(ES02_202310_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "ES02_202310.csv"))
+
+#ES03
+ES03_202310_Folder <- paste0("/home/asmith/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_VA/NEFSC_VA_202310_ES03/NC")
+ES03_202310_Files <- list.files(ES03_202310_Folder, pattern='nc$', full.names=TRUE)
+ES03_202310_HMD = loadSoundscapeData(ES03_202310_Files, timeBin = "1hour")
+
+write_csv(ES03_202310_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "ES03_202310.csv"))
+
+```
+
+## CHESAPEAKE BAY
+
+```{r}
+## HMD FULL FILES
+#CB01
+CB01_202212_Folder <- paste0("/home/asmith/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_VA/NEFSC_VA_202212_CB01/NC")
+CB01_202212_Files <- list.files(CB01_202212_Folder, pattern='nc$', full.names=TRUE)
+CB01_202212_HMD = loadSoundscapeData(CB01_202212_Files, timeBin = "1hour")
+
+
+write_csv(CB01_202212_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "CB01_202212.csv"))
+
+#CB03
+CB03_202311_Folder <- paste0("/home/asmith/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_VA/NEFSC_VA_202311_CB01/NC")
+CB03_202311_Files <- list.files(CB03_202311_Folder, pattern='nc$', full.names=TRUE)
+CB03_202311_HMD = loadSoundscapeData(CB03_202311_Files, timeBin = "1hour")
+
+
+write_csv(CB03_202311_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "CB03_202311.csv"))
+
+```
+
+## LOADING IN ALL HMD FILES- DB
+
+```{r}
+#DB01
+DB01_202207 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB01/HMD/202207_DB01.csv")
+DB01_202207$UTC <- as.POSIXct(DB01_202207$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB01_202301 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB01/HMD/202301_DB01.csv")
+DB01_202301$UTC <- as.POSIXct(DB01_202301$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB01_202306 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB01/HMD/202306_DB01.csv")
+DB01_202306$UTC <- as.POSIXct(DB01_202306$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB01_202311 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB01/HMD/202311_DB01.csv")
+DB01_202311$UTC <- as.POSIXct(DB01_202311$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB01_202405 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB01/HMD/202405_DB01.csv")
+DB01_202405$UTC <- as.POSIXct(DB01_202405$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+
+DB01_HMD <- DB01_202207 %>%
+  full_join(DB01_202301)%>%
+  full_join(DB01_202306)%>%
+  full_join(DB01_202311)%>%
+  full_join(DB01_202405)
+write_csv(DB01_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "DB01_HMD.csv"))
+
+DB01_HMD <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB01/HMD/DB01_HMD.csv")
+
+#DB02
+DB02_202207 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB02/HMD/202207_DB02.csv")
+DB02_202207$UTC <- as.POSIXct(DB02_202207$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB02_202301 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB02/HMD/202301_DB02.csv")
+DB02_202301$UTC <- as.POSIXct(DB02_202301$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB02_202306 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB02/HMD/202306_DB02.csv")
+DB02_202306$UTC <- as.POSIXct(DB02_202306$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB02_202311 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB02/HMD/202311_DB02.csv")
+DB02_202311$UTC <- as.POSIXct(DB02_202311$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB02_202405 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB02/HMD/202405_DB02.csv")
+DB02_202405$UTC <- as.POSIXct(DB02_202405$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+
+DB02_HMD <- DB02_202207 %>%
+  full_join(DB02_202301)%>%
+  full_join(DB02_202306)%>%
+  full_join(DB02_202311)%>%
+  full_join(DB02_202405)
+
+write_csv(DB02_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "DB02_HMD.csv"))
+
+
+#DB03
+DB03_202207 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB03/HMD/202207_DB03.csv")
+DB03_202207$UTC <- as.POSIXct(DB03_202207$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB03_202301 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB03/HMD/202301_DB03.csv")
+DB03_202301$UTC <- as.POSIXct(DB03_202301$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB03_202306 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB03/HMD/202306_DB03.csv")
+DB03_202306$UTC <- as.POSIXct(DB03_202306$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB03_202311 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB03/HMD/202311_DB03.csv")
+DB03_202311$UTC <- as.POSIXct(DB03_202311$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB03_202405 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB03/HMD/202405_DB03.csv")
+DB03_202405$UTC <- as.POSIXct(DB03_202405$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+
+DB03_HMD <- DB03_202207 %>%
+  full_join(DB03_202301)%>%
+  full_join(DB03_202306)%>%
+  full_join(DB03_202311)%>%
+  full_join(DB03_202405)
+
+write_csv(DB03_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "DB03_HMD.csv"))
+
+```
+
+## LOADING IN ALL HMD FILES- ES
+
+```{r}
+
+#ES01
+ES01_202310 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/ES01/HMD/202310_ES01.csv")
+ES01_202310$UTC <- as.POSIXct(ES01_202310$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+ES01_202404 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/ES01/HMD/202404_ES01.csv")
+ES01_202404$UTC <- as.POSIXct(ES01_202404$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+
+ES01_HMD <- ES01_202310 %>%
+  full_join(ES01_202404)
+
+write_csv(ES01_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "ES01_HMD.csv"))
+
+#ES02
+ES02_202310 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/ES02/HMD/202310_ES02.csv")
+ES02_202310$UTC <- as.POSIXct(ES02_202310$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+ES02_202404 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/ES02/HMD/202404_ES02.csv")
+ES02_202404$UTC <- as.POSIXct(ES02_202404$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+
+ES02_HMD <- ES02_202310 %>%
+  full_join(ES02_202404)
+
+write_csv(ES02_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "ES02_HMD.csv"))
+
+#ES03
+ES03_202310 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/ES03/HMD/202310_ES03.csv")
+ES03_202310$UTC <- as.POSIXct(ES03_202310$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+ES03_202404 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/ES03/HMD/202404_ES03.csv")
+ES03_202404$UTC <- as.POSIXct(ES03_202404$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+
+ES03_HMD <- ES03_202310 %>%
+  full_join(ES03_202404)
+
+write_csv(ES03_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "ES03_HMD.csv"))
+
+```
+
+## LOADING IN ALL HMD FILES- CB
+
+```{r}
+#CB01
+
+CB01_202206 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/CB01/HMD/202206_CB01.csv")
+CB01_202206$UTC <- as.POSIXct(CB01_202206$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+CB01_202212 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/CB01/HMD/202212_CB01.csv")
+CB01_202212$UTC <- as.POSIXct(CB01_202212$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+CB01_202306 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/CB01/HMD/202306_CB01.csv")
+CB01_202306$UTC <- as.POSIXct(CB01_202306$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+CB01_202311 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/CB01/HMD/202311_CB01.csv")
+CB01_202311$UTC <- as.POSIXct(CB01_202311$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+CB01_202405 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/CB01/HMD/202405_CB01.csv")
+CB01_202405$UTC <- as.POSIXct(CB01_202405$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+
+CB01_HMD <- CB01_202206 %>%
+  full_join(CB01_202212)%>%
+  full_join(CB01_202306)%>%
+  full_join(CB01_202311)%>%
+  full_join(CB01_202405)
+write_csv(CB01_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "CB01_HMD.csv"))
+
+#CB02
+
+CB02_202206 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/CB02/HMD/202206_CB02.csv")
+CB02_202206$UTC <- as.POSIXct(CB02_202206$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+CB02_202306 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/CB02/HMD/202306_CB02.csv")
+CB02_202306$UTC <- as.POSIXct(CB01_202306$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+CB02_202311 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/CB02/HMD/202311_CB02.csv")
+CB02_202311$UTC <- as.POSIXct(CB02_202311$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+CB02_202405 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/CB02/HMD/202405_CB02.csv")
+CB02_202405$UTC <- as.POSIXct(CB02_202405$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+
+CB02_HMD <- CB02_202206 %>%
+  full_join(CB02_202306)%>%
+  full_join(CB02_202311)%>%
+  full_join(CB02_202405)
+write_csv(CB02_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "CB02_HMD.csv"))
+
+#CB03
+
+CB03_202206 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/CB03/HMD/202206_CB03.csv")
+CB03_202206$UTC <- as.POSIXct(CB03_202206$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+CB03_202212 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/CB03/HMD/202212_CB03.csv")
+CB03_202212$UTC <- as.POSIXct(CB03_202212$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+CB03_202306 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/CB03/HMD/202306_CB03.csv")
+CB03_202306$UTC <- as.POSIXct(CB03_202306$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+CB03_202311 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/CB03/HMD/202311_CB03.csv")
+CB03_202311$UTC <- as.POSIXct(CB03_202311$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+CB03_202405 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/CB03/HMD/202405_CB03.csv")
+CB03_202405$UTC <- as.POSIXct(CB03_202405$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+
+CB03_HMD <- CB03_202206 %>%
+  full_join(CB03_202212)%>%
+  full_join(CB03_202306)%>%
+  full_join(CB03_202311)%>%
+  full_join(CB03_202405)
+
+write.csv(CB03_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "CB03_HMD.csv"))
+
+
+
+```
