@@ -42,8 +42,8 @@ library(paletteer)
 # loading full HMD files per site
 
 ```{r}
-all_sites_HMD <- read.csv(here("data/all_sites_HMD.csv"))
-runSoundscapeExplorer(all_sites_HMD)
+#all_sites_HMD <- read.csv(here("data/all_sites_HMD.csv"))
+#runSoundscapeExplorer(all_sites_HMD)
 
 DB01_HMD <- read.csv(here("data/DB01_HMD.csv"))
 DB01_HMD$UTC <- as.POSIXct(DB01_HMD$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
@@ -53,7 +53,7 @@ DB02_HMD$UTC <- as.POSIXct(DB02_HMD$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT
 DB02_HMD$PLATFORM = "DB02"
 DB03_HMD <- read.csv(here("data/DB03_HMD.csv"))
 DB03_HMD$UTC <- as.POSIXct(DB03_HMD$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
-DB02_HMD$PLATFORM = "DB03"
+DB03_HMD$PLATFORM = "DB03"
 
 ES01_HMD <- read.csv(here("data/ES01_HMD.csv"))
 ES01_HMD$UTC <- as.POSIXct(ES01_HMD$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
