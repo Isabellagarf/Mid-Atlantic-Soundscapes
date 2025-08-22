@@ -68,30 +68,33 @@ ES03_HMD$PLATFORM = "ES03"
 CB01_HMD <- read.csv(here("data/CB01_HMD.csv"))
 CB01_HMD$UTC <- as.POSIXct(CB01_HMD$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
 CB01_HMD$PLATFORM = "CB01"
-CB02_HMD <- read.csv(here("data/CB02_HMD.csv"))
+CB02_HMD <- read.csv(here("data/dataCB02_HMD.csv"))
 CB02_HMD$UTC <- as.POSIXct(CB02_HMD$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
 CB02_HMD$PLATFORM = "CB02"
-CB03_HMD <- read.csv(here("data/CB03_HMD.csv"))
+CB03_HMD <- read.csv(here("data/dataCB03_HMD.csv"))
 CB03_HMD$UTC <- as.POSIXct(CB03_HMD$UTC, format= "%m/%d/%Y %H", tz = "GMT")
+CB03_HMD <- CB03_HMD[-c(1)]
 CB03_HMD$PLATFORM = "CB03"
 
-all_sites <- DB01_HMD%>%
-  full_join(DB02_HMD)%>%
-  full_join(DB03_HMD)%>%
-  full_join(ES01_HMD)%>%
-  full_join(ES02_HMD)%>%
-  full_join(ES03_HMD)%>%
-  full_join(CB01_HMD)%>%
-  full_join(CB02_HMD)%>%
-  full_join(CB03_HMD)
+#all_sites <- DB01_HMD%>%
+#  full_join(DB02_HMD)%>%
+#  full_join(DB03_HMD)%>%
+#  full_join(ES01_HMD)%>%
+#  full_join(ES02_HMD)%>%
+#  full_join(ES03_HMD)%>%
+#  full_join(CB01_HMD)%>%
+#  full_join(CB02_HMD)%>%
+#  full_join(CB03_HMD)
 
-write.csv(all_sites, here("data", "all_sites_HMD.csv")) #need to save after joining all sites again
+#write.csv(all_sites, here("data", "all_sites_HMD.csv")) #need to save after joining all sites again
 
 ```
 
 #inshore/offshore grouping
 
 ```{r}
+#load back in csv from data folder next time!
+
 inshore_sites <- DB01_HMD %>%
   full_join(ES01_HMD)%>%
   full_join(CB01_HMD)
@@ -104,7 +107,28 @@ midshore_sites <- DB02_HMD %>%
 offshore_sites <- DB03_HMD %>%
   full_join(ES03_HMD)
 
-runSoundscapeExplorer(all_sites)
+DB_sites <- DB01_HMD %>%
+  full_join(DB02_HMD)%>%
+  full_join(DB03_HMD)
+ES_sites <- ES01_HMD %>%
+  full_join(ES02_HMD)%>%
+  full_join(ES03_HMD)
+CB_sites <- CB01_HMD %>% #will need to redo when CB02 error is fixed
+  full_join(CB02_HMD)%>%
+  full_join(CB03_HMD)
+
+write.csv(CB_sites, here("data", "CB_sites.csv")) #will need to redo when CB02 error is fixed- and same with the PSD plots
+
+plotPSD(x=offshore_sites, style='quantile', q=0.01, facet='PLATFORM')+
+  labs(y= (expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz"))))+
+  theme(axis.text= element_text(size= 12),
+        axis.title= element_text(size= 14),
+        legend.text = element_text(size= 13),
+        legend.title= element_text(size= 13.5),
+        strip.text= element_text(size= 12))
+
+  guides(color= guide_legend(title= "Month")) #add back to ggplot if using other PSDs
+
 ```
 
 ## DELAWARE BAY- mostly OL
