@@ -117,7 +117,20 @@ CB_sites <- CB01_HMD %>% #will need to redo when CB02 error is fixed
   full_join(CB02_HMD)%>%
   full_join(CB03_HMD)
 
-write.csv(CB_sites, here("data", "CB_sites.csv")) #will need to redo when CB02 error is fixed- and same with the PSD plots
+runSoundscapeExplorer(DB_sites)
+
+plotPSD(x=midshore_sites, style='quantile', q=0.01, by='PLATFORM', facet='month')+
+  labs(y= (expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz"))))+
+  theme(axis.text= element_text(size= 10),
+        axis.title= element_text(size= 14),
+        legend.text = element_text(size= 13),
+        legend.title= element_text(size= 13.5),
+        strip.text= element_text(size= 12))+
+  scale_color_manual(labels= c("DB02", "ES02", "CB02", "CB03"), values= c("#00797F","#003087", "#B71300"))+
+  scale_fill_manual(values= c("#00797F","#003087", "#B71300"))+
+  theme_bw()+
+  guides(color= guide_legend(title= "Platform"))
+
 
 plotPSD(x=offshore_sites, style='quantile', q=0.01, facet='PLATFORM')+
   labs(y= (expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz"))))+
