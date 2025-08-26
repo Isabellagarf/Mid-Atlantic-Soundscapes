@@ -88,6 +88,7 @@ CB03_HMD$PLATFORM = "CB03"
 
 #write.csv(all_sites, here("data", "all_sites_HMD.csv")) #need to save after joining all sites again
 
+
 ```
 
 #inshore/offshore grouping
@@ -126,8 +127,8 @@ plotPSD(x=midshore_sites, style='quantile', q=0.01, by='PLATFORM', facet='month'
         legend.text = element_text(size= 13),
         legend.title= element_text(size= 13.5),
         strip.text= element_text(size= 12))+
-  scale_color_manual(labels= c("DB02", "ES02", "CB02", "CB03"), values= c("#00797F","#003087", "#B71300"))+
-  scale_fill_manual(values= c("#00797F","#003087", "#B71300"))+
+  scale_color_manual(labels= c("DB02", "ES02", "CB02", "CB03"), values= c("#00797F90","#00308790", "#B7130090", "#B7130080"))+
+  scale_fill_manual(values= c("#00797F90","#00308790", "#B7130090"))+
   theme_bw()+
   guides(color= guide_legend(title= "Platform"))
 
