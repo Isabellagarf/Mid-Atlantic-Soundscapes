@@ -117,6 +117,11 @@ ES_sites <- ES01_HMD %>%
 CB_sites <- CB01_HMD %>% #will need to redo when CB02 error is fixed
   full_join(CB02_HMD)%>%
   full_join(CB03_HMD)
+```
+
+#plotting sites by group
+
+```{r}
 
 runSoundscapeExplorer(DB_sites)
 
@@ -140,8 +145,53 @@ plotPSD(x=offshore_sites, style='quantile', q=0.01, facet='PLATFORM')+
         legend.text = element_text(size= 13),
         legend.title= element_text(size= 13.5),
         strip.text= element_text(size= 12))
+guides(color= guide_legend(title= "Month")) #add back to plot if using other PSDs
 
-  guides(color= guide_legend(title= "Month")) #add back to ggplot if using other PSDs
+
+DB_plot <- plotPSD(DB_sites, 
+                     style = "quantile",
+                     scale = "log",
+                     q = 0.1,
+                     color = "black",
+                     units = expression(paste("dB re 1", mu, "Pa"^"2", "Hz"^"-1")),
+                     freqRange = c(20,24000),
+                     by = c("PLATFORM"))
+
+DB_plot +
+   scale_color_viridis_d(option = "mako", begin = 0.25, end = 0.75)+
+   scale_fill_viridis_d(option = "mako", begin = 0.25, end = 0.75)+
+   labs(color="Platform") +
+   theme_bw()
+
+ES_plot <- plotPSD(ES_sites, 
+                     style = "quantile",
+                     scale = "log",
+                     q = 0.1,
+                     color = "black",
+                     units = expression(paste("dB re 1", mu, "Pa"^"2", "Hz"^"-1")),
+                     freqRange = c(20,24000),
+                     by = c("PLATFORM"))
+
+ES_plot +
+   scale_color_viridis_d(option = "mako", begin = 0.25, end = 0.75)+
+   scale_fill_viridis_d(option = "mako", begin = 0.25, end = 0.75)+
+   labs(color="Platform") +
+   theme_bw()
+
+CB_plot <- plotPSD(CB_sites, 
+                     style = "quantile",
+                     scale = "log",
+                     color = "black",
+                     units = expression(paste("dB re 1", mu, "Pa"^"2", "Hz"^"-1")),
+                     freqRange = c(20,24000),
+                     by = 'month',
+                   facet= 'PLATFORM')
+
+CB_plot +
+   scale_color_viridis_d(option = "mako", begin = 0.25, end = 0.75)+
+   scale_fill_viridis_d(option = "mako", begin = 0.25, end = 0.75)+
+   labs(color="Month") +
+   theme_bw()
 
 ```
 
