@@ -35,7 +35,7 @@ library(tsibble)
 library(scales)
 library(ggpmisc)
 library(paletteer)
-
+library(ggh4x)
 
 ```
 
@@ -87,6 +87,18 @@ CB03_HMD$PLATFORM = "CB03"
 #  full_join(CB03_HMD)
 
 #write.csv(all_sites, here("data", "all_sites_HMD.csv")) #need to save after joining all sites again
+
+
+```
+
+
+```{r}
+all_sites <- inshore_sites %>%
+  full_join(midshore_sites)%>%
+  full_join(offshore_sites)
+
+runSoundscapeExplorer(DB01_HMD)
+
 
 
 ```
@@ -178,7 +190,79 @@ ES_plot +
    labs(color="Platform") +
    theme_bw()
 
-CB_plot <- plotPSD(CB_sites, 
+inshore_plot <-  plotPSD(inshore_sites, 
+                     style = "quantile",
+                     scale = "log",
+                     q = 0.1,
+                     color = "black",
+                     units = expression(paste("dB re 1", mu, "Pa"^"2", "Hz"^"-1")),
+                     freqRange = c(20,24000),
+                     by = c("PLATFORM"))
+inshore_plot +
+   scale_color_viridis_d(option = "magma", begin = 0.25, end = 0.75)+
+   scale_fill_viridis_d(option = "magma", begin = 0.25, end = 0.75)+
+   labs(color="Platform") +
+   theme_bw()
+
+midshore_plot <- plotPSD(midshore_sites,
+                         style= "quantile",
+                         scale= "log",
+                         q= 0.1,
+                         color= "black",
+                         units= expression(paste("dB re 1", mu, "Pa"^"2", "Hz"^"-1")),
+                         freqRange= c(20,24000),
+                         by = c("PLATFORM"))
+midshore_plot +
+  scale_color_viridis_d(option= "magma", begin = 0.25, end = 0.75)+
+  scale_fill_viridis_d(option = "magma", begin = 0.25, end = 0.75)+
+  labs(color= "Platform")+
+  theme_bw()
+
+offshore_plot <- plotPSD(offshore_sites,
+                         style= "quantile",
+                         scale= "log",
+                         q= 0.1,
+                         color= "black",
+                         units= expression(paste("dB re 1", mu, "Pa"^"2", "Hz"^"-1")),
+                         freqRange= c(20,24000),
+                         by = c("PLATFORM"))
+offshore_plot +
+  scale_color_viridis_d(option= "magma", begin = 0.25, end = 0.75)+
+  scale_fill_viridis_d(option = "magma", begin = 0.25, end = 0.75)+
+  labs(color= "Platform")+
+  theme_bw()
+  
+
+```
+
+#plots by specific months
+
+```{r}
+offshore_sites$month_num <- month(offshore_sites$UTC)
+inshore_sites$month_num <- month(inshore_sites$UTC)
+midshore_sites$month_num <- month(midshore_sites$UTC)
+
+data_subset <- USArrests %>% filter(UrbanPop > 70)
+plot(data_subset$Murder, data_subset$Assault)
+inshore_chorusingMonths <- inshore_sites %>%
+  filter(inshore_sites$month_num > 5 & inshore_sites$month_num <11)
+
+inshore_chorusMonths_plot <- plotPSD(inshore_chorusingMonths,
+                                     style= "quantile",
+                                     scale= "log",
+                                     color= "black",
+                                     units= expression(paste("dB re 1", mu, "Pa"^"2", "Hz"^"-1")),
+                                     freqRange= c(20,24000),
+                                     by ="month",
+                                     facet= 'PLATFORM')
+inshore_chorusMonths_plot+
+  scale_color_viridis_d(option = "magma", begin = 0.25, end = 0.75)+
+  scale_fill_viridis_d(option= "magma", begin = 0.25, end = 0.75)+
+  labs(color= "Month")+
+  theme_bw()
+
+#individual months
+inshore_july_plot <- plotPSD(inshore_sites [inshore_sites$month_num == "7",],
                      style = "quantile",
                      scale = "log",
                      color = "black",
@@ -187,7 +271,7 @@ CB_plot <- plotPSD(CB_sites,
                      by = 'month',
                    facet= 'PLATFORM')
 
-CB_plot +
+inshore_july_plot +
    scale_color_viridis_d(option = "mako", begin = 0.25, end = 0.75)+
    scale_fill_viridis_d(option = "mako", begin = 0.25, end = 0.75)+
    labs(color="Month") +

@@ -4,7 +4,7 @@ library(ggalt)
 library(readxl)
 library(ggalt)
 
-devtools::install_github("hrbrmstr/ggalt")
+#devtools::install_github("hrbrmstr/ggalt")
 # Read in spreadsheet with deployment dates 
 Deployment_data <- read.csv("data/Deployment_metadata_mid-Atl.csv")
 
@@ -15,7 +15,7 @@ Deployment_data <- read.csv("data/Deployment_metadata_mid-Atl.csv")
 Deployment_data$SITE_NAME <- factor(Deployment_data$SITE_NAME, levels = c("DB01","DB02","DB03","ES01","ES02", "ES03", "CB01", "CB02","CB04", "CB03"))
 
 # order factor levels
-Status_order <- c("Processed Sucessfully","ERROR", "Omitted")
+Status_order <- c("Processed Sucessfully","ERROR", "Omitted", "Data Gap")
 
 # plot - used by Annie
 deployment_timelines <- ggplot() +
@@ -26,7 +26,8 @@ deployment_timelines <- ggplot() +
                     colour = factor(Status, level = Status_order)))+
   scale_color_manual(name = "", values = c("Processed Sucessfully" = "aquamarine3",
                                            "Omitted" ="slategray3",
-                                           "ERROR"= "#CC0000")) +
+                                           "ERROR"= "#CC0000",
+                                           "Data Gap" = "grey")) +
   
   ylab("SITE NAME") + xlab("DEPLOYMENT PERIOD (Month/Year)") + 
   ggtitle("SoundTrap deployments included in Mid-Atlantic Soundscape Analysis")+
