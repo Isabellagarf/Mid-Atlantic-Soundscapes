@@ -91,7 +91,7 @@ CB03_HMD$PLATFORM = "CB03"
 
 ```
 
-
+# all sites
 ```{r}
 all_sites <- inshore_sites %>%
   full_join(midshore_sites)%>%
@@ -279,22 +279,131 @@ inshore_july_plot +
 
 ```
 
+
+## OCTAVE LEVEL FILES
+```{r}
+DB01_OL <- read.csv(here("data/OL/DB01_OL.csv"))
+DB01_OL <- DB01_OL[-c(1)]
+DB01_OL$UTC <- as.POSIXct(DB01_OL$UTC, format= "%m/%d/%Y %H", tz = "GMT")
+DB02_OL <- read.csv(here("data/OL/DB02_OL.csv"))
+DB02_OL$UTC <- as.POSIXct(DB02_OL$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB03_OL <- read.csv(here("data/OL/DB03_OL_missing2022.csv"))
+DB03_OL$UTC <- as.POSIXct(DB03_OL$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+ES01_OL <- read.csv(here("data/OL/ES01_OL.csv"))
+ES01_OL <- ES01_OL[-c(1)]
+ES02_OL <- read.csv(here("data/OL/ES02_OL.csv"))
+ES02_OL <- ES02_OL[-c(1)]
+ES03_OL <- read.csv(here("data/OL/ES03_OL.csv"))
+ES03_OL <- ES03_OL[-c(1)]
+CB01_OL <- read.csv(here("data/OL/CB01_OL.csv"))
+CB01_OL <- CB01_OL[-c(1)]
+CB02_OL <- read.csv(here("data/OL/CB02_OL.csv"))
+CB02_OL <- CB02_OL[-c(1)]
+CB03_OL <- read.csv(here("data/OL/CB03_OL.csv"))
+CB03_OL <- CB03_OL[-c(1)]
+
+
+runSoundscapeExplorer(DB01_OL)
+```
+
+#OL_500 Delaware
+
+```{r}
+#make more data so DB03 starts at same time
+subset_OL_DB03 <- seq(ymd_hms("2022-07-07 00:00:00"), ymd_hms("2023-01-10 23:00:00"), by = "1 hour")
+subset_OL_DB03 <- data.frame(UTC= subset_OL_DB03)
+DB03_OL <- DB03_OL%>%
+  full_join(subset_OL_DB03, by= join_by(UTC))
+
+DB01_OL_plot<- ggplot(DB01_OL, aes(x= UTC, y= OL_500))+
+  geom_line()+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  ylim(72, 140)+
+  annotate("text", x= as.POSIXct("2022-07-10 00:00"), y= 135, label= "DB01", color= "black", size= 5)+
+  xlab("Date")+
+  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))
+
+DB02_OL_plot <- ggplot(DB02_OL, aes(x= UTC, y= OL_500))+
+  geom_line()+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  ylim(72, 140)+
+  annotate("text", x= as.POSIXct("2022-07-10 00:00"), y= 135, label= "DB02", color= "black", size= 5)+
+  xlab("Date")+
+  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))
+
+DB03_OL_plot <- ggplot(DB03_OL, aes(x= UTC, y= OL_500))+
+  geom_line()+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  ylim(72, 140)+
+  annotate("text", x= as.POSIXct("2022-07-10 00:00"), y= 135, label= "DB03", color= "black", size= 5)+
+  xlab("Date")+
+  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))
+
+DB01_OL_plot/DB02_OL_plot/DB03_OL_plot + plot_layout(axis_titles = "collect", guides = "collect", design = "AA\nBB\nCC")
+
+```
+
+#OL_2000 Delaware
+
+```{r}
+
+#make more data so DB03 starts at same time
+subset_OL_DB03 <- seq(ymd_hms("2022-07-07 00:00:00"), ymd_hms("2023-01-10 23:00:00"), by = "1 hour")
+subset_OL_DB03 <- data.frame(UTC= subset_OL_DB03)
+DB03_OL <- DB03_OL%>%
+  full_join(subset_OL_DB03, by= join_by(UTC))
+
+DB01_2000OL_plot<- ggplot(DB01_OL, aes(x= UTC, y= OL_2000))+
+  geom_line()+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  ylim(72, 140)+
+  annotate("text", x= as.POSIXct("2022-07-10 00:00"), y= 135, label= "DB01", color= "black", size= 5)+
+  xlab("Date")+
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))
+
+DB02_2000OL_plot <- ggplot(DB02_OL, aes(x= UTC, y= OL_2000))+
+  geom_line()+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  ylim(72, 140)+
+  annotate("text", x= as.POSIXct("2022-07-10 00:00"), y= 135, label= "DB02", color= "black", size= 5)+
+  xlab("Date")+
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))
+
+DB03_2000OL_plot <- ggplot(DB03_OL, aes(x= UTC, y= OL_2000))+
+  geom_line()+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  ylim(72, 140)+
+  annotate("text", x= as.POSIXct("2022-07-10 00:00"), y= 135, label= "DB03", color= "black", size= 5)+
+  xlab("Date")+
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))
+
+DB01_2000OL_plot/DB02_2000OL_plot/DB03_2000OL_plot + plot_layout(axis_titles = "collect", guides = "collect", design = "AA\nBB\nCC")
+
+
+```
+
 ## DELAWARE BAY- mostly OL
 
 ```{r}
 ## OL BANDS
 #DB01
-DB01 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB01_OL.csv")
-DB01 <- DB01[-c(1)]
-DB01$UTC <- as.POSIXct(DB01$UTC, format= "%m/%d/%Y %H", tz = "GMT")
+DB01_OL <- read.csv("Z:/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB01/OL/DB01_OL.csv")
+DB01_OL <- DB01_OL[-c(1)]
+DB01_OL$UTC <- as.POSIXct(DB01_OL$UTC, format= "%m/%d/%Y %H", tz = "GMT")
 
 #DB02
-DB02 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB02_OL.csv")
-DB02$UTC <- as.POSIXct(DB02$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB02_OL <- read.csv("Z:/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB02/OL/DB02_OL.csv")
+DB02_OL$UTC <- as.POSIXct(DB02_OL$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
 
 #DB03
-DB03_missing2022 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB03_OL_missing2022.csv")
-DB03_missing2022$UTC <- as.POSIXct(DB03_missing2022$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB03_OL <- read.csv("Z:/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB03/OL/DB03_OL_missing2022.csv")
+DB03_OL$UTC <- as.POSIXct(DB03_OL$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
 
 
 ## HMD FULL FILES
