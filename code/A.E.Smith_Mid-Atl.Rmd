@@ -36,6 +36,7 @@ library(scales)
 library(ggpmisc)
 library(paletteer)
 library(ggh4x)
+library(suntools)
 
 ```
 
@@ -353,6 +354,26 @@ ggplot(inshore_sites_OL, aes(x= UTC_fixed, y= OL_2000, color = PLATFORM))+
   xlab("Date")+
   ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   scale_color_manual(labels= c("DB01", "ES01", "CB01"), values= c("#00797F90","#00308790", "#B7130090"))
+```
+
+#only plotting certain hours
+
+```{r}
+sunrise_set <- function(Latitude, Longitude, date, timezone = "UTC", direction = c("sunrise", "sunset")) {
+  lat.long <- cbind(lon, lat)
+  sunriset(lat.long, date, direction= direction, POSIXct.out = TRUE)[,2]
+}
+
+DB01_OL <- DB01_OL %>%
+  mutate(val = sunrise_set(UTC_fixed))
+
+crepuscule(
+  matrix(c(DB01_OL$Latitude, DB01_OL$Longitude), nrow= 19920),
+  as.POSIXct(DB01_OL$UTC_fixed, tz = "UTC"),
+  solarDep = 1.9,
+  direction = "dawn",
+  POSIXct.out = TRUE
+)
 
 ggplot(inshore_sites_OL [inshore_sites_OL$UTC_hour == "19:00:00",], aes(x= UTC_fixed, y= OL_500, color= PLATFORM))+
   geom_line(linewidth = 0.75)+
