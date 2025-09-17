@@ -282,28 +282,46 @@ inshore_july_plot +
 
 ## OCTAVE LEVEL FILES
 ```{r}
-DB01_OL <- read.csv(here("data/OL/DB01_OL.csv"))
+DB01_OL <- read.csv(here("data/DB01_OL.csv"))
 DB01_OL <- DB01_OL[-c(1)]
 DB01_OL$UTC <- as.POSIXct(DB01_OL$UTC, format= "%m/%d/%Y %H", tz = "GMT")
-DB02_OL <- read.csv(here("data/OL/DB02_OL.csv"))
+
+DB02_OL <- read.csv(here("data/DB02_OL.csv"))
 DB02_OL$UTC <- as.POSIXct(DB02_OL$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
-DB03_OL <- read.csv(here("data/OL/DB03_OL_missing2022.csv"))
+
+DB03_OL <- read.csv(here("data/DB03_OL_missing2022.csv"))
 DB03_OL$UTC <- as.POSIXct(DB03_OL$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
-ES01_OL <- read.csv(here("data/OL/ES01_OL.csv"))
+
+ES01_OL <- read.csv(here("data/ES01_OL.csv"))
 ES01_OL <- ES01_OL[-c(1)]
-ES02_OL <- read.csv(here("data/OL/ES02_OL.csv"))
+ES01_OL$UTC_fixed <- paste(ES01_OL$UTC_date, ES01_OL$UTC_hour, sep = " ")
+ES01_OL$UTC_fixed <- as.POSIXct(ES01_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+
+ES02_OL <- read.csv(here("data/ES02_OL.csv"))
 ES02_OL <- ES02_OL[-c(1)]
-ES03_OL <- read.csv(here("data/OL/ES03_OL.csv"))
+ES02_OL$UTC_fixed <- paste(ES02_OL$UTC_date, ES02_OL$UTC_hour, sep = " ")
+ES02_OL$UTC_fixed <- as.POSIXct(ES02_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+
+ES03_OL <- read.csv(here("data/ES03_OL.csv"))
 ES03_OL <- ES03_OL[-c(1)]
-CB01_OL <- read.csv(here("data/OL/CB01_OL.csv"))
+ES03_OL$UTC_fixed <- paste(ES03_OL$UTC_date, ES03_OL$UTC_hour, sep = " ")
+ES03_OL$UTC_fixed <- as.POSIXct(ES03_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+
+CB01_OL <- read.csv(here("data/CB01_OL.csv"))
 CB01_OL <- CB01_OL[-c(1)]
-CB02_OL <- read.csv(here("data/OL/CB02_OL.csv"))
+CB01_OL$UTC_fixed <- paste(CB01_OL$UTC_date, CB01_OL$UTC_hour, sep = " ")
+CB01_OL$UTC_fixed <- as.POSIXct(CB01_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+
+CB02_OL <- read.csv(here("data/CB02_OL.csv"))
 CB02_OL <- CB02_OL[-c(1)]
-CB03_OL <- read.csv(here("data/OL/CB03_OL.csv"))
+CB02_OL$UTC_fixed <- paste(CB02_OL$UTC_date, CB02_OL$UTC_hour, sep = " ")
+CB02_OL$UTC_fixed <- as.POSIXct(CB02_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+
+CB03_OL <- read.csv(here("data/CB03_OL.csv"))
 CB03_OL <- CB03_OL[-c(1)]
+CB03_OL$UTC_fixed <- paste(CB03_OL$UTC_date, CB03_OL$UTC_hour, sep = " ")
+CB03_OL$UTC_fixed <- as.POSIXct(CB03_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
 
-
-runSoundscapeExplorer(DB01_OL)
 ```
 
 #OL_500 Delaware
