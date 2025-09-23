@@ -347,13 +347,13 @@ inshore_sites_OL <- DB01_OL %>%
   full_join(CB01_OL)
 
 
-ggplot(inshore_sites_OL, aes(x= UTC_fixed, y= OL_2000, color = PLATFORM))+
+ggplot(inshore_sites_OL, aes(x= UTC_fixed, y= OL_500, color = PLATFORM))+
   geom_line()+
   theme_bw()+
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   xlab("Date")+
-  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
-  scale_color_manual(labels= c("DB01", "ES01", "CB01"), values= c("#00797F90","#00308790", "#B7130090"))
+  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  scale_color_manual(values= c("#00797F90","#00308790", "#B7130090"))
 ```
 
 #only plotting sunset hours
