@@ -362,7 +362,7 @@ ggplot(inshore_sites_OL, aes(x= UTC_fixed, y= OL_500, color = PLATFORM))+
 ```{r}
 #DB01
 DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
-DB01_date_Time <- seq(ymd_hms("2022-07-07 00:00:00"), ymd_hms("2024-11-03 23:00:00"), by = "1 hour")
+DB01_date_Time <- seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2024-11-08 16:00:00"), by = "1 hour")
 
 Sunset <- sunriset(crds = DB01_location, dateTime = DB01_date_Time, direction = "sunset", POSIXct.out = TRUE)
 sunset_datehour <- Sunset %>%
@@ -497,7 +497,7 @@ ggplot(inshore_sunsets, aes(x= UTC_fixed, y= OL_2000, color= PLATFORM))+
 ```{r}
 #DB01
 DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
-DB01_date_Time <- seq(ymd_hms("2022-07-07 00:00:00"), ymd_hms("2024-11-03 23:00:00"), by = "1 hour")
+DB01_date_Time <- seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2024-11-08 16:00:00"), by = "1 hour")
 
 DB01Sunrise <- sunriset(crds = DB01_location, dateTime = DB01_date_Time, direction = "sunrise", POSIXct.out = TRUE)
 DB01sunrise_datehour <- DB01Sunrise %>%
@@ -526,7 +526,8 @@ DB01_500Hz <- ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_500, color= sun_time
 #  geom_smooth(aes(group=1,2))+
   scale_color_manual(values= c("#00308790", "#B7130090"))+
   ggtitle("DB01")+
-  theme(legend.title= element_blank())
+  theme(legend.title= element_blank())+
+  ylim(72, 135)
 DB01_2000Hz <- ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_time))+
   geom_line(linewidth = 0.75)+
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
@@ -535,7 +536,9 @@ DB01_2000Hz <- ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_ti
   ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
 #  geom_smooth(aes(group=1,2))+
   scale_color_manual(values= c("#00308790", "#B7130090"))+
-  theme(legend.title= element_blank())
+  theme(legend.title= element_blank())+
+  ggtitle("DB01")+
+  ylim(72, 135)
 
 DB01_500Hz/DB01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
 
@@ -554,7 +557,7 @@ ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_500, color= sun_time, ))+
 
 
 ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color=sun_time, q=0.01))+
-  geom_line()
+  geom_line()+
   theme_bw()+
   xlab("Date")+
   ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
@@ -563,7 +566,121 @@ ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color=sun_time, q=0.01))+
   
 
 
-runSoundscapeExplorer(DB01_suntimes)
+runSoundscapeExplorer(ES01_suntimes)
+```
+
+
+```{r}
+#ES01
+ES01_location <- matrix(c(-75.29, 37.69), nrow = 1)
+ES01_date_Time <- seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2024-11-08 16:00:00"), by = "1 hour")
+
+ES01Sunrise <- sunriset(crds = ES01_location, dateTime = ES01_date_Time, direction = "sunrise", POSIXct.out = TRUE)
+ES01sunrise_datehour <- ES01Sunrise %>%
+  mutate(UTC_date = date(time))%>%
+  mutate(sunrise_UTC_hour = hour(time))
+
+ES01sunrise_datehour <- ES01sunrise_datehour %>%
+  group_by(UTC_date, sunrise_UTC_hour)%>%
+  summarize(n = n())
+ES01sunrise_datehour$sunrise_UTC_hour <- as.character(ES01sunrise_datehour$sunrise_UTC_hour)
+ES01sunrise_datehour$UTC_date <- as.character(ES01sunrise_datehour$UTC_date)
+ES01sunrise_datehour <- ES01sunrise_datehour[-c(3)]
+ES01sunrise_datehour$UTC_fixed <- paste(ES01sunrise_datehour$UTC_date, ES01sunrise_datehour$sunrise_UTC_hour, sep = " ")
+ES01sunrise_datehour$UTC_fixed = as.POSIXct(ES01sunrise_datehour$UTC_fixed, format = "%Y-%m-%d %H")
+
+ES01_sunrise <- ES01_OL %>%
+  right_join(ES01sunrise_datehour, join_by(UTC_fixed))
+
+ES01_sunset$sun_time = "Sunset"
+ES01_sunrise$sun_time = "Sunrise"
+ES01_suntimes <- ES01_sunrise %>%
+  full_join(ES01_sunset)
+
+ES01_500Hz <- ggplot(ES01_suntimes, aes(x= UTC_fixed, y= OL_500, color= sun_time))+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+#  geom_smooth(aes(group=1,2))+
+  scale_color_manual(values= c("#00308790", "#B7130090"))+
+  ggtitle("ES01")+
+  theme(legend.title= element_blank())+
+  ylim(72, 135)
+ES01_2000Hz <- ggplot(ES01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_time))+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+#  geom_smooth(aes(group=1,2))+
+  scale_color_manual(values= c("#00308790", "#B7130090"))+
+  theme(legend.title= element_blank())+
+  ggtitle("ES01")+
+  ylim(72, 135)
+
+ES01_500Hz/ES01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
+
+
+```
+
+
+
+```{r}
+#CB01
+CB01_location <- matrix(c(-75.67, 36.98), nrow = 1)
+CB01_date_Time <- seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2024-11-08 16:00:00"), by = "1 hour")
+
+CB01Sunrise <- sunriset(crds = CB01_location, dateTime = CB01_date_Time, direction = "sunrise", POSIXct.out = TRUE)
+CB01sunrise_datehour <- CB01Sunrise %>%
+  mutate(UTC_date = date(time))%>%
+  mutate(sunrise_UTC_hour = hour(time))
+
+CB01sunrise_datehour <- CB01sunrise_datehour %>%
+  group_by(UTC_date, sunrise_UTC_hour)%>%
+  summarize(n = n())
+CB01sunrise_datehour$sunrise_UTC_hour <- as.character(CB01sunrise_datehour$sunrise_UTC_hour)
+CB01sunrise_datehour$UTC_date <- as.character(CB01sunrise_datehour$UTC_date)
+CB01sunrise_datehour <- CB01sunrise_datehour[-c(3)]
+CB01sunrise_datehour$UTC_fixed <- paste(CB01sunrise_datehour$UTC_date, CB01sunrise_datehour$sunrise_UTC_hour, sep = " ")
+CB01sunrise_datehour$UTC_fixed = as.POSIXct(CB01sunrise_datehour$UTC_fixed, format = "%Y-%m-%d %H")
+
+CB01_sunrise <- CB01_OL %>%
+  right_join(CB01sunrise_datehour, join_by(UTC_fixed))
+
+CB01_sunset$sun_time = "Sunset"
+CB01_sunrise$sun_time = "Sunrise"
+CB01_suntimes <- CB01_sunrise %>%
+  full_join(CB01_sunset)
+
+CB01_500Hz <- ggplot(CB01_suntimes, aes(x= UTC_fixed, y= OL_500, color= sun_time))+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+#  geom_smooth(aes(group=1,2))+
+  scale_color_manual(values= c("#00308790", "#B7130090"))+
+  ggtitle("CB01")+
+  theme(legend.title= element_blank())+
+  ylim(72, 135)
+CB01_2000Hz <- ggplot(CB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_time))+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+#  geom_smooth(aes(group=1,2))+
+  scale_color_manual(values= c("#00308790", "#B7130090"))+
+  theme(legend.title= element_blank())+
+  ggtitle("CB01")+
+  ylim(72, 135)
+
+CB01_500Hz/CB01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
+
+
+DB01_2000Hz/ES01_2000Hz/CB01_2000Hz +plot_layout(guides= "collect", axis_titles= "collect")
 ```
 
 #OL_500 Delaware
