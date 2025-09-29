@@ -677,10 +677,51 @@ CB01_2000Hz <- ggplot(CB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_ti
   ggtitle("CB01")+
   ylim(72, 135)
 
+runSoundscapeExplorer(DB01_suntimes)
+
 CB01_500Hz/CB01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
 
 
 DB01_2000Hz/ES01_2000Hz/CB01_2000Hz +plot_layout(guides= "collect", axis_titles= "collect")
+
+
+CB01_1000Hz <- ggplot(CB01_suntimes, aes(x= UTC_fixed, y= OL_1000, color= sun_time))+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "2 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 1000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+#  geom_smooth(aes(group=1,2))+
+  scale_color_manual(values= c("#00308790", "#B7130090"))+
+  theme(legend.title= element_blank())+
+  ggtitle("CB01")+
+  ylim(72, 135)
+
+DB01_1000Hz <- ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_1000, color= sun_time))+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "2 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 1000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+#  geom_smooth(aes(group=1,2))+
+  scale_color_manual(values= c("#00308790", "#B7130090"))+
+  theme(legend.title= element_blank())+
+  ggtitle("DB01")+
+  ylim(72, 135)
+
+ES01_1000Hz <- ggplot(ES01_suntimes, aes(x= UTC_fixed, y= OL_1000, color= sun_time))+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "2 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 1000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+#  geom_smooth(aes(group=1,2))+
+  scale_color_manual(values= c("#00308790", "#B7130090"))+
+  theme(legend.title= element_blank())+
+  ggtitle("ES01")+
+  ylim(72, 135)
+
+DB01_1000Hz/ES01_1000Hz/CB01_1000Hz +plot_layout(guides= "collect", axis_titles= "collect")
 ```
 
 #OL_500 Delaware
