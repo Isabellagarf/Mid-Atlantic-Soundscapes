@@ -39,6 +39,7 @@ library(ggh4x)
 library(suntools)
 library(zoo)
 library(wesanderson)
+library(openair)
 
 ```
 
@@ -731,6 +732,22 @@ ES01_1000Hz <- ggplot(ES01_suntimes, aes(x= UTC_fixed, y= OL_1000, color= sun_ti
   ylim(72, 135)
 
 DB01_1000Hz/ES01_1000Hz/CB01_1000Hz +plot_layout(guides= "collect", axis_titles= "collect")
+
+
+```
+
+```{r}
+#smoothing plot using openair
+
+colnames(CB01_OL)[17] <- "date"
+ES01_OL <- ES01_OL[complete.cases(CB01_OL), ]
+
+timePlot(DB01_OL, pollutant= c("OL_500", "OL_1000", "OL_2000"), avg.time= "week", y.relation = "free", smooth= TRUE, date.format = "%b-%Y", ylab = (expression(paste("Octave Band SPL (dB re \u00b5Pa" ^ "2", "/Hz)"))))
+
+
+calendarPlot(CB01_OL, pollutant= "OL_500", year = "2022")
+
+
 ```
 
 #OL_500 Delaware
