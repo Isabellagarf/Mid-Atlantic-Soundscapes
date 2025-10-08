@@ -779,7 +779,21 @@ ES01_OL <- ES01_OL[complete.cases(ES01_OL), ]
 CB01_OL <- CB01_OL[complete.cases(CB01_OL), ]
 DB02_OL <- DB02_OL[complete.cases(DB02_OL), ]
 
-timePlot(DB_OL, type= "PLATFORM", pollutant= c("OL_500", "OL_2000"), avg.time= "week", y.relation = "same", smooth= FALSE, date.format = "%b-%Y", ylab = (expression(paste("500 Hz Octave Band SPL (dB re \u00b5Pa" ^ "2", "/Hz)"))))
+DB01_plot <- timePlot(DB01_OL, type= "PLATFORM", pollutant= c("OL_500", "OL_2000"), avg.time= "week", y.relation = "same", smooth= FALSE, date.format = "%b-%Y", ylab = (expression(paste("Octave Band SPL (dB re \u00b5Pa" ^ "2", "/Hz)"))))
+
+ES01_plot <- timePlot(ES01_OL, type= "PLATFORM", pollutant= c("OL_500", "OL_2000"), avg.time= "week", y.relation = "same", smooth= FALSE, date.format = "%b-%Y", ylab = (expression(paste("Octave Band SPL (dB re \u00b5Pa" ^ "2", "/Hz)"))))
+
+CB01_plot <- timePlot(CB01_OL, type= "PLATFORM", pollutant= c("OL_500", "OL_2000"), avg.time= "week", y.relation = "same", smooth= FALSE, date.format = "%b-%Y", ylab = (expression(paste("Octave Band SPL (dB re \u00b5Pa" ^ "2", "/Hz)"))))
+
+DB01_plot / ES01_plot / CB01_plot + plot_layout(axes = "collect", guides= "collect")
+
+
+ES01_extraTime <- seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2023-10-13 20:00:00"), by = "1 hour")
+ES01_extraTime <- data.frame(date= ES01_extraTime)
+ES01_OL <- ES01_OL %>%
+ full_join(ES01_extraTime)
+
+
 
 smoothTrend(DB01_OL, pollutant = c("OL_500", "OL_1000", "OL_2000"), statistics= "percentile", percentile = c(95), shade= "transparent", ci= FALSE, ylab = (expression(paste("500 Hz Octave Band SPL (dB re \u00b5Pa" ^ "2", "/Hz)"))), main = "DB01")
 
