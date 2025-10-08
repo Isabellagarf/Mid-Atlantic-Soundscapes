@@ -144,6 +144,35 @@ CB_sites <- CB01_HMD %>% #will need to redo when CB02 error is fixed
   full_join(CB03_HMD)
 ```
 
+#making LTSAs
+```{r}
+
+inshore_LTSA = plotLTSA(x=inshore_sites, facet= 'PLATFORM') +
+ # facet_grid(~factor(PLATFORM, levels = c('DB01', 'ES01', 'CB01')))+
+  theme_bw()
+
+midshore_LTSA = plotLTSA(x=midshore_sites, facet= 'PLATFORM') +
+  #facet_grid(~factor(PLATFORM, levels = c('DB02', 'ES02', 'CB02', 'CB03')))+
+  theme_bw()
+
+offshore_LTSA = plotLTSA(x=offshore_sites, facet= 'PLATFORM') +
+  #facet_grid(~factor(PLATFORM, levels = c('DB03', 'ES03')))+
+  theme_bw()
+
+
+DB_LTSA = plotLTSA(x=DB_sites, facet= 'PLATFORM') +
+  theme_bw()
+
+ES_LTSA = plotLTSA(x=ES_sites, facet= 'PLATFORM') +
+  theme_bw()
+
+CB_LTSA = plotLTSA(x=CB_sites, facet= 'PLATFORM') +
+  theme_bw()
+
+plot(CB_LTSA)
+
+```
+
 #plotting sites by group
 
 ```{r}
@@ -358,6 +387,9 @@ inshore_sites_OL <- DB01_OL %>%
   full_join(ES01_OL)%>%
   full_join(CB01_OL)
 
+DB_OL <- DB01_OL %>%
+  full_join(DB02_OL) %>%
+  full_join(DB03_OL)
 
 ggplot(inshore_sites_OL, aes(x= UTC_fixed, y= OL_500, color = PLATFORM))+
   geom_line()+
@@ -528,7 +560,7 @@ DB01sunrise_datehour$UTC_fixed = as.POSIXct(DB01sunrise_datehour$UTC_fixed, form
 DB01_sunrise <- DB01_OL %>%
   right_join(DB01sunrise_datehour, join_by(UTC_fixed))
 
-DB01_500Hz <- ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_500, color= sun_time))+
+#DB01_500Hz <- ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_500, color= sun_time))+
   geom_line(linewidth = 0.75)+
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   theme_bw()+
@@ -539,7 +571,7 @@ DB01_500Hz <- ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_500, color= sun_time
   ggtitle("DB01")+
   theme(legend.title= element_blank())+
   ylim(72, 135)
-DB01_2000Hz <- ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_time))+
+#DB01_2000Hz <- ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_time))+
   geom_line(linewidth = 0.75)+
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   theme_bw()+
@@ -551,7 +583,7 @@ DB01_2000Hz <- ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_ti
   ggtitle("DB01")+
   ylim(72, 135)
 
-DB01_500Hz/DB01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
+#DB01_500Hz/DB01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
 
 DB01_sunset$sun_time = "Sunset"
 DB01_sunrise$sun_time = "Sunrise"
@@ -736,17 +768,26 @@ DB01_1000Hz/ES01_1000Hz/CB01_1000Hz +plot_layout(guides= "collect", axis_titles=
 
 ```
 
+#open air package
 ```{r}
 #smoothing plot using openair
 
 colnames(CB01_OL)[17] <- "date"
-ES01_OL <- ES01_OL[complete.cases(CB01_OL), ]
+colnames(DB01_OL)[17] <- "date"
+colnames(ES01_OL)[17] <- "date"
+ES01_OL <- ES01_OL[complete.cases(ES01_OL), ]
+CB01_OL <- CB01_OL[complete.cases(CB01_OL), ]
+DB02_OL <- DB02_OL[complete.cases(DB02_OL), ]
 
-timePlot(DB01_OL, pollutant= c("OL_500", "OL_1000", "OL_2000"), avg.time= "week", y.relation = "free", smooth= TRUE, date.format = "%b-%Y", ylab = (expression(paste("Octave Band SPL (dB re \u00b5Pa" ^ "2", "/Hz)"))))
+timePlot(DB_OL, type= "PLATFORM", pollutant= c("OL_500", "OL_2000"), avg.time= "week", y.relation = "same", smooth= FALSE, date.format = "%b-%Y", ylab = (expression(paste("500 Hz Octave Band SPL (dB re \u00b5Pa" ^ "2", "/Hz)"))))
 
+smoothTrend(DB01_OL, pollutant = c("OL_500", "OL_1000", "OL_2000"), statistics= "percentile", percentile = c(95), shade= "transparent", ci= FALSE, ylab = (expression(paste("500 Hz Octave Band SPL (dB re \u00b5Pa" ^ "2", "/Hz)"))), main = "DB01")
 
-calendarPlot(CB01_OL, pollutant= "OL_500", year = "2022")
+calendarPlot(DB01_OL, pollutant= "OL_500", year = "2023", annotate= "value")
 
+DB_dates <- DB02_OL %>%
+  group_by(date)%>%
+  summarize(total = n())
 
 ```
 
