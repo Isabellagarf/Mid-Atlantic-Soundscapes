@@ -389,7 +389,7 @@ ES01_chorusPresence <- read.csv(here("data/ES01_chorusPresence.csv"))
 CB01_chorusPresence <- read.csv(here("data/CB01_chorusPresence.csv"))
 
 colnames(DB01_sunset)[19] <- "date"
-
+DB01_chorusPresence$date <- as.date()
 
 
 DB01_chorusSunset <- DB01_chorusPresence %>%
