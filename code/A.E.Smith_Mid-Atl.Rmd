@@ -109,9 +109,9 @@ allSites_LTSA = plotLTSA(x=all_sites, facet= 'PLATFORM') +
   theme_bw()
 
 plot(allSites_LTSA)
-plotPSD(x=all_sites, style='quantile', q=0, by='month', facet='PLATFORM')+
-  scale_color_manual(values= c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#fdbf6f", "#ffff99", "#ff7f00", "#cab2d6", "#6a3d9a", "#b15928"))
-  scale_fill_manual(values= wes_palette("Royal1", n= 4))
+plotPSD(x=all_sites, style='quantile', q=0.1, facet='PLATFORM')+
+  theme_bw()+
+  labs(y= (expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz"))))
 
 
 ```
@@ -124,24 +124,51 @@ plotPSD(x=all_sites, style='quantile', q=0, by='month', facet='PLATFORM')+
 inshore_sites <- DB01_HMD %>%
   full_join(ES01_HMD)%>%
   full_join(CB01_HMD)
+inshore_sites$grouping = "Inshore"
 
 midshore_sites <- DB02_HMD %>%
   full_join(ES02_HMD)%>%
   full_join(CB02_HMD)%>%
   full_join(CB03_HMD)
+midshore_sites$grouping= "Midshore"
 
 offshore_sites <- DB03_HMD %>%
   full_join(ES03_HMD)
+offshore_sites$grouping="Offshore"
+
+all_grouped <- inshore_sites %>%
+  full_join(midshore_sites)%>%
+  full_join(offshore_sites)
 
 DB_sites <- DB01_HMD %>%
   full_join(DB02_HMD)%>%
   full_join(DB03_HMD)
+DB_sites$Latitudes = "Delaware Bay"
+
 ES_sites <- ES01_HMD %>%
   full_join(ES02_HMD)%>%
   full_join(ES03_HMD)
+ES_sites$Latitudes = "Eastern Seaboard"
+
 CB_sites <- CB01_HMD %>% #will need to redo when CB02 error is fixed
   full_join(CB02_HMD)%>%
   full_join(CB03_HMD)
+CB_sites$Latitudes = "Chesapeake Bay"
+
+all_latitudes <- DB_sites %>%
+  full_join(ES_sites)%>%
+  full_join(CB_sites)
+
+plotPSD(all_grouped, style='quantile', q=0.01, facet='grouping')+
+  labs(y= (expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz"))))+
+  theme(axis.text= element_text(size= 10),
+        axis.title= element_text(size= 14),
+        legend.text = element_text(size= 13),
+        legend.title= element_text(size= 13.5),
+        strip.text= element_text(size= 12))
+
+runSoundscapeExplorer(all_grouped)
+
 ```
 
 #making LTSAs
@@ -389,11 +416,12 @@ ES01_chorusPresence <- read.csv(here("data/ES01_chorusPresence.csv"))
 CB01_chorusPresence <- read.csv(here("data/CB01_chorusPresence.csv"))
 
 colnames(DB01_sunset)[19] <- "date"
-DB01_chorusPresence$date <- as.date()
-
+DB01_chorusPresence$date <- as.Date(DB01_chorusPresence$date, format= "%m/%d/%Y")
+DB01_subSunset <- subset(DB01_sunset, select = c(OL_500, OL_1000, OL_2000, PLATFORM, date, sunset_UTC_hour, sun_time))
+DB01_subSunset$date <- as.Date(DB01_subSunset$date, format= "%Y-%m-%d")
 
 DB01_chorusSunset <- DB01_chorusPresence %>%
-  full_join(DB01_sunset)
+  full_join(DB01_subSunset)
 
 ```
 
