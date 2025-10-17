@@ -380,6 +380,23 @@ CB03_OL$PLATFORM = "CB03"
 
 ```
 
+#loading in chorus presence files
+
+```{r}
+
+DB01_chorusPresence <- read.csv(here("data/DB01_chorusPresence.csv"))
+ES01_chorusPresence <- read.csv(here("data/ES01_chorusPresence.csv"))
+CB01_chorusPresence <- read.csv(here("data/CB01_chorusPresence.csv"))
+
+colnames(DB01_sunset)[19] <- "date"
+
+
+
+DB01_chorusSunset <- DB01_chorusPresence %>%
+  full_join(DB01_sunset)
+
+```
+
 # inshore/offshore gradient using OL
 
 ```{r}
@@ -609,7 +626,7 @@ ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color=sun_time, q=0.01))+
   
 
 
-runSoundscapeExplorer(ES01_suntimes)
+#runSoundscapeExplorer(ES01_suntimes)
 ```
 #ES01
 
@@ -719,7 +736,7 @@ CB01_2000Hz <- ggplot(CB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_ti
   ggtitle("CB01")+
   ylim(72, 135)
 
-runSoundscapeExplorer(DB01_suntimes)
+#runSoundscapeExplorer(DB01_suntimes)
 
 CB01_500Hz/CB01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
 
@@ -777,7 +794,7 @@ colnames(DB01_OL)[17] <- "date"
 colnames(ES01_OL)[17] <- "date"
 ES01_OL <- ES01_OL[complete.cases(ES01_OL), ]
 CB01_OL <- CB01_OL[complete.cases(CB01_OL), ]
-DB02_OL <- DB02_OL[complete.cases(DB02_OL), ]
+DB01_OL <- DB01_OL[complete.cases(DB01_OL), ]
 
 DB01_plot <- timePlot(DB01_OL, type= "PLATFORM", pollutant= c("OL_500", "OL_2000"), avg.time= "week", y.relation = "same", smooth= FALSE, date.format = "%b-%Y", ylab = (expression(paste("Octave Band SPL (dB re \u00b5Pa" ^ "2", "/Hz)"))))
 
