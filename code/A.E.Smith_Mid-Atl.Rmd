@@ -104,16 +104,17 @@ all_sites <- inshore_sites %>%
 
 runSoundscapeExplorer(all_sites)
 
-allSites_LTSA = plotLTSA(x=all_sites, facet= 'PLATFORM') +
+allSites_LTSA = plotLTSA(x=all_sites, facet= 'PLATFORM', units= expression(paste("dB re 1 \u00b5Pa" ^ "2", "/Hz"))) +
   facet_grid(~factor(PLATFORM, levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03')))+
   theme_bw()
 
 plot(allSites_LTSA)
+
 plotPSD(x=all_sites, style='quantile', q=0.1, facet='PLATFORM')+
   theme_bw()+
   labs(y= (expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz"))))
 
-
+citation("PAMscapes")
 ```
 
 #inshore/offshore grouping
@@ -412,8 +413,26 @@ CB03_OL$PLATFORM = "CB03"
 ```{r}
 
 DB01_chorusPresence <- read.csv(here("data/DB01_chorusPresence.csv"))
+DB01_chorusPresence$X500_chorus = case_when(DB01_chorusPresence$X500_chorus == 1 ~ "yes",
+                                            DB01_chorusPresence$X500_chorus == 0 ~ "no")
+DB01_chorusPresence$X1000_chorus = case_when(DB01_chorusPresence$X1000_chorus == 1 ~ "yes",
+                                            DB01_chorusPresence$X1000_chorus == 0 ~ "no")
+DB01_chorusPresence$X2000_chorus = case_when(DB01_chorusPresence$X2000_chorus == 1 ~ "yes",
+                                            DB01_chorusPresence$X2000_chorus == 0 ~ "no")
 ES01_chorusPresence <- read.csv(here("data/ES01_chorusPresence.csv"))
+ES01_chorusPresence$X500_chorus = case_when(ES01_chorusPresence$X500_chorus == 1 ~ "yes",
+                                            ES01_chorusPresence$X500_chorus == 0 ~ "no")
+ES01_chorusPresence$X1000_chorus = case_when(ES01_chorusPresence$X1000_chorus == 1 ~ "yes",
+                                            ES01_chorusPresence$X1000_chorus == 0 ~ "no")
+ES01_chorusPresence$X2000_chorus = case_when(ES01_chorusPresence$X2000_chorus == 1 ~ "yes",
+                                            ES01_chorusPresence$X2000_chorus == 0 ~ "no")
 CB01_chorusPresence <- read.csv(here("data/CB01_chorusPresence.csv"))
+CB01_chorusPresence$X500_chorus = case_when(CB01_chorusPresence$X500_chorus == 1 ~ "yes",
+                                            CB01_chorusPresence$X500_chorus == 0 ~ "no")
+CB01_chorusPresence$X1000_chorus = case_when(CB01_chorusPresence$X1000_chorus == 1 ~ "yes",
+                                            CB01_chorusPresence$X1000_chorus == 0 ~ "no")
+CB01_chorusPresence$X2000_chorus = case_when(CB01_chorusPresence$X2000_chorus == 1 ~ "yes",
+                                            CB01_chorusPresence$X2000_chorus == 0 ~ "no")
 
 colnames(DB01_sunset)[19] <- "date"
 DB01_chorusPresence$date <- as.Date(DB01_chorusPresence$date, format= "%m/%d/%Y")
@@ -422,6 +441,25 @@ DB01_subSunset$date <- as.Date(DB01_subSunset$date, format= "%Y-%m-%d")
 
 DB01_chorusSunset <- DB01_chorusPresence %>%
   full_join(DB01_subSunset)
+
+colnames(DB01_sunrise)[19] <- "date"
+DB01_subSunrise <- subset(DB01_sunrise, select = c(OL_500, OL_1000, OL_2000, PLATFORM, date, sunrise_UTC_hour, sun_time))
+DB01_subSunrise$date <- as.Date(DB01_subSunrise$date, format= "%Y-%m-%d")
+
+DB01_chorusSunrise <- DB01_chorusPresence %>%
+  full_join(DB01_subSunrise)
+DB01_chorusSuntimes <- DB01_chorusSunset %>%
+  full_join(DB01_chorusSunrise)
+
+
+ggplot(DB01_chorusSunset, aes(x= date, y= OL_500, color=X500_chorus, group = 1))+
+  geom_line()+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 500 Hz Octave Level SPL (db re 1 \u00b5Pa) at sunset')))+
+  scale_color_manual(values= c("#00308790", "#B7130090"))+
+  scale_fill_manual(values= c("#00308790", "#B7130090"))
+
 
 ```
 
