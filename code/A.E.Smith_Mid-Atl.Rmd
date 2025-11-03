@@ -105,11 +105,11 @@ all_sites <- inshore_sites %>%
 runSoundscapeExplorer(all_sites)
 
 allSites_LTSA = plotLTSA(x=all_sites, facet= 'PLATFORM', units= expression(paste("dB re 1 \u00b5Pa" ^ "2", "/Hz"))) +
-#  facet_grid(~factor(PLATFORM, levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03')))+
+  facet_grid(factor(PLATFORM, levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))~.)+
   theme_bw()
 
 plot(allSites_LTSA)
-ggsave(here("figs", "allsites_LTSA.png"), allSites_LTSA, width= 20, height= 10, units= "in")
+ggsave(here("figs", "allsites_LTSA.png"), allSites_LTSA, width= 24, height= 14, units= "in")
 
 plotPSD(x=all_sites, style='quantile', q=0.1, facet='PLATFORM')+
   theme_bw()+
