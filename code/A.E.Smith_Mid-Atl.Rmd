@@ -112,6 +112,7 @@ plot(allSites_LTSA)
 ggsave(here("figs", "allsites_LTSA.png"), allSites_LTSA, width= 24, height= 14, units= "in")
 
 plotPSD(x=all_sites, style='quantile', q=0.1, facet='PLATFORM')+
+  facet_grid(factor(PLATFORM, levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))~.)+
   theme_bw()+
   labs(y= (expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz"))))
 
