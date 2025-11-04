@@ -89,7 +89,7 @@ all_sites <- DB01_HMD%>%
   full_join(CB01_HMD)%>%
   full_join(CB02_HMD)%>%
   full_join(CB03_HMD)
-all_sites$PLATFORM_order= factor(all_sites$PLATFORM, levels = c("DB01","DB02","DB03","ES01","ES02", "ES03", "CB01", "CB02","CB03"))
+#all_sites$PLATFORM_order= factor(all_sites$PLATFORM, levels = c("DB01","DB02","DB03","ES01","ES02", "ES03", "CB01", "CB02","CB03"))
 
 #write.csv(all_sites, here("data", "all_sites_HMD.csv")) #need to save after joining all sites again
 
@@ -465,6 +465,62 @@ ggplot(DB01_chorusSunset, aes(x= date, y= OL_500, color=X500_chorus, group = 1))
 
 ```
 
+##temps
+
+```{r}
+#DB01
+DB01_202207Temp <- read.csv(here("data/Temp_data/NEFSC_DE_202207_DB01_Filtered_ST_Temp_data.csv"))
+DB01_202207Temp$Datetime_UTC <- as.POSIXct(DB01_202207Temp$Datetime_UTC, format = "%d-%m-%Y_%H:%M:%S")
+DB01_202301Temp <- read.csv(here("data/Temp_data/NEFSC_DE_202301_DB01_Filtered_ST_Temp_data.csv"))
+DB01_202301Temp$Datetime_UTC <- as.POSIXct(DB01_202301Temp$Datetime_UTC, format = "%d-%m-%Y_%H:%M:%S")
+DB01_202306Temp <- read.csv(here("data/Temp_data/NEFSC_DE_202306_DB01_Filtered_ST_Temp_data.csv"))
+DB01_202306Temp$Datetime_UTC <- as.POSIXct(DB01_202306Temp$Datetime_UTC, format = "%d-%m-%Y_%H:%M:%S")
+DB01_202311Temp <- read.csv(here("data/Temp_data/NEFSC_DE_202311_DB01_Filtered_ST_Temp_data.csv"))
+DB01_202311Temp$Datetime_UTC <- as.POSIXct(DB01_202311Temp$Datetime_UTC, format = "%d-%m-%Y_%H:%M:%S")
+DB01_202405Temp <- read.csv(here("data/Temp_data/NEFSC_DE_202405_DB01_8015_Filtered_ST_Temp_data.csv"))
+DB01_202405Temp$Datetime_UTC <- as.POSIXct(DB01_202405Temp$Datetime_UTC, format = "%m-%d-%Y_%H:%M:%S")
+DB01_202411Temp <- read.csv(here("data/Temp_data/NEFSC_DE_202411_DB01_6105_Filtered_ST_Temp_data.csv"))
+DB01_202411Temp$Datetime_UTC <- as.POSIXct(DB01_202411Temp$Datetime_UTC, format = "%m-%d-%Y_%H:%M:%S")
+DB01_temps <- DB01_202207Temp %>%
+  full_join(DB01_202301Temp)%>%
+  full_join(DB01_202306Temp)%>%
+  full_join(DB01_202311Temp)%>%
+  full_join(DB01_202405Temp)%>%
+  full_join(DB01_202411Temp)
+
+#ES01
+ES01_202310Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202310_ES01_Filtered_ST_Temp_data.csv"))
+ES01_202404Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202404_ES01_6105_Filtered_ST_Temp_data.csv"))
+ES01_202409Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202409_ES01_6104_Filtered_ST_Temp_data.csv"))
+ES01_temps <- ES01_202310Temp %>%
+  full_join(ES01_202404Temp)%>%
+  full_join(ES01_202409Temp)
+
+#CB01
+CB01_202206Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202206_CB01_Filtered_ST_Temp_data.csv"))
+CB01_202212Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202212_CB01_Filtered_ST_Temp_data.csv"))
+CB01_202306Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202306_CB01_Filtered_ST_Temp_data.csv"))
+CB01_202311Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202311_CB01_Filtered_ST_Temp_data.csv"))
+CB01_202405Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202405_CB01_8014_Filtered_ST_Temp_data.csv"))
+CB01_202411Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202411_CB01_8015_Filtered_ST_Temp_data.csv"))
+
+CB01_temps <- CB01_202206Temp %>%
+  full_join(CB01_202212Temp) %>%
+  full_join(CB01_202306Temp)%>%
+  full_join(CB01_202311Temp)%>%
+  full_join(CB01_202405Temp)%>%
+  full_join(CB01_202411Temp)
+
+DB01_temps$Date <- as.POSIXct(DB01_temps$Date, format = "%Y-%m-%d")
+DB01_temps$UTC_fixed <- droplevels(cut(DB01_temps$Datetime_UTC, breaks= "hour"))
+DB01_temps$UTC_fixed <- as.POSIXct(DB01_temps$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+DB01_OL <- DB01_OL %>%
+  full_join(DB01_temps)
+
+
+
+
+```
 # inshore/offshore gradient using OL
 
 ```{r}

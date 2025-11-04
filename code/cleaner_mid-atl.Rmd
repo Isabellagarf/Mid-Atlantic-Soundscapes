@@ -563,11 +563,27 @@ DB_dates <- DB02_OL %>%
 
 ```
 
+##temp data
 
+```{r}
+#DB01
+DB01_202207Temp <- read.csv(here("data/Temp_data/NEFSC_DE_202207_DB01_Filtered_ST_Temp_data.csv"))
+DB01_202301Temp <- read.csv(here("data/Temp_data/NEFSC_DE_202301_DB01_Filtered_ST_Temp_data.csv"))
+DB01_202306Temp <- read.csv(here("data/Temp_data/NEFSC_DE_202306_DB01_Filtered_ST_Temp_data.csv"))
+DB01_202311Temp <- read.csv(here("data/Temp_data/NEFSC_DE_202311_DB01_Filtered_ST_Temp_data.csv"))
+DB01_202405Temp <- read.csv(here("data/Temp_data/NEFSC_DE_202405_DB01_8015_Filtered_ST_Temp_data.csv"))
+DB01_202411Temp <- read.csv(here("data/Temp_data/NEFSC_DE_202411_DB01_6105_Filtered_ST_Temp_data.csv"))
+#ES01
+ES01_202310Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202310_ES01_Filtered_ST_Temp_data.csv"))
+ES01_202404Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202404_ES01_6105_Filtered_ST_Temp_data.csv"))
+ES01_202409Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202409_ES01_6104_Filtered_ST_Temp_data.csv"))
 
+#CB01
+CB01_202206Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202206_CB01_Filtered_ST_Temp_data.csv"))
+CB01_202212Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202212_CB01_Filtered_ST_Temp_data.csv"))
+CB01_202306Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202306_CB01_Filtered_ST_Temp_data.csv"))
+CB01_202311Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202311_CB01_Filtered_ST_Temp_data.csv"))
+CB01_202405Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202405_CB01_8014_Filtered_ST_Temp_data.csv"))
+CB01_202411Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202411_CB01_8015_Filtered_ST_Temp_data.csv"))
 
-
-
-
-
-
+```
