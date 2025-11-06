@@ -597,6 +597,19 @@ OL_500_dailyTemps_Plot/OL_1000_dailyTemps_Plot/OL_2000_dailyTemps_Plot+ plot_lay
 
 
 ```
+
+##moon phases
+
+```{r}
+moon_phases <- read.csv(here("data/moon_phases.csv"))
+moon_phases$Date <- as.Date(moon_phases$Date, format= "%Y %b %e")
+
+
+
+
+
+```
+
 # inshore/offshore gradient using OL
 
 ```{r}
