@@ -532,41 +532,44 @@ DB01_500Plot= ggplot(DB01_OLTemps, aes(Datetime_UTC, OL_500))+
 
 DB01_tempsPlot/DB01_500Plot +plot_layout(axes= "collect", guides= "collect")
 
-DB01_500OL <- DB01_OLtemps_daily %>%
-  group_by(UTC, med_temp) %>%
-  dplyr::summarize(Med_OL = median(med_500, na.rm= TRUE))
-DB01_500OL$OL_band <- "OL_500"
-DB01_500OL$PLATFORM <- "DB01"
-DB01_1000OL <- DB01_OLtemps_daily %>%
-  group_by(UTC, med_temp) %>%
-  dplyr::summarize(Med_OL = median(med_1000, na.rm= TRUE))
-DB01_1000OL$OL_band <- "OL_1000"
-DB01_1000OL$PLATFORM <- "DB01"
-DB01_2000OL <- DB01_OLtemps_daily %>%
-  group_by(UTC, med_temp) %>%
-  dplyr::summarize(Med_OL = median(med_2000, na.rm= TRUE))
-DB01_2000OL$OL_band <- "OL_2000"
-DB01_2000OL$PLATFORM <- "DB01"
-DB01_daily_OL <- DB01_500OL %>%
-  full_join(DB01_1000OL)%>%
-  full_join(DB01_2000OL)
-
-
 DB01_OLTemps$UTC <- droplevels(cut(DB01_OLTemps$UTC_fixed, breaks= "day"))
 DB01_OLtemps_daily <- DB01_OLTemps %>% 
   group_by(UTC) %>% 
+  dplyr::summarize(med_500 = median(OL_500, na.rm=TRUE), med_1000= median(OL_1000, na.rm= TRUE), med_2000= median(OL_2000, na.rm= TRUE), med_temp= median(Internal_temp_C, na.rm= TRUE))
+
+
+
+#DB01_OLtemps_daily <- DB01_OLTemps %>% 
+  group_by(UTC) %>% 
   dplyr::summarize(med_temp = median(Internal_temp_C, na.rm=TRUE))
 
-DB01_OLtemps_daily <- DB01_OLTemps %>% 
-  group_by(UTC) %>% 
-  dplyr::summarize(med_500 = median(OL_500, na.rm=TRUE), med_1000= median(OL_1000, na.rm= TRUE), med_2000= median(OL_2000, na.rm= TRUE), med_temp= median(Internal_temp_C, na.rm= TRUE))
+#DB01_500OL <- DB01_OLTemps %>%
+  group_by(UTC) %>%
+  dplyr::summarize(Med_OL = median(OL_500, na.rm= TRUE))
+#DB01_500OL$OL_band <- "OL_500"
+#DB01_500OL$PLATFORM <- "DB01"
+#DB01_1000OL <- DB01_OLTemps %>%
+  group_by(UTC) %>%
+  dplyr::summarize(Med_OL = median(OL_1000, na.rm= TRUE))
+#DB01_1000OL$OL_band <- "OL_1000"
+#DB01_1000OL$PLATFORM <- "DB01"
+#DB01_2000OL <- DB01_OLTemps %>%
+  group_by(UTC) %>%
+  dplyr::summarize(Med_OL = median(OL_2000, na.rm= TRUE))
+#DB01_2000OL$OL_band <- "OL_2000"
+#DB01_2000OL$PLATFORM <- "DB01"
+#DB01_OLtemps_daily <- DB01_OLtemps_daily %>%
+  full_join(DB01_500OL) %>%
+  full_join(DB01_1000OL)%>%
+  full_join(DB01_2000OL)
+
 
 DB01_OLtemps_daily$UTC <- as.Date(DB01_OLtemps_daily$UTC, format= "%Y-%m-%d")
 
 OL_500_dailyTemps_Plot = ggplot(data = DB01_OLtemps_daily, mapping = aes(x =UTC)) + 
   geom_line(mapping = aes(y = med_temp+90), color="pink", size=1)+
   geom_line(mapping= aes(y=med_500)) + 
-  scale_y_continuous("Daily Median 500 Octave Level (UNITS)", 
+  scale_y_continuous(expression(paste("Daily Median 500 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
                      sec.axis = sec_axis(~ . -90, name = "Temperature (°C)")
   )+
   theme_bw()+
@@ -575,7 +578,7 @@ OL_500_dailyTemps_Plot = ggplot(data = DB01_OLtemps_daily, mapping = aes(x =UTC)
 OL_1000_dailyTemps_Plot = ggplot(data = DB01_OLtemps_daily, mapping = aes(x =UTC)) + 
   geom_line(mapping = aes(y = med_temp+90), color="pink", size=1)+
   geom_line(mapping= aes(y=med_1000)) + 
-  scale_y_continuous("Daily Median 1000 Octave Level (UNITS)", 
+  scale_y_continuous(expression(paste("Daily Median 1000 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
                      sec.axis = sec_axis(~ . -90, name = "Temperature (°C)")
   )+
   theme_bw()+
@@ -584,13 +587,14 @@ OL_1000_dailyTemps_Plot = ggplot(data = DB01_OLtemps_daily, mapping = aes(x =UTC
 OL_2000_dailyTemps_Plot = ggplot(data = DB01_OLtemps_daily, mapping = aes(x =UTC)) + 
   geom_line(mapping = aes(y = med_temp+90), color="pink", size=1)+
   geom_line(mapping= aes(y=med_2000)) + 
-  scale_y_continuous("Daily Median 2000 Octave Level (UNITS)", 
+  scale_y_continuous(expression(paste("Daily Median 2000 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
                      sec.axis = sec_axis(~ . -90, name = "Temperature (°C)")
   )+
   theme_bw()+
   scale_x_date(limits= as.Date(c("2022-07-07", "2024-11-03")))
 
 OL_500_dailyTemps_Plot/OL_1000_dailyTemps_Plot/OL_2000_dailyTemps_Plot+ plot_layout(axis_titles = "collect", guides= "collect")
+
 
 ```
 # inshore/offshore gradient using OL
@@ -986,7 +990,7 @@ DB01_1000Hz/ES01_1000Hz/CB01_1000Hz +plot_layout(guides= "collect", axis_titles=
 #smoothing plot using openair
 
 colnames(CB01_OL)[17] <- "date"
-colnames(DB01_OLTemps)[2] <- "date"
+colnames(DB01_OLtemps_daily)[1] <- "date"
 colnames(ES01_OL)[17] <- "date"
 ES01_OL <- ES01_OL[complete.cases(ES01_OL), ]
 CB01_OL <- CB01_OL[complete.cases(CB01_OL), ]
