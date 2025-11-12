@@ -619,7 +619,7 @@ DB01_envData_daily$Moon.Phase = case_when(DB01_envData_daily$Moon.Phase == "Full
                                           DB01_envData_daily$Moon.Phase == NA ~ 0)
 
 
-ggplot(data = DB01_envData_daily, mapping = aes(x =UTC)) + 
+Env500OL_plot = ggplot(data = DB01_envData_daily, mapping = aes(x =UTC)) + 
   geom_rect(data= (DB01_envData_daily %>% filter(Moon.Phase== 1)), aes(xmin= UTC-1, xmax= UTC+1, ymin= -Inf, ymax= Inf, fill = "Full Moon"), linetype= "blank", alpha = 0.5)+
   geom_rect(data= (DB01_envData_daily %>% filter(Moon.Phase== 2)), aes(xmin= UTC-1, xmax= UTC+1, ymin= -Inf, ymax= Inf, fill = "New Moon"), linetype= "blank", alpha = 0.5)+
   scale_fill_manual(values = c("lightblue", "grey"))+
@@ -632,8 +632,40 @@ ggplot(data = DB01_envData_daily, mapping = aes(x =UTC)) +
   theme(panel.grid = element_blank())+
   scale_x_date(limits= as.Date(c("2022-07-07", "2024-11-03")))+
   labs(title= "DB01",
-       x= "Date (UTC)")
+       x= "Date (UTC)")+
+  guides(fill= guide_legend(title= "Moon Phase"))
 
+Env1000OL_plot = ggplot(data = DB01_envData_daily, mapping = aes(x =UTC)) + 
+  geom_rect(data= (DB01_envData_daily %>% filter(Moon.Phase== 1)), aes(xmin= UTC-1, xmax= UTC+1, ymin= -Inf, ymax= Inf, fill = "Full Moon"), linetype= "blank", alpha = 0.5)+
+  geom_rect(data= (DB01_envData_daily %>% filter(Moon.Phase== 2)), aes(xmin= UTC-1, xmax= UTC+1, ymin= -Inf, ymax= Inf, fill = "New Moon"), linetype= "blank", alpha = 0.5)+
+  scale_fill_manual(values = c("lightblue", "grey"))+
+  geom_line(mapping = aes(y = med_temp+90), color="pink", size=1)+
+  geom_line(mapping= aes(y=med_1000)) + 
+  scale_y_continuous(expression(paste("Daily Median 1000 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
+                     sec.axis = sec_axis(~ . -90, name = "Daily Median Temperature (°C)")
+  )+
+  theme_bw()+
+  theme(panel.grid = element_blank())+
+  scale_x_date(limits= as.Date(c("2022-07-07", "2024-11-03")))+
+  labs(x= "Date (UTC)")+
+  guides(fill= guide_legend(title= "Moon Phase"))
+
+Env2000OL_plot = ggplot(data = DB01_envData_daily, mapping = aes(x =UTC)) + 
+  geom_rect(data= (DB01_envData_daily %>% filter(Moon.Phase== 1)), aes(xmin= UTC-1, xmax= UTC+1, ymin= -Inf, ymax= Inf, fill = "Full Moon"), linetype= "blank", alpha = 0.5)+
+  geom_rect(data= (DB01_envData_daily %>% filter(Moon.Phase== 2)), aes(xmin= UTC-1, xmax= UTC+1, ymin= -Inf, ymax= Inf, fill = "New Moon"), linetype= "blank", alpha = 0.5)+
+  scale_fill_manual(values = c("lightblue", "grey"))+
+  geom_line(mapping = aes(y = med_temp+90), color="pink", size=1)+
+  geom_line(mapping= aes(y=med_2000)) + 
+  scale_y_continuous(expression(paste("Daily Median 2000 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
+                     sec.axis = sec_axis(~ . -90, name = "Daily Median Temperature (°C)")
+  )+
+  theme_bw()+
+  theme(panel.grid = element_blank())+
+  scale_x_date(limits= as.Date(c("2022-07-07", "2024-11-03")))+
+  labs(x= "Date (UTC)")+
+  guides(fill= guide_legend(title= "Moon Phase"))
+
+Env500OL_plot/Env1000OL_plot/Env2000OL_plot+ plot_layout(axis_titles = "collect", guides= "collect")
 
 ```
 
