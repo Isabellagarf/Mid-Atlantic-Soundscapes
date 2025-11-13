@@ -439,6 +439,17 @@ CB01_chorusPresence$X2000_chorus = case_when(CB01_chorusPresence$X2000_chorus ==
 
 ```
 
+#presence with full octave level (hourly)
+
+```{r}
+DB01_chorusPresence
+
+
+
+
+
+```
+
 #plotting sunrise/sunset with chorus presence
 
 ```{r}
@@ -468,15 +479,28 @@ ggplot(DB01_chorusSunset, aes(x= date, y= OL_500, color=X500_chorus, group = 1))
   scale_color_manual(values= c("#00308790", "#B7130090"))+
   scale_fill_manual(values= c("#00308790", "#B7130090"))
 
-DB01_500Present = DB01_chorusSuntimes %>%
-  filter(X500_chorus != c("no"))
-DB01_1000Present = DB01_chorusSuntimes %>%
-  filter(X1000_chorus != c("no"))
-DB01_2000Present = DB01_chorusSuntimes %>%
-  filter(X2000_chorus != c("no"))
+DB01_500SunPresent = DB01_chorusSuntimes %>%
+  filter(X500_chorus != c("no")) %>%
+  filter(X1000_chorus != c("yes"))%>%
+  filter(X2000_chorus != c("yes"))
+DB01_1000SunPresent = DB01_chorusSuntimes %>%
+  filter(X1000_chorus != c("no"))%>%
+  filter(X500_chorus != c("yes")) %>%
+  filter(X2000_chorus != c("yes"))
+DB01_2000SunPresent = DB01_chorusSuntimes %>%
+  filter(X2000_chorus != c("no"))%>%
+  filter(X500_chorus != c("yes"))%>%
+  filter(X1000_chorus != c("yes"))
 
-ggplot(DB01_500Present, aes(x= date, y= OL_500))+
+ggplot(DB01_2000SunPresent, aes(x= date, y= OL_2000, color= sun_time, group = 2))+
   geom_line()+
+  theme_bw()+
+  xlab("Date")+
+  geom_hline(yintercept = 100, col= "black")+
+  ylab(expression(paste('Median 2000 Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  scale_color_manual(values= c("#00308790", "#B7130090"))+
+  scale_fill_manual(values= c("#00308790", "#B7130090"))
+#need to remove the lines connecting dates
 
 
 ```
