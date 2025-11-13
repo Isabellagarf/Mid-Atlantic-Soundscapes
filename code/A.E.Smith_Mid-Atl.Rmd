@@ -437,6 +437,11 @@ CB01_chorusPresence$X1000_chorus = case_when(CB01_chorusPresence$X1000_chorus ==
 CB01_chorusPresence$X2000_chorus = case_when(CB01_chorusPresence$X2000_chorus == 1 ~ "yes",
                                             CB01_chorusPresence$X2000_chorus == 0 ~ "no")
 
+```
+
+#plotting sunrise/sunset with chorus presence
+
+```{r}
 colnames(DB01_sunset)[19] <- "date"
 DB01_chorusPresence$date <- as.Date(DB01_chorusPresence$date, format= "%m/%d/%Y")
 DB01_subSunset <- subset(DB01_sunset, select = c(OL_500, OL_1000, OL_2000, PLATFORM, date, sunset_UTC_hour, sun_time))
@@ -462,6 +467,16 @@ ggplot(DB01_chorusSunset, aes(x= date, y= OL_500, color=X500_chorus, group = 1))
   ylab(expression(paste('Median 500 Hz Octave Level SPL (db re 1 \u00b5Pa) at sunset')))+
   scale_color_manual(values= c("#00308790", "#B7130090"))+
   scale_fill_manual(values= c("#00308790", "#B7130090"))
+
+DB01_500Present = DB01_chorusSuntimes %>%
+  filter(X500_chorus != c("no"))
+DB01_1000Present = DB01_chorusSuntimes %>%
+  filter(X1000_chorus != c("no"))
+DB01_2000Present = DB01_chorusSuntimes %>%
+  filter(X2000_chorus != c("no"))
+
+ggplot(DB01_500Present, aes(x= date, y= OL_500))+
+  geom_line()+
 
 
 ```
@@ -602,7 +617,7 @@ OL_500_dailyTemps_Plot/OL_1000_dailyTemps_Plot/OL_2000_dailyTemps_Plot+ plot_lay
 
 ```
 
-##moon phases
+#moon phases
 
 ```{r}
 moon_phases <- read.csv(here("data/moon_phases.csv"))
