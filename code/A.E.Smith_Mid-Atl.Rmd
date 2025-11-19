@@ -97,6 +97,44 @@ CB03_HMD$PLATFORM = "CB03"
 
 ```
 
+#seasonal sound level medians
+
+```{r}
+all_OLSites$month <- month(all_OLSites$UTC)
+ES01_HMD$month <- month(ES01_HMD$UTC)
+CB01_HMD$month <- month(CB01_HMD$UTC)
+
+DB02_HMD$month <- month(DB02_HMD$UTC)
+ES02_HMD$month <- month(ES02_HMD$UTC)
+CB02_HMD$month <- month(CB02_HMD$UTC)
+CB03_HMD$month <- month(CB03_HMD$UTC)
+
+DB03_HMD$month <- month(DB03_HMD$UTC)
+ES03_HMD$month <- month(ES03_HMD$UTC)
+
+all_OLSites$season = case_when(all_OLSites$month == 1 ~ "winter",
+                            all_OLSites$month == 2 ~ "winter",
+                            all_OLSites$month == 3 ~ "spring",
+                            all_OLSites$month == 4 ~ "spring",
+                            all_OLSites$month == 5 ~ "spring",
+                            all_OLSites$month == 6 ~ "summer",
+                            all_OLSites$month == 7 ~ "summer",
+                            all_OLSites$month == 8 ~ "summer",
+                            all_OLSites$month == 9 ~ "fall",
+                            all_OLSites$month == 10 ~ "fall",
+                            all_OLSites$month == 11 ~ "fall",
+                            all_OLSites$month == 12 ~ "winter")
+  
+all_OLSiteSeason<- all_OLSites %>% 
+  group_by(season, PLATFORM) %>% 
+  dplyr::summarize(med_63 = median(OL_63, na.rm=TRUE),med_125 = median(OL_125, na.rm=TRUE), med_500 = median(OL_500, na.rm=TRUE), med_1000 = median(OL_1000, na.rm=TRUE),med_2000= median(OL_2000, na.rm= TRUE), med_8000= median(OL_8000, na.rm= TRUE))
+
+ggplot(DB_OLSiteSeason, aes(x= season, y = med_500, color= PLATFORM, group= PLATFORM))+
+  geom_point()+
+  theme_bw()
+
+```
+
 # all sites
 ```{r}
 all_sites <- inshore_sites %>%
@@ -129,16 +167,25 @@ inshore_sites <- DB01_HMD %>%
   full_join(ES01_HMD)%>%
   full_join(CB01_HMD)
 inshore_sites$grouping = "Inshore"
+inshore_OLSites <- DB01_OL %>%
+  full_join(ES01_OL) %>%
+  full_join(DB01_OL)
 
 midshore_sites <- DB02_HMD %>%
   full_join(ES02_HMD)%>%
   full_join(CB02_HMD)%>%
   full_join(CB03_HMD)
 midshore_sites$grouping= "Midshore"
+midshore_OLSites <- DB02_OL %>%
+  full_join(ES02_OL)%>%
+  full_join(CB02_OL)%>%
+  full_join(CB03_OL)
 
 offshore_sites <- DB03_HMD %>%
   full_join(ES03_HMD)
 offshore_sites$grouping="Offshore"
+offshore_OLSites <- DB03_OL %>%
+  full_join(ES03_OL)
 
 all_grouped <- inshore_sites %>%
   full_join(midshore_sites)%>%
@@ -148,22 +195,35 @@ DB_sites <- DB01_HMD %>%
   full_join(DB02_HMD)%>%
   full_join(DB03_HMD)
 DB_sites$Latitudes = "Delaware Bay"
+DB_OLSites <- DB01_OL %>%
+  full_join(DB02_OL) %>%
+  full_join(DB03_OL)
 
 ES_sites <- ES01_HMD %>%
   full_join(ES02_HMD)%>%
   full_join(ES03_HMD)
 ES_sites$Latitudes = "Eastern Seaboard"
+ES_OLSites <- ES01_OL %>%
+  full_join(ES02_OL)%>%
+  full_join(ES03_OL)
 
 CB_sites <- CB01_HMD %>% #will need to redo when CB02 error is fixed
   full_join(CB02_HMD)%>%
   full_join(CB03_HMD)
 CB_sites$Latitudes = "Chesapeake Bay"
+CB_OLSites <- CB01_OL %>%
+  full_join(CB02_OL)%>%
+  full_join(CB03_OL)
 
-all_latitudes <- DB_sites %>%
+all_OLSites <- DB_OLSites %>%
+  full_join(ES_OLSites)%>%
+  full_join(CB_OLSites)
+
+#all_latitudes <- DB_sites %>%
   full_join(ES_sites)%>%
   full_join(CB_sites)
 
-plotPSD(all_grouped, style='quantile', q=0.01, facet='grouping')+
+#plotPSD(all_grouped, style='quantile', q=0.01, facet='grouping')+
   labs(y= (expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz"))))+
   theme(axis.text= element_text(size= 10),
         axis.title= element_text(size= 14),
@@ -171,7 +231,7 @@ plotPSD(all_grouped, style='quantile', q=0.01, facet='grouping')+
         legend.title= element_text(size= 13.5),
         strip.text= element_text(size= 12))
 
-runSoundscapeExplorer(all_grouped)
+#runSoundscapeExplorer(all_grouped)
 
 ```
 
@@ -436,17 +496,6 @@ CB01_chorusPresence$X1000_chorus = case_when(CB01_chorusPresence$X1000_chorus ==
                                             CB01_chorusPresence$X1000_chorus == 0 ~ "no")
 CB01_chorusPresence$X2000_chorus = case_when(CB01_chorusPresence$X2000_chorus == 1 ~ "yes",
                                             CB01_chorusPresence$X2000_chorus == 0 ~ "no")
-
-```
-
-#presence with full octave level (hourly)
-
-```{r}
-DB01_chorusPresence
-
-
-
-
 
 ```
 
