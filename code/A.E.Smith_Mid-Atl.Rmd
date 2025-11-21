@@ -123,14 +123,21 @@ all_OLSiteSeason<- all_OLSites %>%
 melted_all_OLSiteSeason <- melt(all_OLSiteSeason, id= c("season", "PLATFORM", "Lat", "shore"), variable.name= "OL_band",
                                 value.name= "med_seasonal_SPL")
 
+melted_all_OLSiteSeason$season = factor(melted_all_OLSiteSeason$season,
+                                        levels= c("winter", "spring", "summer", "fall"),
+                                        labels= c("Winter", "Spring", "Summer", "Fall"))
+melted_all_OLSiteSeason$OL_band = factor(melted_all_OLSiteSeason$OL_band,
+                                        levels= c("med_63", "med_125", "med_500", "med_1000", "med_2000", "med_8000"),
+                                        labels= c("63", "125", "500", "1000", "2000", "8000"))
 
 ggplot(melted_all_OLSiteSeason, aes(x= OL_band, y = med_seasonal_SPL, color= season, group= season))+
-  geom_point()+ geom_line()+
-  facet_grid(Lat ~ shore, switch= "y")+
+  geom_point()+ geom_line() +
+  facet_wrap(factor(PLATFORM, levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))~., ncol= 3)+
   theme_bw()+
   xlab("Octave band (Hz)")+
-  ylab(expression(paste('Octave-band sound pressure levels (db re 1 \u00b5Pa)')))#+
-  scale_color_manual(values= c("purple", "darkgreen", "darkorange","lightblue"))
+  ylab(expression(paste('Octave-band sound pressure levels (db re 1 \u00b5Pa)')))+
+  scale_color_manual(values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
+  guides(color= guide_legend(title= "Season"))
 
 ```
 
