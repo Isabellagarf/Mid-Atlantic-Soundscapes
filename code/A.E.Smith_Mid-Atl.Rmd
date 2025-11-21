@@ -40,7 +40,7 @@ library(suntools)
 library(zoo)
 library(wesanderson)
 library(openair)
-
+library(reshape2)
 ```
 
 # loading full HMD files per site
@@ -100,17 +100,7 @@ CB03_HMD$PLATFORM = "CB03"
 #seasonal sound level medians
 
 ```{r}
-all_OLSites$month <- month(all_OLSites$UTC)
-ES01_HMD$month <- month(ES01_HMD$UTC)
-CB01_HMD$month <- month(CB01_HMD$UTC)
-
-DB02_HMD$month <- month(DB02_HMD$UTC)
-ES02_HMD$month <- month(ES02_HMD$UTC)
-CB02_HMD$month <- month(CB02_HMD$UTC)
-CB03_HMD$month <- month(CB03_HMD$UTC)
-
-DB03_HMD$month <- month(DB03_HMD$UTC)
-ES03_HMD$month <- month(ES03_HMD$UTC)
+all_OLSites$month <- month(all_OLSites$UTC) ##this dataframe is in the OL files combining "inshore/offshore grouping" section
 
 all_OLSites$season = case_when(all_OLSites$month == 1 ~ "winter",
                             all_OLSites$month == 2 ~ "winter",
@@ -126,12 +116,21 @@ all_OLSites$season = case_when(all_OLSites$month == 1 ~ "winter",
                             all_OLSites$month == 12 ~ "winter")
   
 all_OLSiteSeason<- all_OLSites %>% 
-  group_by(season, PLATFORM) %>% 
+  group_by(season, PLATFORM, Lat, shore) %>% 
   dplyr::summarize(med_63 = median(OL_63, na.rm=TRUE),med_125 = median(OL_125, na.rm=TRUE), med_500 = median(OL_500, na.rm=TRUE), med_1000 = median(OL_1000, na.rm=TRUE),med_2000= median(OL_2000, na.rm= TRUE), med_8000= median(OL_8000, na.rm= TRUE))
 
-ggplot(DB_OLSiteSeason, aes(x= season, y = med_500, color= PLATFORM, group= PLATFORM))+
-  geom_point()+
-  theme_bw()
+
+melted_all_OLSiteSeason <- melt(all_OLSiteSeason, id= c("season", "PLATFORM", "Lat", "shore"), variable.name= "OL_band",
+                                value.name= "med_seasonal_SPL")
+
+
+ggplot(melted_all_OLSiteSeason, aes(x= OL_band, y = med_seasonal_SPL, color= season, group= season))+
+  geom_point()+ geom_line()+
+  facet_grid(Lat ~ shore, switch= "y")+
+  theme_bw()+
+  xlab("Octave band (Hz)")+
+  ylab(expression(paste('Octave-band sound pressure levels (db re 1 \u00b5Pa)')))#+
+  scale_color_manual(values= c("purple", "darkgreen", "darkorange","lightblue"))
 
 ```
 
@@ -419,55 +418,72 @@ DB01_OL <- DB01_OL[-c(1)]
 DB01_OL$UTC_fixed <- paste(DB01_OL$UTC_date, DB01_OL$UTC_hour, sep = " ")
 DB01_OL$UTC_fixed <- as.POSIXct(DB01_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
 DB01_OL$PLATFORM = "DB01"
+DB01_OL$shore = "Inshore"
+DB01_OL$Lat = "Delaware"
 
 DB02_OL <- read.csv(here("data/DB02_OL.csv"))
 DB02_OL <- DB02_OL[-c(1)]
 DB02_OL$UTC_fixed <- paste(DB02_OL$UTC_date, DB02_OL$UTC_hour, sep = " ")
 DB02_OL$UTC_fixed <- as.POSIXct(DB02_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
 DB02_OL$PLATFORM = "DB02"
+DB02_OL$shore = "Mid-shore"
+DB02_OL$Lat = "Delaware"
 
 DB03_OL <- read.csv(here("data/DB03_OL.csv"))
 DB03_OL <- DB03_OL[-c(1)]
 DB03_OL$UTC_fixed <- paste(DB03_OL$UTC_date, DB03_OL$UTC_hour, sep = " ")
 DB03_OL$UTC_fixed <- as.POSIXct(DB03_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
 DB03_OL$PLATFORM = "DB03"
+DB03_OL$shore = "Offshore"
+DB03_OL$Lat = "Delaware"
 
 ES01_OL <- read.csv(here("data/ES01_OL.csv"))
 ES01_OL <- ES01_OL[-c(1)]
 ES01_OL$UTC_fixed <- paste(ES01_OL$UTC_date, ES01_OL$UTC_hour, sep = " ")
 ES01_OL$UTC_fixed <- as.POSIXct(ES01_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
 ES01_OL$PLATFORM = "ES01"
+ES01_OL$shore = "Inshore"
+ES01_OL$Lat = "Eastern"
 
 ES02_OL <- read.csv(here("data/ES02_OL.csv"))
 ES02_OL <- ES02_OL[-c(1)]
 ES02_OL$UTC_fixed <- paste(ES02_OL$UTC_date, ES02_OL$UTC_hour, sep = " ")
 ES02_OL$UTC_fixed <- as.POSIXct(ES02_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
 ES02_OL$PLATFORM = "ES02"
+ES02_OL$shore = "Mid-shore"
+ES02_OL$Lat = "Eastern"
 
 ES03_OL <- read.csv(here("data/ES03_OL.csv"))
 ES03_OL <- ES03_OL[-c(1)]
 ES03_OL$UTC_fixed <- paste(ES03_OL$UTC_date, ES03_OL$UTC_hour, sep = " ")
 ES03_OL$UTC_fixed <- as.POSIXct(ES03_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
 ES03_OL$PLATFORM = "ES03"
+ES03_OL$shore = "Offshore"
+ES03_OL$Lat = "Eastern"
 
 CB01_OL <- read.csv(here("data/CB01_OL.csv"))
 CB01_OL <- CB01_OL[-c(1)]
 CB01_OL$UTC_fixed <- paste(CB01_OL$UTC_date, CB01_OL$UTC_hour, sep = " ")
 CB01_OL$UTC_fixed <- as.POSIXct(CB01_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
 CB01_OL$PLATFORM = "CB01"
+CB01_OL$shore = "Inshore"
+CB01_OL$Lat = "Chesapeake"
 
 CB02_OL <- read.csv(here("data/CB02_OL.csv"))
 CB02_OL <- CB02_OL[-c(1)]
 CB02_OL$UTC_fixed <- paste(CB02_OL$UTC_date, CB02_OL$UTC_hour, sep = " ")
 CB02_OL$UTC_fixed <- as.POSIXct(CB02_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
 CB02_OL$PLATFORM = "CB02"
+CB02_OL$shore = "Mid-shore"
+CB02_OL$Lat = "Chesapeake"
 
 CB03_OL <- read.csv(here("data/CB03_OL.csv"))
 CB03_OL <- CB03_OL[-c(1)]
 CB03_OL$UTC_fixed <- paste(CB03_OL$UTC_date, CB03_OL$UTC_hour, sep = " ")
 CB03_OL$UTC_fixed <- as.POSIXct(CB03_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
 CB03_OL$PLATFORM = "CB03"
-
+CB03_OL$shore = "Mid-shore"
+CB03_OL$Lat = "Chesapeake"
 
 ```
 
