@@ -135,10 +135,33 @@ ggplot(melted_all_OLSiteSeason, aes(x= OL_band, y = med_seasonal_SPL, color= sea
   facet_wrap(factor(PLATFORM, levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))~., ncol= 3)+
   theme_bw()+
   xlab("Octave band (Hz)")+
-  ylab(expression(paste('Octave-band sound pressure levels (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median sound pressure levels (db re 1 \u00b5Pa)')))+
   scale_color_manual(values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
   guides(color= guide_legend(title= "Season"))
 
+
+#do this with HMD files instead
+
+all_OLSites$season = factor(all_OLSites$season,
+                                        levels= c("winter", "spring", "summer", "fall"),
+                                        labels= c("Winter", "Spring", "Summer", "Fall"))
+
+plotPSD(x=all_OLSites, style='quantile', q=0.01, by='season', facet='PLATFORM')+
+  labs(y= (expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz"))))+
+  theme(axis.text= element_text(size= 10),
+        axis.title= element_text(size= 14),
+        legend.text = element_text(size= 13),
+        legend.title= element_text(size= 13.5),
+        strip.text= element_text(size= 12))+
+  scale_color_manual(labels= c("Winter", "Spring", "Summer", "Fall"), values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
+  scale_fill_manual(values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
+  theme_bw()+
+  guides(color= guide_legend(title= "Season"))#+
+  facet_grid(factor(PLATFORM, levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))~.)
+  
+
+
+runSoundscapeExplorer(all_OLSites)
 ```
 
 # all sites
