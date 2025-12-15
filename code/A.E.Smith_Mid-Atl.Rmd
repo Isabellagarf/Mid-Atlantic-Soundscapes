@@ -41,6 +41,7 @@ library(zoo)
 library(wesanderson)
 library(openair)
 library(reshape2)
+library(fishualize)
 ```
 
 # loading full HMD files per site
@@ -80,7 +81,7 @@ CB03_HMD$UTC <- as.POSIXct(CB03_HMD$UTC, format= "%m/%d/%Y %H", tz = "GMT")
 CB03_HMD <- CB03_HMD[-c(1)]
 CB03_HMD$PLATFORM = "CB03"
 
-#all_sites <- DB01_HMD%>%
+all_sites <- DB01_HMD%>%
   full_join(DB02_HMD)%>%
   full_join(DB03_HMD)%>%
   full_join(ES01_HMD)%>%
@@ -117,7 +118,7 @@ all_OLSites$season = case_when(all_OLSites$month == 1 ~ "winter",
   
 all_OLSiteSeason<- all_OLSites %>% 
   group_by(season, PLATFORM, Lat, shore) %>% 
-  dplyr::summarize(med_63 = median(OL_63, na.rm=TRUE),med_125 = median(OL_125, na.rm=TRUE), med_500 = median(OL_500, na.rm=TRUE), med_1000 = median(OL_1000, na.rm=TRUE),med_2000= median(OL_2000, na.rm= TRUE), med_8000= median(OL_8000, na.rm= TRUE))
+  dplyr::summarize(med_31.5 = median(OL_31.5, na.rm=TRUE),med_63 = median(OL_63, na.rm=TRUE),med_125 = median(OL_125, na.rm=TRUE),med_250 = median(OL_250, na.rm=TRUE),med_500 = median(OL_500, na.rm=TRUE), med_1000 = median(OL_1000, na.rm=TRUE),med_2000= median(OL_2000, na.rm= TRUE), med_4000 = median(OL_4000, na.rm=TRUE),med_8000= median(OL_8000, na.rm= TRUE), med_16000 = median(OL_16000, na.rm=TRUE))
 
 
 melted_all_OLSiteSeason <- melt(all_OLSiteSeason, id= c("season", "PLATFORM", "Lat", "shore"), variable.name= "OL_band",
@@ -127,8 +128,8 @@ melted_all_OLSiteSeason$season = factor(melted_all_OLSiteSeason$season,
                                         levels= c("winter", "spring", "summer", "fall"),
                                         labels= c("Winter", "Spring", "Summer", "Fall"))
 melted_all_OLSiteSeason$OL_band = factor(melted_all_OLSiteSeason$OL_band,
-                                        levels= c("med_63", "med_125", "med_500", "med_1000", "med_2000", "med_8000"),
-                                        labels= c("63", "125", "500", "1000", "2000", "8000"))
+                                        levels= c("med_31.5", "med_63", "med_125", "med_250", "med_500", "med_1000", "med_2000", "med_4000", "med_8000", "med_16000"),
+                                        labels= c("31.5", "63", "125", "250","500", "1000", "2000", "4000", "8000", "16000"))
 
 ggplot(melted_all_OLSiteSeason, aes(x= OL_band, y = med_seasonal_SPL, color= season, group= season))+
   geom_point()+ geom_line() +
@@ -141,12 +142,25 @@ ggplot(melted_all_OLSiteSeason, aes(x= OL_band, y = med_seasonal_SPL, color= sea
 
 
 #do this with HMD files instead
+all_sites$month <- month(all_sites$UTC) 
 
-all_OLSites$season = factor(all_OLSites$season,
+all_sites$season = case_when(all_sites$month == 1 ~ "winter",
+                            all_sites$month == 2 ~ "winter",
+                            all_sites$month == 3 ~ "spring",
+                            all_sites$month == 4 ~ "spring",
+                            all_sites$month == 5 ~ "spring",
+                            all_sites$month == 6 ~ "summer",
+                            all_sites$month == 7 ~ "summer",
+                            all_sites$month == 8 ~ "summer",
+                            all_sites$month == 9 ~ "fall",
+                            all_sites$month == 10 ~ "fall",
+                            all_sites$month == 11 ~ "fall",
+                            all_sites$month == 12 ~ "winter")
+all_sites$season = factor(all_sites$season,
                                         levels= c("winter", "spring", "summer", "fall"),
                                         labels= c("Winter", "Spring", "Summer", "Fall"))
 
-plotPSD(x=all_OLSites, style='quantile', q=0.01, by='season', facet='PLATFORM')+
+plotPSD(x=all_sites, style='quantile', q=0.01, by='season', facet='PLATFORM')+
   labs(y= (expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz"))))+
   theme(axis.text= element_text(size= 10),
         axis.title= element_text(size= 14),
@@ -161,7 +175,7 @@ plotPSD(x=all_OLSites, style='quantile', q=0.01, by='season', facet='PLATFORM')+
   
 
 
-runSoundscapeExplorer(all_OLSites)
+runSoundscapeExplorer(all_sites)
 ```
 
 # all sites
@@ -1001,12 +1015,17 @@ DB01sunrise_datehour$UTC_fixed = as.POSIXct(DB01sunrise_datehour$UTC_fixed, form
 DB01_sunrise <- DB01_OL %>%
   right_join(DB01sunrise_datehour, join_by(UTC_fixed))
 
+DB01_sunset$sun_time = "Sunset"
+DB01_sunrise$sun_time = "Sunrise"
+DB01_suntimes <- DB01_sunrise %>%
+  full_join(DB01_sunset)
+
 DB01_500Hz <- ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_500, color= sun_time))+
   geom_line(linewidth = 0.75)+
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   theme_bw()+
   xlab("Date")+
-  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 500Hz OL SPL (db re 1 \u00b5Pa)')))+
   geom_hline(yintercept = 100, col= "black")+
  # geom_smooth(aes(group=1,2))+
   scale_color_manual(values= c("#00308790", "#B7130090"))+
@@ -1018,7 +1037,7 @@ DB01_1000Hz <- ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_1000, color= sun_ti
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   theme_bw()+
   xlab("Date")+
-  ylab(expression(paste('Median 1000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 1000Hz OL SPL (db re 1 \u00b5Pa)')))+
   geom_hline(yintercept = 100, col= "black")+
  # geom_smooth(aes(group=1,2))+
   scale_color_manual(values= c("#00308790", "#B7130090"))+
@@ -1029,7 +1048,7 @@ DB01_2000Hz <- ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_ti
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   theme_bw()+
   xlab("Date")+
-  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 2000Hz OL SPL (db re 1 \u00b5Pa)')))+
   geom_hline(yintercept = 100, col= "black")+
 #  geom_smooth(aes(group=1,2))+
   scale_color_manual(values= c("#00308790", "#B7130090"))+
@@ -1038,12 +1057,7 @@ DB01_2000Hz <- ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_ti
 
 DB01_500Hz/DB01_1000Hz/DB01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
 
-DB01_sunset$sun_time = "Sunset"
-DB01_sunrise$sun_time = "Sunrise"
-DB01_suntimes <- DB01_sunrise %>%
-  full_join(DB01_sunset)
-
-ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_500, color= sun_time, ))+
+#ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_500, color= sun_time, ))+
   geom_line(linewidth = 0.75)+
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   theme_bw()+
@@ -1052,7 +1066,7 @@ ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_500, color= sun_time, ))+
   scale_color_manual(values= c("#00308790", "#B7130090"))
 
 
-ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color=sun_time, q=0.01))+
+#ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color=sun_time, q=0.01))+
   geom_line()+
   theme_bw()+
   xlab("Date")+
@@ -1060,7 +1074,7 @@ ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color=sun_time, q=0.01))+
   scale_color_manual(values= c("#00308790", "#B7130090"))+
   scale_fill_manual(values= c("#00308790", "#B7130090"))
   
-plot(DB01_500Hz)
+#plot(DB01_500Hz)
 
 #runSoundscapeExplorer(ES01_suntimes)
 ```
@@ -1098,10 +1112,22 @@ ES01_500Hz <- ggplot(ES01_suntimes, aes(x= UTC_fixed, y= OL_500, color= sun_time
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   theme_bw()+
   xlab("Date")+
-  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
-#  geom_smooth(aes(group=1,2))+
+  ylab(expression(paste('Median 500Hz OL SPL (db re 1 \u00b5Pa)')))+
+  geom_hline(yintercept = 100, col= "black")+
+ # geom_smooth(aes(group=1,2))+
   scale_color_manual(values= c("#00308790", "#B7130090"))+
   ggtitle("ES01")+
+  theme(legend.title= element_blank())+
+  ylim(72, 135)
+ES01_1000Hz <- ggplot(ES01_suntimes, aes(x= UTC_fixed, y= OL_1000, color= sun_time))+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 1000Hz OL SPL (db re 1 \u00b5Pa)')))+
+  geom_hline(yintercept = 100, col= "black")+
+ # geom_smooth(aes(group=1,2))+
+  scale_color_manual(values= c("#00308790", "#B7130090"))+
   theme(legend.title= element_blank())+
   ylim(72, 135)
 ES01_2000Hz <- ggplot(ES01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_time))+
@@ -1109,14 +1135,14 @@ ES01_2000Hz <- ggplot(ES01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_ti
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   theme_bw()+
   xlab("Date")+
-  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 2000Hz OL SPL (db re 1 \u00b5Pa)')))+
+  geom_hline(yintercept = 100, col= "black")+
 #  geom_smooth(aes(group=1,2))+
   scale_color_manual(values= c("#00308790", "#B7130090"))+
   theme(legend.title= element_blank())+
-  ggtitle("ES01")+
   ylim(72, 135)
 
-ES01_500Hz/ES01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
+ES01_500Hz/ES01_1000Hz/ES01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
 
 
 ```
@@ -1154,10 +1180,22 @@ CB01_500Hz <- ggplot(CB01_suntimes, aes(x= UTC_fixed, y= OL_500, color= sun_time
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   theme_bw()+
   xlab("Date")+
-  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
-#  geom_smooth(aes(group=1,2))+
+  ylab(expression(paste('Median 500Hz OL SPL (db re 1 \u00b5Pa)')))+
+  geom_hline(yintercept = 100, col= "black")+
+ # geom_smooth(aes(group=1,2))+
   scale_color_manual(values= c("#00308790", "#B7130090"))+
   ggtitle("CB01")+
+  theme(legend.title= element_blank())+
+  ylim(72, 135)
+CB01_1000Hz <- ggplot(CB01_suntimes, aes(x= UTC_fixed, y= OL_1000, color= sun_time))+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 1000Hz OL SPL (db re 1 \u00b5Pa)')))+
+  geom_hline(yintercept = 100, col= "black")+
+ # geom_smooth(aes(group=1,2))+
+  scale_color_manual(values= c("#00308790", "#B7130090"))+
   theme(legend.title= element_blank())+
   ylim(72, 135)
 CB01_2000Hz <- ggplot(CB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_time))+
@@ -1165,17 +1203,17 @@ CB01_2000Hz <- ggplot(CB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_ti
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   theme_bw()+
   xlab("Date")+
-  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 2000Hz OL SPL (db re 1 \u00b5Pa)')))+
+  geom_hline(yintercept = 100, col= "black")+
 #  geom_smooth(aes(group=1,2))+
   scale_color_manual(values= c("#00308790", "#B7130090"))+
   theme(legend.title= element_blank())+
-  ggtitle("CB01")+
   ylim(72, 135)
 
-#runSoundscapeExplorer(DB01_suntimes)
+CB01_500Hz/CB01_1000Hz/CB01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
 
-CB01_500Hz/CB01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
 
+###
 
 DB01_2000Hz/ES01_2000Hz/CB01_2000Hz +plot_layout(guides= "collect", axis_titles= "collect")
 
