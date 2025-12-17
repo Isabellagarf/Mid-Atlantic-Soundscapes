@@ -175,7 +175,30 @@ plotPSD(x=all_sites, style='quantile', q=0.01, by='season', facet='PLATFORM')+
   
 
 
-runSoundscapeExplorer(all_sites)
+#runSoundscapeExplorer(all_OLSites)
+```
+#testing median diel patterns across sites
+```{r}
+DB01_suntimes_med <- DB01_suntimes %>% 
+  group_by(sun_time) %>% 
+  dplyr::summarize(med_31.5 = median(OL_31.5, na.rm=TRUE),med_63 = median(OL_63, na.rm=TRUE),med_125 = median(OL_125, na.rm=TRUE),med_250 = median(OL_250, na.rm=TRUE),med_500 = median(OL_500, na.rm=TRUE), med_1000 = median(OL_1000, na.rm=TRUE),med_2000= median(OL_2000, na.rm= TRUE), med_4000 = median(OL_4000, na.rm=TRUE),med_8000= median(OL_8000, na.rm= TRUE), med_16000 = median(OL_16000, na.rm=TRUE))
+
+melted_DB01_suntimes_med <- melt(DB01_suntimes_med, id= c("sun_time"), variable.name= "OL_band",
+                                value.name= "med_diel_SPL")
+
+melted_DB01_suntimes_med$OL_band = factor(melted_DB01_suntimes_med$OL_band,
+                                        levels= c("med_31.5", "med_63", "med_125", "med_250", "med_500", "med_1000", "med_2000", "med_4000", "med_8000", "med_16000"),
+                                        labels= c("31.5", "63", "125", "250","500", "1000", "2000", "4000", "8000", "16000"))
+
+ggplot(melted_DB01_suntimes_med, aes(x= OL_band, y = med_diel_SPL, color= sun_time, group= sun_time))+
+  geom_point()+ geom_line()+
+  theme_bw()+
+  xlab("Octave band (Hz)")+
+  ylab(expression(paste('Median sound pressure levels (db re 1 \u00b5Pa)')))+
+  scale_color_manual(values= c("#5761C0", "#DB2207"))+
+  guides(color= guide_legend(title= "Time"))
+
+
 ```
 
 # all sites
@@ -789,7 +812,8 @@ Env500OL_plot = ggplot(data = DB01_envData_daily, mapping = aes(x =UTC)) +
   geom_rect(data= (DB01_envData_daily %>% filter(Moon.Phase== 1)), aes(xmin= UTC-1, xmax= UTC+1, ymin= -Inf, ymax= Inf, fill = "Full Moon"), linetype= "blank", alpha = 0.5)+
   geom_rect(data= (DB01_envData_daily %>% filter(Moon.Phase== 2)), aes(xmin= UTC-1, xmax= UTC+1, ymin= -Inf, ymax= Inf, fill = "New Moon"), linetype= "blank", alpha = 0.5)+
   scale_fill_manual(values = c("lightblue", "grey"))+
-  geom_line(mapping = aes(y = med_temp+90), color="pink", size=1)+
+  geom_line(mapping = aes(y = med_temp+90, color= "Temp"), size=1)+
+  scale_color_manual(NULL, values= "pink")+
   geom_line(mapping= aes(y=med_500)) + 
   scale_y_continuous(expression(paste("Daily Median 500 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
                      sec.axis = sec_axis(~ . -90, name = "Daily Median Temperature (°C)")
@@ -800,6 +824,8 @@ Env500OL_plot = ggplot(data = DB01_envData_daily, mapping = aes(x =UTC)) +
   labs(title= "DB01",
        x= "Date (UTC)")+
   guides(fill= guide_legend(title= "Moon Phase"))
+
+plot(Env500OL_plot)
 
 Env1000OL_plot = ggplot(data = DB01_envData_daily, mapping = aes(x =UTC)) + 
   geom_rect(data= (DB01_envData_daily %>% filter(Moon.Phase== 1)), aes(xmin= UTC-1, xmax= UTC+1, ymin= -Inf, ymax= Inf, fill = "Full Moon"), linetype= "blank", alpha = 0.5)+
