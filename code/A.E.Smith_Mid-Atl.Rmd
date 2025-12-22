@@ -726,7 +726,7 @@ DB01_OLtemps_daily <- DB01_OLTemps %>%
   group_by(UTC) %>% 
   dplyr::summarize(med_500 = median(OL_500, na.rm=TRUE), med_1000= median(OL_1000, na.rm= TRUE), med_2000= median(OL_2000, na.rm= TRUE), med_temp= median(Internal_temp_C, na.rm= TRUE))
 
-
+DB01_OLtemps_daily$UTC <- as.Date(DB01_OLtemps_daily$UTC, format= "%Y-%m-%d")
 
 #DB01_OLtemps_daily <- DB01_OLTemps %>% 
   group_by(UTC) %>% 
@@ -753,7 +753,7 @@ DB01_OLtemps_daily <- DB01_OLTemps %>%
   full_join(DB01_2000OL)
 
 
-DB01_OLtemps_daily$UTC <- as.Date(DB01_OLtemps_daily$UTC, format= "%Y-%m-%d")
+
 
 OL_500_dailyTemps_Plot = ggplot(data = DB01_OLtemps_daily, mapping = aes(x =UTC)) + 
   geom_line(mapping = aes(y = med_temp+90), color="pink", size=1)+
@@ -798,6 +798,13 @@ moon_phases <- read.csv(here("data/moon_phases.csv"))
 moon_phases$Date <- as.Date(moon_phases$Date, format= "%Y %b %e")
 colnames(moon_phases)[2] <- "UTC"
 moon_phases <- moon_phases[-c(3)]
+
+moon_phases2 <- read.csv(here("data/moon_phases2.csv"))
+moon_phases2$Date <- as.Date(moon_phases2$Date, format= "%Y %b %e")
+colnames(moon_phases2)[2] <- "UTC"
+moon_phases2 <- moon_phases2[-c(3,4,5,6,7)]
+moon_phases <- moon_phases %>%
+  full_join(moon_phases2)
 
 DB01_envData_daily <- DB01_OLtemps_daily%>%
   full_join(moon_phases)
