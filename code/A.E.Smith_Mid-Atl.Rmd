@@ -1696,3 +1696,20 @@ write.csv(CB03_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Sounds
 
 
 ```
+#testing area
+```{r}
+#wind stuff
+ES03_HMD <- matchGFS(ES03_HMD)
+ES03_HMD$windCategory <- cut(ES03_HMD$windMag, breaks=c(0, 8, 20, 100),
+                                  labels=c('Low Wind', 'Medium Wind', 'High Wind'))
+runSoundscapeExplorer(DB01_HMD)
+
+#finding max SPL from TOL
+
+max_TOLs <- melted_all_TOLSiteSeason %>%
+  group_by(PLATFORM, season)%>%
+  summarise(Value= max(med_seasonal_SPL))
+df <- tapply(melted_all_TOLSiteSeason$med_seasonal_SPL, list(melted_all_TOLSiteSeason$PLATFORM, melted_all_TOLSiteSeason$TOL_band), max, na.rm=TRUE)
+
+print(df)
+```
