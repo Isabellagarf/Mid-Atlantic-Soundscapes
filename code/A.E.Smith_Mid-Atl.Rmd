@@ -81,7 +81,7 @@ CB03_HMD$UTC <- as.POSIXct(CB03_HMD$UTC, format= "%m/%d/%Y %H", tz = "GMT")
 CB03_HMD <- CB03_HMD[-c(1)]
 CB03_HMD$PLATFORM = "CB03"
 
-all_sites <- DB01_HMD%>%
+ #all_sites <- DB01_HMD%>%
   full_join(DB02_HMD)%>%
   full_join(DB03_HMD)%>%
   full_join(ES01_HMD)%>%
@@ -97,9 +97,73 @@ all_sites <- DB01_HMD%>%
 #all_test <- read.csv(here("data/all_sites_HMD.csv"))
 
 ```
+#converting to TOLs
+```{r}
+DB01_TOL <- createOctaveLevel(DB01_HMD, type= 'tol')
+DB02_TOL <- createOctaveLevel(DB02_HMD, type= 'tol')
+DB03_TOL <- createOctaveLevel(DB03_HMD, type= 'tol')
 
+ES01_TOL <- createOctaveLevel(ES01_HMD, type= 'tol')
+ES02_TOL <- createOctaveLevel(ES02_HMD, type= 'tol')
+ES03_TOL <- createOctaveLevel(ES03_HMD, type= 'tol')
+
+CB01_TOL <- createOctaveLevel(CB01_HMD, type= 'tol')
+CB02_TOL <- createOctaveLevel(CB02_HMD, type= 'tol')
+CB03_TOL <- createOctaveLevel(CB03_HMD, type= 'tol')
+
+all_TOLSites <- DB01_TOL%>%
+  full_join(DB02_TOL)%>%
+  full_join(DB03_TOL)%>%
+  full_join(ES01_TOL)%>%
+  full_join(ES02_TOL)%>%
+  full_join(ES03_TOL)%>%
+  full_join(CB01_TOL)%>%
+  full_join(CB02_TOL)%>%
+  full_join(CB03_TOL)
+
+#making seasonal plots
+
+all_TOLSites$month <- month(all_TOLSites$UTC)
+
+all_TOLSites$season = case_when(all_TOLSites$month == 1 ~ "Winter",
+                            all_TOLSites$month == 2 ~ "Winter",
+                            all_TOLSites$month == 3 ~ "Spring",
+                            all_TOLSites$month == 4 ~ "Spring",
+                            all_TOLSites$month == 5 ~ "Spring",
+                            all_TOLSites$month == 6 ~ "Summer",
+                            all_TOLSites$month == 7 ~ "Summer",
+                            all_TOLSites$month == 8 ~ "Summer",
+                            all_TOLSites$month == 9 ~ "Fall",
+                            all_TOLSites$month == 10 ~ "Fall",
+                            all_TOLSites$month == 11 ~ "Fall",
+                            all_TOLSites$month == 12 ~ "Winter")
+
+all_TOLSiteSeason<- all_TOLSites %>% 
+  group_by(season, PLATFORM) %>% 
+  dplyr::summarize(med_25 = median(TOL_25, na.rm=TRUE), med_31.5 = median(TOL_31.5, na.rm=TRUE), med_40 = median(TOL_40, na.rm=TRUE), med_50 = median(TOL_50, na.rm=TRUE), med_63 = median(TOL_63, na.rm=TRUE),med_80 = median(TOL_80, na.rm=TRUE), med_100 = median(TOL_100, na.rm=TRUE), med_125 = median(TOL_125, na.rm=TRUE),med_160 = median(TOL_160, na.rm=TRUE), med_200 = median(TOL_200, na.rm=TRUE), med_250 = median(TOL_250, na.rm=TRUE), med_315 = median(TOL_315, na.rm=TRUE), med_400 = median(TOL_400, na.rm=TRUE),med_500 = median(TOL_500, na.rm=TRUE), med_630 = median(TOL_630, na.rm=TRUE), med_800 = median(TOL_800, na.rm=TRUE),med_1000 = median(TOL_1000, na.rm=TRUE), med_1250 = median(TOL_1250, na.rm=TRUE), med_1600 = median(TOL_1600, na.rm=TRUE),med_2000= median(TOL_2000, na.rm= TRUE),med_2500 = median(TOL_2500, na.rm=TRUE), med_3150 = median(TOL_3150, na.rm=TRUE),med_4000 = median(TOL_4000, na.rm=TRUE), med_5000 = median(TOL_5000, na.rm=TRUE), med_6300 = median(TOL_6300, na.rm=TRUE),med_8000= median(TOL_8000, na.rm= TRUE),med_10000 = median(TOL_10000, na.rm=TRUE), med_12500 = median(TOL_12500, na.rm=TRUE),med_16000 = median(TOL_16000, na.rm=TRUE), med_20000 = median(TOL_20000, na.rm=TRUE))
+
+melted_all_TOLSiteSeason <- melt(all_TOLSiteSeason, id= c("season", "PLATFORM"), variable.name= "TOL_band",
+                                value.name= "med_seasonal_SPL")
+melted_all_TOLSiteSeason$season = factor(melted_all_TOLSiteSeason$season,
+                                        levels= c("Winter", "Spring", "Summer", "Fall"),
+                                        labels= c("Winter", "Spring", "Summer", "Fall"))
+
+melted_all_TOLSiteSeason$TOL_band = factor(melted_all_TOLSiteSeason$TOL_band,
+                                        levels= c("med_25","med_31.5","med_40","med_50", "med_63","med_80","med_100", "med_125","med_160","med_200", "med_250","med_315","med_400", "med_500","med_630","med_800", "med_1000","med_1250","med_1600", "med_2000","med_2500","med_3150", "med_4000","med_5000","med_6300", "med_8000","med_10000","med_12500", "med_16000", "med_20000"),
+                                        labels= c("25", "31.5", "40", "50", "63", "80", "100", "125", "160", "200", "250", "315", "400", "500", "630", "800", "1000", "1250", "1600", "2000", "2500", "3150", "4000", "5000", "6300", "8000", "10000", "12500", "16000", "20000"))
+
+ggplot(melted_all_TOLSiteSeason, aes(x= TOL_band, y = med_seasonal_SPL, color= season, group= season))+
+  geom_point(size= 1)+ geom_line() +
+  facet_wrap(factor(PLATFORM, levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))~., ncol= 3)+
+  theme_bw()+
+  xlab("Third-octave band (Hz)")+
+  ylab(expression(paste('Median sound pressure levels (db re 1 \u00b5Pa)')))+
+  scale_color_manual(values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
+  guides(color= guide_legend(title= "Season"))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+```
 #seasonal sound level medians
-
 ```{r}
 all_OLSites$month <- month(all_OLSites$UTC) ##this dataframe is in the OL files combining "inshore/offshore grouping" section
 
@@ -200,7 +264,6 @@ ggplot(melted_DB01_suntimes_med, aes(x= OL_band, y = med_diel_SPL, color= sun_ti
 
 
 ```
-
 # all sites
 ```{r}
 all_sites <- inshore_sites %>%
@@ -223,9 +286,7 @@ plotPSD(x=all_sites, style='quantile', q=0.1, facet='PLATFORM')+
 
 
 ```
-
 #inshore/offshore grouping
-
 ```{r}
 #load back in csv from data folder next time!
 
@@ -300,7 +361,6 @@ all_OLSites <- DB_OLSites %>%
 #runSoundscapeExplorer(all_grouped)
 
 ```
-
 #making LTSAs
 ```{r}
 
@@ -329,9 +389,7 @@ CB_LTSA = plotLTSA(x=CB_sites, facet= 'PLATFORM') +
 plot(CB_LTSA)
 
 ```
-
 #plotting sites by group
-
 ```{r}
 
 runSoundscapeExplorer(DB_sites)
@@ -433,9 +491,7 @@ offshore_plot +
   
 
 ```
-
 #plots by specific months
-
 ```{r}
 offshore_sites$month_num <- month(offshore_sites$UTC)
 inshore_sites$month_num <- month(inshore_sites$UTC)
@@ -477,7 +533,6 @@ inshore_july_plot +
    theme_bw()
 
 ```
-
 ## OCTAVE LEVEL FILES
 ```{r}
 DB01_OL <- read.csv(here("data/DB01_OL.csv"))
@@ -553,9 +608,7 @@ CB03_OL$shore = "Mid-shore"
 CB03_OL$Lat = "Chesapeake"
 
 ```
-
 #loading in chorus presence files
-
 ```{r}
 
 DB01_chorusPresence <- read.csv(here("data/DB01_chorusPresence.csv"))
@@ -581,9 +634,7 @@ CB01_chorusPresence$X2000_chorus = case_when(CB01_chorusPresence$X2000_chorus ==
                                             CB01_chorusPresence$X2000_chorus == 0 ~ "no")
 
 ```
-
 #plotting sunrise/sunset with chorus presence
-
 ```{r}
 colnames(DB01_sunset)[19] <- "date"
 DB01_chorusPresence$date <- as.Date(DB01_chorusPresence$date, format= "%m/%d/%Y")
@@ -654,9 +705,7 @@ chorus2000_plot <- ggplot(DB01_2000SunPresent, aes(x= date, y= OL_2000, color= s
 chorus500_plot/chorus1000_plot/chorus2000_plot +plot_layout(guides = "collect", axis_titles = "collect")
 
 ```
-
 ##temps
-
 ```{r}
 #DB01
 DB01_202207Temp <- read.csv(here("data/Temp_data/NEFSC_DE_202207_DB01_Filtered_ST_Temp_data.csv"))
@@ -790,9 +839,7 @@ OL_500_dailyTemps_Plot/OL_1000_dailyTemps_Plot/OL_2000_dailyTemps_Plot+ plot_lay
 
 
 ```
-
 #moon phases
-
 ```{r}
 moon_phases <- read.csv(here("data/moon_phases.csv"))
 moon_phases$Date <- as.Date(moon_phases$Date, format= "%Y %b %e")
@@ -867,9 +914,7 @@ Env2000OL_plot = ggplot(data = DB01_envData_daily, mapping = aes(x =UTC)) +
 Env500OL_plot/Env1000OL_plot/Env2000OL_plot+ plot_layout(axis_titles = "collect", guides= "collect")
 
 ```
-
 # inshore/offshore gradient using OL
-
 ```{r}
 inshore_sites_OL <- DB01_OL %>%
   full_join(ES01_OL)%>%
@@ -887,9 +932,7 @@ ggplot(inshore_sites_OL, aes(x= UTC_fixed, y= OL_500, color = PLATFORM))+
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   scale_color_manual(values= c("#00797F90","#00308790", "#B7130090"))
 ```
-
 #only plotting sunset hours
-
 ```{r}
 #DB01
 DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
@@ -1022,9 +1065,7 @@ ggplot(inshore_sunsets, aes(x= UTC_fixed, y= OL_2000, color= PLATFORM))+
   ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))
 
 ```
-
 # plotting sunrise
-
 ```{r}
 #DB01
 DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
@@ -1112,7 +1153,6 @@ DB01_500Hz/DB01_1000Hz/DB01_2000Hz +plot_layout(guides = "collect", axis_titles 
 #runSoundscapeExplorer(ES01_suntimes)
 ```
 #ES01
-
 ```{r}
 #ES01
 ES01_location <- matrix(c(-75.29, 37.69), nrow = 1)
@@ -1180,7 +1220,6 @@ ES01_500Hz/ES01_1000Hz/ES01_2000Hz +plot_layout(guides = "collect", axis_titles 
 
 ```
 #CB01 and combining
-
 ```{r}
 #CB01
 CB01_location <- matrix(c(-75.67, 36.98), nrow = 1)
@@ -1291,7 +1330,6 @@ DB01_1000Hz/ES01_1000Hz/CB01_1000Hz +plot_layout(guides= "collect", axis_titles=
 
 
 ```
-
 #open air package
 ```{r}
 #smoothing plot using openair
@@ -1335,9 +1373,7 @@ DB_dates <- DB02_OL %>%
   summarize(total = n())
 
 ```
-
 #OL_500 Delaware
-
 ```{r}
 #make more data so DB03 starts at same time
 subset_OL_DB03 <- seq(ymd_hms("2022-07-07 00:00:00"), ymd_hms("2023-01-10 23:00:00"), by = "1 hour")
@@ -1375,9 +1411,7 @@ DB03_OL_plot <- ggplot(DB03_OL, aes(x= UTC, y= OL_500))+
 DB01_OL_plot/DB02_OL_plot/DB03_OL_plot + plot_layout(axis_titles = "collect", guides = "collect", design = "AA\nBB\nCC")
 
 ```
-
 #OL_2000 Delaware
-
 ```{r}
 
 #make more data so DB03 starts at same time
@@ -1417,9 +1451,7 @@ DB01_2000OL_plot/DB02_2000OL_plot/DB03_2000OL_plot + plot_layout(axis_titles = "
 
 
 ```
-
 ## DELAWARE BAY- mostly OL
-
 ```{r}
 ## OL BANDS
 #DB01
@@ -1453,9 +1485,7 @@ DB03 <- DB03_202301%>%
 DB01_202207 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB01/HMD/202207_DB01.csv")
 
 ```
-
 ## EASTERN SEABOARD
-
 ```{r}
 
 ## HMD FULL FILES
@@ -1481,9 +1511,7 @@ ES03_202310_HMD = loadSoundscapeData(ES03_202310_Files, timeBin = "1hour")
 write_csv(ES03_202310_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "ES03_202310.csv"))
 
 ```
-
 ## CHESAPEAKE BAY
-
 ```{r}
 ## HMD FULL FILES
 #CB01
@@ -1503,9 +1531,7 @@ CB03_202311_HMD = loadSoundscapeData(CB03_202311_Files, timeBin = "1hour")
 write_csv(CB03_202311_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "CB03_202311.csv"))
 
 ```
-
 ## LOADING IN ALL HMD FILES- DB
-
 ```{r}
 #DB01
 DB01_202207 <- read.csv("/home/asmith/PassiveAcoustics/DATA_ANALYSIS/PUBLICATIONS/MANUSCRIPTS/Smith-et-al_TBD-Mid-Atl-Soundscapes/Output_Files_and_Results/DB01/HMD/202207_DB01.csv")
@@ -1570,9 +1596,7 @@ DB03_HMD <- DB03_202207 %>%
 write_csv(DB03_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "DB03_HMD.csv"))
 
 ```
-
 ## LOADING IN ALL HMD FILES- ES
-
 ```{r}
 
 #ES01
@@ -1609,9 +1633,7 @@ ES03_HMD <- ES03_202310 %>%
 write_csv(ES03_HMD, file = paste0("/home/asmith/Anne.Smith/GitHub/Mid_Atl_Soundscape/data", "ES03_HMD.csv"))
 
 ```
-
 ## LOADING IN ALL HMD FILES- CB
-
 ```{r}
 #CB01
 
