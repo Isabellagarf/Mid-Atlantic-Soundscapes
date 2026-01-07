@@ -48,7 +48,7 @@ library(fishualize)
 
 ```{r}
 #all_sites_HMD <- read.csv(here("data/all_sites_HMD.csv"))
-#runSoundscapeExplorer(all_sites_HMD)
+#runSoundscapeExplorer(CB03_OL)
 
 DB01_HMD <- read.csv(here("data/DB01_HMD.csv"))
 DB01_HMD$UTC <- as.POSIXct(DB01_HMD$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
@@ -283,7 +283,7 @@ all_sites$PLATFORM = factor(all_sites$PLATFORM,
                                         levels= c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'),
                                         labels= c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))
 
-plotPSD(x=all_sites, style='quantile', q=0.1, dbRange= c(30, 105),facet='PLATFORM', ncol = 3)+
+plotPSD(x=all_sites, style='quantile', q=0.01, dbRange= c(30, 105),facet='PLATFORM', ncol = 3)+
 #  facet_grid(factor('PLATFORM', levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03')))+
   theme_bw()+
   labs(y= (expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz"))))
@@ -733,19 +733,28 @@ DB01_temps <- DB01_202207Temp %>%
 
 #ES01
 ES01_202310Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202310_ES01_Filtered_ST_Temp_data.csv"))
+ES01_202310Temp$Datetime_UTC <- as.POSIXct(ES01_202310Temp$Datetime_UTC, format = "%d-%m-%Y_%H:%M:%S")
 ES01_202404Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202404_ES01_6105_Filtered_ST_Temp_data.csv"))
+ES01_202404Temp$Datetime_UTC <- as.POSIXct(ES01_202404Temp$Datetime_UTC, format = "%m-%d-%Y_%H:%M:%S")
 ES01_202409Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202409_ES01_6104_Filtered_ST_Temp_data.csv"))
+ES01_202409Temp$Datetime_UTC <- as.POSIXct(ES01_202409Temp$Datetime_UTC, format = "%m-%d-%Y_%H:%M:%S")
 ES01_temps <- ES01_202310Temp %>%
   full_join(ES01_202404Temp)%>%
   full_join(ES01_202409Temp)
 
 #CB01
 CB01_202206Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202206_CB01_Filtered_ST_Temp_data.csv"))
+CB01_202206Temp$Datetime_UTC <- as.POSIXct(CB01_202206Temp$Datetime_UTC, format = "%d-%m-%Y_%H:%M:%S")
 CB01_202212Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202212_CB01_Filtered_ST_Temp_data.csv"))
+CB01_202212Temp$Datetime_UTC <- as.POSIXct(CB01_202212Temp$Datetime_UTC, format = "%d-%m-%Y_%H:%M:%S")
 CB01_202306Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202306_CB01_Filtered_ST_Temp_data.csv"))
+CB01_202306Temp$Datetime_UTC <- as.POSIXct(CB01_202306Temp$Datetime_UTC, format = "%d-%m-%Y_%H:%M:%S")
 CB01_202311Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202311_CB01_Filtered_ST_Temp_data.csv"))
+CB01_202311Temp$Datetime_UTC <- as.POSIXct(CB01_202311Temp$Datetime_UTC, format = "%d-%m-%Y_%H:%M:%S")
 CB01_202405Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202405_CB01_8014_Filtered_ST_Temp_data.csv"))
+CB01_202405Temp$Datetime_UTC <- as.POSIXct(CB01_202405Temp$Datetime_UTC, format = "%m-%d-%Y_%H:%M:%S")
 CB01_202411Temp <- read.csv(here("data/Temp_data/NEFSC_VA_202411_CB01_8015_Filtered_ST_Temp_data.csv"))
+CB01_202411Temp$Datetime_UTC <- as.POSIXct(CB01_202411Temp$Datetime_UTC, format = "%m-%d-%Y_%H:%M:%S")
 
 CB01_temps <- CB01_202206Temp %>%
   full_join(CB01_202212Temp) %>%
@@ -762,17 +771,17 @@ DB01_OL <- DB01_OL %>%
 DB01_OLTemps <- DB01_OL %>%
   select(UTC_fixed, Datetime_UTC, OL_500, OL_1000, OL_2000, Internal_temp_C, PLATFORM)
 
-DB01_tempsPlot= ggplot(DB01_OLTemps, aes(x = Datetime_UTC, y = Internal_temp_C))+
+#DB01_tempsPlot= ggplot(DB01_OLTemps, aes(x = Datetime_UTC, y = Internal_temp_C))+
   geom_line()+
   theme_bw()+
   labs(x= "Date-time (UTC)", y= "Temperature (°C)")
 
-DB01_500Plot= ggplot(DB01_OLTemps, aes(Datetime_UTC, OL_500))+
+#DB01_500Plot= ggplot(DB01_OLTemps, aes(Datetime_UTC, OL_500))+
   geom_line()+
   theme_bw()+
   labs(x= "Date-time (UTC)", y= (expression(paste("Median 500 Hz Octave Band SPL (dB re \u00b5Pa" ^ "2", "/Hz)"))))
 
-DB01_tempsPlot/DB01_500Plot +plot_layout(axes= "collect", guides= "collect")
+#DB01_tempsPlot/DB01_500Plot +plot_layout(axes= "collect", guides= "collect")
 
 DB01_OLTemps$UTC <- droplevels(cut(DB01_OLTemps$UTC_fixed, breaks= "day"))
 DB01_OLtemps_daily <- DB01_OLTemps %>% 
@@ -808,11 +817,11 @@ DB01_OLtemps_daily$UTC <- as.Date(DB01_OLtemps_daily$UTC, format= "%Y-%m-%d")
 
 
 
-OL_500_dailyTemps_Plot = ggplot(data = DB01_OLtemps_daily, mapping = aes(x =UTC)) + 
-  geom_line(mapping = aes(y = med_temp+90), color="pink", size=1)+
+DBOL_500_dailyTemps_Plot = ggplot(data = DB01_OLtemps_daily, mapping = aes(x =UTC)) + 
+  geom_line(mapping = aes(y = med_temp+80), color="pink", size=1)+
   geom_line(mapping= aes(y=med_500)) + 
   scale_y_continuous(expression(paste("Daily Median 500 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
-                     sec.axis = sec_axis(~ . -90, name = "Daily Median Temperature (°C)")
+                     sec.axis = sec_axis(~ . -80, name = "Daily Median Temperature (°C)")
   )+
   geom_hline(yintercept = 100, col= "black")+
   theme_bw()+
@@ -820,29 +829,136 @@ OL_500_dailyTemps_Plot = ggplot(data = DB01_OLtemps_daily, mapping = aes(x =UTC)
   labs(title= "DB01",
        x= "Date (UTC)")
 
-OL_1000_dailyTemps_Plot = ggplot(data = DB01_OLtemps_daily, mapping = aes(x =UTC)) + 
-  geom_line(mapping = aes(y = med_temp+90), color="pink", size=1)+
+DBOL_1000_dailyTemps_Plot = ggplot(data = DB01_OLtemps_daily, mapping = aes(x =UTC)) + 
+  geom_line(mapping = aes(y = med_temp+80), color="pink", size=1)+
   geom_line(mapping= aes(y=med_1000)) + 
   scale_y_continuous(expression(paste("Daily Median 1000 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
-                     sec.axis = sec_axis(~ . -90, name = "Daily Median Temperature (°C)")
+                     sec.axis = sec_axis(~ . -80, name = "Daily Median Temperature (°C)")
   )+
   geom_hline(yintercept = 100, col= "black")+
   theme_bw()+
   scale_x_date(limits= as.Date(c("2022-07-07", "2024-11-03")))+
   labs(x= "Date (UTC)")
 
-OL_2000_dailyTemps_Plot = ggplot(data = DB01_OLtemps_daily, mapping = aes(x =UTC)) + 
-  geom_line(mapping = aes(y = med_temp+90), color="pink", size=1)+
+DBOL_2000_dailyTemps_Plot = ggplot(data = DB01_OLtemps_daily, mapping = aes(x =UTC)) + 
+  geom_line(mapping = aes(y = med_temp+80), color="pink", size=1)+
   geom_line(mapping= aes(y=med_2000)) + 
   scale_y_continuous(expression(paste("Daily Median 2000 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
-                     sec.axis = sec_axis(~ . -90, name = "Daily Median Temperature (°C)")
+                     sec.axis = sec_axis(~ . -80, name = "Daily Median Temperature (°C)")
   )+
   geom_hline(yintercept = 100, col= "black")+
   theme_bw()+
   scale_x_date(limits= as.Date(c("2022-07-07", "2024-11-03")))+
   labs(x= "Date (UTC)")
 
-OL_500_dailyTemps_Plot/OL_1000_dailyTemps_Plot/OL_2000_dailyTemps_Plot+ plot_layout(axis_titles = "collect", guides= "collect")
+DBOL_500_dailyTemps_Plot/DBOL_1000_dailyTemps_Plot/DBOL_2000_dailyTemps_Plot+ plot_layout(axis_titles = "collect", guides= "collect")
+
+
+
+#ES01 temps
+ES01_temps$Date <- as.POSIXct(ES01_temps$Date, format = "%Y-%m-%d")
+ES01_temps$UTC_fixed <- droplevels(cut(ES01_temps$Datetime_UTC, breaks= "hour"))
+ES01_temps$UTC_fixed <- as.POSIXct(ES01_temps$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+ES01_OL <- ES01_OL %>%
+  full_join(ES01_temps)
+ES01_OLTemps <- ES01_OL %>%
+  select(UTC_fixed, Datetime_UTC, OL_500, OL_1000, OL_2000, Internal_temp_C, PLATFORM)
+
+ES01_OLTemps$UTC <- droplevels(cut(ES01_OLTemps$UTC_fixed, breaks= "day"))
+ES01_OLtemps_daily <- ES01_OLTemps %>% 
+  group_by(UTC) %>% 
+  dplyr::summarize(med_500 = median(OL_500, na.rm=TRUE), med_1000= median(OL_1000, na.rm= TRUE), med_2000= median(OL_2000, na.rm= TRUE), med_temp= median(Internal_temp_C, na.rm= TRUE))
+
+ES01_OLtemps_daily$UTC <- as.Date(ES01_OLtemps_daily$UTC, format= "%Y-%m-%d")
+
+ESOL_500_dailyTemps_Plot = ggplot(data = ES01_OLtemps_daily, mapping = aes(x =UTC)) + 
+  geom_line(mapping = aes(y = med_temp+80), color="pink", size=1)+
+  geom_line(mapping= aes(y=med_500)) + 
+  scale_y_continuous(expression(paste("Daily Median 500 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
+                     sec.axis = sec_axis(~ . -80, name = "Daily Median Temperature (°C)")
+  )+
+  geom_hline(yintercept = 100, col= "black")+
+  theme_bw()+
+  scale_x_date(limits= as.Date(c("2023-10-13", "2024-09-29")))+
+  labs(title= "ES01",
+       x= "Date (UTC)")
+
+ESOL_1000_dailyTemps_Plot = ggplot(data = ES01_OLtemps_daily, mapping = aes(x =UTC)) + 
+  geom_line(mapping = aes(y = med_temp+80), color="pink", size=1)+
+  geom_line(mapping= aes(y=med_1000)) + 
+  scale_y_continuous(expression(paste("Daily Median 1000 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
+                     sec.axis = sec_axis(~ . -80, name = "Daily Median Temperature (°C)")
+  )+
+  geom_hline(yintercept = 100, col= "black")+
+  theme_bw()+
+  scale_x_date(limits= as.Date(c("2023-10-13", "2024-09-29")))+
+  labs(x= "Date (UTC)")
+
+ESOL_2000_dailyTemps_Plot = ggplot(data = ES01_OLtemps_daily, mapping = aes(x =UTC)) + 
+  geom_line(mapping = aes(y = med_temp+80), color="pink", size=1)+
+  geom_line(mapping= aes(y=med_2000)) + 
+  scale_y_continuous(expression(paste("Daily Median 2000 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
+                     sec.axis = sec_axis(~ . -80, name = "Daily Median Temperature (°C)")
+  )+
+  geom_hline(yintercept = 100, col= "black")+
+  theme_bw()+
+  scale_x_date(limits= as.Date(c("2023-10-13", "2024-09-29")))+
+  labs(x= "Date (UTC)")
+
+ESOL_500_dailyTemps_Plot/ESOL_1000_dailyTemps_Plot/ESOL_2000_dailyTemps_Plot+ plot_layout(axis_titles = "collect", guides= "collect")
+
+#CB01 temps
+
+CB01_temps$Date <- as.POSIXct(CB01_temps$Date, format = "%Y-%m-%d")
+CB01_temps$UTC_fixed <- droplevels(cut(CB01_temps$Datetime_UTC, breaks= "hour"))
+CB01_temps$UTC_fixed <- as.POSIXct(CB01_temps$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+CB01_OL <- CB01_OL %>%
+  full_join(CB01_temps)
+CB01_OLTemps <- CB01_OL %>%
+  select(UTC_fixed, Datetime_UTC, OL_500, OL_1000, OL_2000, Internal_temp_C, PLATFORM)
+
+CB01_OLTemps$UTC <- droplevels(cut(CB01_OLTemps$UTC_fixed, breaks= "day"))
+CB01_OLtemps_daily <- CB01_OLTemps %>% 
+  group_by(UTC) %>% 
+  dplyr::summarize(med_500 = median(OL_500, na.rm=TRUE), med_1000= median(OL_1000, na.rm= TRUE), med_2000= median(OL_2000, na.rm= TRUE), med_temp= median(Internal_temp_C, na.rm= TRUE))
+
+CB01_OLtemps_daily$UTC <- as.Date(CB01_OLtemps_daily$UTC, format= "%Y-%m-%d")
+
+CBOL_500_dailyTemps_Plot = ggplot(data = CB01_OLtemps_daily, mapping = aes(x =UTC)) + 
+  geom_line(mapping = aes(y = med_temp+80), color="pink", size=1)+
+  geom_line(mapping= aes(y=med_500)) + 
+  scale_y_continuous(expression(paste("Daily Median 500 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
+                     sec.axis = sec_axis(~ . -80, name = "Daily Median Temperature (°C)")
+  )+
+  geom_hline(yintercept = 100, col= "black")+
+  theme_bw()+
+  scale_x_date(limits= as.Date(c("2022-06-10", "2024-11-07")))+
+  labs(title= "CB01",
+       x= "Date (UTC)")
+
+CBOL_1000_dailyTemps_Plot = ggplot(data = CB01_OLtemps_daily, mapping = aes(x =UTC)) + 
+  geom_line(mapping = aes(y = med_temp+80), color="pink", size=1)+
+  geom_line(mapping= aes(y=med_1000)) + 
+  scale_y_continuous(expression(paste("Daily Median 1000 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
+                     sec.axis = sec_axis(~ . -80, name = "Daily Median Temperature (°C)")
+  )+
+  geom_hline(yintercept = 100, col= "black")+
+  theme_bw()+
+  scale_x_date(limits= as.Date(c("2022-06-10", "2024-11-07")))+
+  labs(x= "Date (UTC)")
+
+CBOL_2000_dailyTemps_Plot = ggplot(data = CB01_OLtemps_daily, mapping = aes(x =UTC)) + 
+  geom_line(mapping = aes(y = med_temp+80), color="pink", size=1)+
+  geom_line(mapping= aes(y=med_2000)) + 
+  scale_y_continuous(expression(paste("Daily Median 2000 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
+                     sec.axis = sec_axis(~ . -80, name = "Daily Median Temperature (°C)")
+  )+
+  geom_hline(yintercept = 100, col= "black")+
+  theme_bw()+
+  scale_x_date(limits= as.Date(c("2022-06-10", "2024-11-07")))+
+  labs(x= "Date (UTC)")
+
+CBOL_500_dailyTemps_Plot/CBOL_1000_dailyTemps_Plot/CBOL_2000_dailyTemps_Plot+ plot_layout(axis_titles = "collect", guides= "collect")
 
 
 ```
@@ -1138,26 +1254,135 @@ DB01_2000Hz <- ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_ti
 
 DB01_500Hz/DB01_1000Hz/DB01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
 
-#ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_500, color= sun_time, ))+
-  geom_line(linewidth = 0.75)+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
-  theme_bw()+
-  xlab("Date")+
-  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
-  scale_color_manual(values= c("#00308790", "#B7130090"))
-
-
-#ggplot(DB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color=sun_time, q=0.01))+
-  geom_line()+
-  theme_bw()+
-  xlab("Date")+
-  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
-  scale_color_manual(values= c("#00308790", "#B7130090"))+
-  scale_fill_manual(values= c("#00308790", "#B7130090"))
   
 #plot(DB01_500Hz)
 
 #runSoundscapeExplorer(ES01_suntimes)
+  
+#ES01  
+ES01_location <- matrix(c(-75.29, 37.69), nrow = 1)
+ES01_date_Time <- seq(ymd_hms("2023-10-13 00:00:00"), ymd_hms("2024-09-29 18:00:00"), by = "1 hour")
+
+ES01Sunrise <- sunriset(crds = ES01_location, dateTime = ES01_date_Time, direction = "sunrise", POSIXct.out = TRUE)
+ES01sunrise_datehour <- ES01Sunrise %>%
+  mutate(UTC_date = date(time))%>%
+  mutate(sunrise_UTC_hour = hour(time))
+
+ES01sunrise_datehour <- ES01sunrise_datehour %>%
+  group_by(UTC_date, sunrise_UTC_hour)%>%
+  summarize(n = n())
+ES01sunrise_datehour$sunrise_UTC_hour <- as.character(ES01sunrise_datehour$sunrise_UTC_hour)
+ES01sunrise_datehour$UTC_date <- as.character(ES01sunrise_datehour$UTC_date)
+ES01sunrise_datehour <- ES01sunrise_datehour[-c(3)]
+ES01sunrise_datehour$UTC_fixed <- paste(ES01sunrise_datehour$UTC_date, ES01sunrise_datehour$sunrise_UTC_hour, sep = " ")
+ES01sunrise_datehour$UTC_fixed = as.POSIXct(ES01sunrise_datehour$UTC_fixed, format = "%Y-%m-%d %H")
+
+
+ES01_sunrise <- ES01_OL %>%
+  right_join(ES01sunrise_datehour, join_by(UTC_fixed))
+
+ES01_sunset$sun_time = "Sunset"
+ES01_sunrise$sun_time = "Sunrise"
+ES01_suntimes <- ES01_sunrise %>%
+  full_join(ES01_sunset)  
+  
+ES01_500Hz <- ggplot(ES01_suntimes, aes(x= UTC_fixed, y= OL_500, color= sun_time))+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 500Hz OL SPL (db re 1 \u00b5Pa)')))+
+  geom_hline(yintercept = 100, col= "black")+
+  scale_color_manual(values= c("#00308790", "#B7130090"))+
+  ggtitle("ES01")+
+  theme(legend.title= element_blank())+
+  ylim(72, 135)
+ES01_1000Hz <- ggplot(ES01_suntimes, aes(x= UTC_fixed, y= OL_1000, color= sun_time))+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 1000Hz OL SPL (db re 1 \u00b5Pa)')))+
+  geom_hline(yintercept = 100, col= "black")+
+  scale_color_manual(values= c("#00308790", "#B7130090"))+
+  theme(legend.title= element_blank())+
+  ylim(72, 135)
+ES01_2000Hz <- ggplot(ES01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_time))+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 2000Hz OL SPL (db re 1 \u00b5Pa)')))+
+  geom_hline(yintercept = 100, col= "black")+
+  scale_color_manual(values= c("#00308790", "#B7130090"))+
+  theme(legend.title= element_blank())+
+  ylim(72, 135)
+
+ES01_500Hz/ES01_1000Hz/ES01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
+
+
+#CB01
+CB01_location <- matrix(c(-75.67, 36.98), nrow = 1)
+CB01_date_Time <- seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2024-11-08 16:00:00"), by = "1 hour")
+
+CB01Sunrise <- sunriset(crds = CB01_location, dateTime = CB01_date_Time, direction = "sunrise", POSIXct.out = TRUE)
+CB01sunrise_datehour <- CB01Sunrise %>%
+  mutate(UTC_date = date(time))%>%
+  mutate(sunrise_UTC_hour = hour(time))
+
+CB01sunrise_datehour <- CB01sunrise_datehour %>%
+  group_by(UTC_date, sunrise_UTC_hour)%>%
+  summarize(n = n())
+CB01sunrise_datehour$sunrise_UTC_hour <- as.character(CB01sunrise_datehour$sunrise_UTC_hour)
+CB01sunrise_datehour$UTC_date <- as.character(CB01sunrise_datehour$UTC_date)
+CB01sunrise_datehour <- CB01sunrise_datehour[-c(3)]
+CB01sunrise_datehour$UTC_fixed <- paste(CB01sunrise_datehour$UTC_date, CB01sunrise_datehour$sunrise_UTC_hour, sep = " ")
+CB01sunrise_datehour$UTC_fixed = as.POSIXct(CB01sunrise_datehour$UTC_fixed, format = "%Y-%m-%d %H")
+
+
+CB01_sunrise <- CB01_OL %>%
+  right_join(CB01sunrise_datehour, join_by(UTC_fixed))
+
+CB01_sunset$sun_time = "Sunset"
+CB01_sunrise$sun_time = "Sunrise"
+CB01_suntimes <- CB01_sunrise %>%
+  full_join(CB01_sunset)  
+  
+CB01_500Hz <- ggplot(CB01_suntimes, aes(x= UTC_fixed, y= OL_500, color= sun_time))+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 500Hz OL SPL (db re 1 \u00b5Pa)')))+
+  geom_hline(yintercept = 100, col= "black")+
+  scale_color_manual(values= c("#00308790", "#B7130090"))+
+  ggtitle("CB01")+
+  theme(legend.title= element_blank())+
+  ylim(72, 135)
+CB01_1000Hz <- ggplot(CB01_suntimes, aes(x= UTC_fixed, y= OL_1000, color= sun_time))+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 1000Hz OL SPL (db re 1 \u00b5Pa)')))+
+  geom_hline(yintercept = 100, col= "black")+
+  scale_color_manual(values= c("#00308790", "#B7130090"))+
+  theme(legend.title= element_blank())+
+  ylim(72, 135)
+CB01_2000Hz <- ggplot(CB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_time))+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 2000Hz OL SPL (db re 1 \u00b5Pa)')))+
+  geom_hline(yintercept = 100, col= "black")+
+  scale_color_manual(values= c("#00308790", "#B7130090"))+
+  theme(legend.title= element_blank())+
+  ylim(72, 135)
+
+CB01_500Hz/CB01_1000Hz/CB01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
+
+
 ```
 #ES01
 ```{r}
