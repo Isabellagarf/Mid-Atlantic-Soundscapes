@@ -283,7 +283,7 @@ all_sites$PLATFORM = factor(all_sites$PLATFORM,
                                         levels= c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'),
                                         labels= c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))
 
-plotPSD(x=all_sites, style='quantile', q=0.01, dbRange= c(30, 105),facet='PLATFORM', ncol = 3)+
+plotPSD(x=all_sites, style='quantile', q=0.01, dbRange= c(30, 120),facet='PLATFORM', ncol = 3)+
 #  facet_grid(factor('PLATFORM', levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03')))+
   theme_bw()+
   labs(y= (expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz"))))
