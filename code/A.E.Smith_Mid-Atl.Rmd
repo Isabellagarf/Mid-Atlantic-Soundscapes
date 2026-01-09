@@ -42,6 +42,9 @@ library(wesanderson)
 library(openair)
 library(reshape2)
 library(fishualize)
+library(gghighlight)
+library(ggrepel)
+
 ```
 
 # loading full HMD files per site
@@ -993,14 +996,20 @@ Env500OL_plot = ggplot(data = DB01_envData_daily, mapping = aes(x =UTC)) +
   scale_color_manual(NULL, values= "pink")+
   geom_line(mapping= aes(y=med_500)) + 
   scale_y_continuous(expression(paste("Daily Median 500 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
-                     sec.axis = sec_axis(~ . -90, name = "Daily Median Temperature (°C)")
-  )+geom_hline(yintercept = 100, col= "black")+
+                     sec.axis = sec_axis(~ . -90, name = "Daily Median Temperature (°C)"))+
+  geom_hline(yintercept = 100, col= "black")+
+  stat_peaks(mapping= aes(x= UTC, y= med_500),
+             color= "red",
+             geom = "point",
+             span= 5,
+             global.threshold = I(107.5))+
   theme_bw()+
   theme(panel.grid = element_blank())+
   scale_x_date(limits= as.Date(c("2022-07-07", "2024-11-03")))+
   labs(title= "DB01",
        x= "Date (UTC)")+
-  guides(fill= guide_legend(title= "Moon Phase"))
+  guides(fill= guide_legend(title= "Moon Phase"))#+
+  geom_text_repel(aes(x = UTC, y = med_500, label = label))
 
 plot(Env500OL_plot)
 
@@ -1013,6 +1022,11 @@ Env1000OL_plot = ggplot(data = DB01_envData_daily, mapping = aes(x =UTC)) +
   scale_y_continuous(expression(paste("Daily Median 1000 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
                      sec.axis = sec_axis(~ . -90, name = "Daily Median Temperature (°C)")
   )+geom_hline(yintercept = 100, col= "black")+
+  stat_peaks(mapping= aes(x= UTC, y= med_1000),
+             color= "red",
+             geom = "point",
+             span= 5,
+             global.threshold = I(107.5))+
   theme_bw()+
   theme(panel.grid = element_blank())+
   scale_x_date(limits= as.Date(c("2022-07-07", "2024-11-03")))+
@@ -1028,6 +1042,11 @@ Env2000OL_plot = ggplot(data = DB01_envData_daily, mapping = aes(x =UTC)) +
   scale_y_continuous(expression(paste("Daily Median 2000 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
                      sec.axis = sec_axis(~ . -90, name = "Daily Median Temperature (°C)")
   )+geom_hline(yintercept = 100, col= "black")+
+  stat_peaks(mapping= aes(x= UTC, y= med_2000),
+             color= "red",
+             geom = "point",
+             span= 5,
+             global.threshold = I(107.5))+
   theme_bw()+
   theme(panel.grid = element_blank())+
   scale_x_date(limits= as.Date(c("2022-07-07", "2024-11-03")))+
@@ -1952,6 +1971,85 @@ all_BB <- createOctaveLevel(all_sites, type= 'bb', freqRange= c(20, 23961), norm
 ggplot(all_BB, aes(x= UTC, y =`BB_20-23961`))+
   geom_line()+
   facet_wrap(factor(PLATFORM, levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))~., ncol= 3)+
+  theme_bw()
+
+#peaks on SPL
+local_maximas <- DB01_envData_daily[which(diff(sign(diff(DB01_envData_daily$med_500)))==-2)+1,]
+top2 <- tail(local_maximas[order(local_maximas$med_500),],2)
+DB01_envData_daily$label <- ifelse(DB01_envData_daily$UTC %in% top2$UTC, DB01_envData_daily$UTC, NA)
+DB01_envData_daily$label <- as.Date(DB01_envData_daily$label, format= "%Y-%m-%d", tz = "GMT")
+
+
+#temps combo
+DB01_temps$site <- "DB01"
+ES01_temps$site <- "ES01"
+CB01_temps$site <- "CB01"
+all_site_temps <- DB01_temps %>%
+  full_join(ES01_temps) %>%
+  full_join(CB01_temps)
+
+all_site_temps$site = factor(all_site_temps$site,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                        labels= c('DB01', 'ES01', 'CB01'))
+
+ggplot(all_site_temps, aes(x= UTC_fixed, y= Internal_temp_C, color= site))+
+  geom_line()+
+  theme_bw()+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  ggtitle("Inshore site temperatures")+
+  theme(legend.title= element_blank())+
+  xlab("Date")+
+  ylab("Daily Median Temperature (°C)")
+  
+boxplot(Internal_temp_C ~ site, data = all_site_temps, xlab= "Site", ylab= "Temp")
+kruskal.test(Internal_temp_C ~ site, data = all_site_temps)
+
+```
+#stats
+```{r}
+#two-way anova
+  #does SPL vary based on OL and time of day?
+
+ES01_diel_shapiro <- ES01_suntimes %>%
+  group_by(sun_time) %>%
+  summarise(p.value= shapiro.test(OL_2000)$p.value)
+print(ES01_diel_shapiro) #failed normality (p-values less than 0.05)
+leveneTest(ES01_suntimes$OL_2000, ES01_suntimes$sun_time) #failed equal variances (p-value less than 0.001)
+
+kruskal.test(OL_2000 ~ sun_time, data = ES01_suntimes)
+boxplot(OL_500 ~ sun_time, data = ES01_suntimes, xlab= "Time of day", ylab= "OL SPL")
+
+#all sites combined
+
+all_suntimes <- DB01_suntimes %>%
+  full_join(ES01_suntimes)%>%
+  full_join(CB01_suntimes)
+all_suntimes <- all_suntimes %>%
+  drop_na(PLATFORM)
+
+ggline(all_suntimes, x= "PLATFORM", y= "OL_1000", color= "sun_time",
+       add= c("mean_se"))
+
+#Do SPL vary based on site and temperature?
+
+all_OLTemps <- DB01_OLTemps %>%
+  full_join(ES01_OLTemps)%>%
+  full_join(CB01_OLTemps)
+
+
+all_OLTemps <- all_OLTemps %>%
+  drop_na(PLATFORM)
+
+cor.test(DB01_OLTemps$OL_1000, DB01_OLTemps$Internal_temp_C, method= "kendall")
+
+ggplot(all_OLTemps, aes(x = Internal_temp_C, y = OL_1000, group= PLATFORM, color= PLATFORM))+
+  geom_point() +
+  geom_smooth(method='glm', level= 0.90)+
+  stat_poly_eq(formula = y ~ x, 
+               aes(label = paste(..eq.label.., ..rr.label.., ..p.value.label.., sep = "*`,`~")), 
+               parse = TRUE,
+               label.x = "right",
+               vstep = 0.05)+
   theme_bw()
 
 ```
