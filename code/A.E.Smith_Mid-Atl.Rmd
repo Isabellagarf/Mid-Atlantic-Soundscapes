@@ -821,37 +821,40 @@ DB01_OLtemps_daily$UTC <- as.Date(DB01_OLtemps_daily$UTC, format= "%Y-%m-%d")
 
 
 DBOL_500_dailyTemps_Plot = ggplot(data = DB01_OLtemps_daily, mapping = aes(x =UTC)) + 
-  geom_line(mapping = aes(y = med_temp+80), color="pink", size=1)+
+  geom_line(mapping = aes(y = med_temp+92), color="pink", size=1)+
   geom_line(mapping= aes(y=med_500)) + 
   scale_y_continuous(expression(paste("Daily Median 500 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
-                     sec.axis = sec_axis(~ . -80, name = "Daily Median Temperature (°C)")
+                     sec.axis = sec_axis(~ . -92, name = "Daily Median Temperature (°C)")
   )+
   geom_hline(yintercept = 100, col= "black")+
+  geom_hline(yintercept= 107, col= "pink", size= .75)+
   theme_bw()+
-  scale_x_date(limits= as.Date(c("2022-07-07", "2024-11-03")))+
+  scale_x_date(limits= as.Date(c("2022-06-10", "2024-11-07")))+
   labs(title= "DB01",
        x= "Date (UTC)")
 
 DBOL_1000_dailyTemps_Plot = ggplot(data = DB01_OLtemps_daily, mapping = aes(x =UTC)) + 
-  geom_line(mapping = aes(y = med_temp+80), color="pink", size=1)+
+  geom_line(mapping = aes(y = med_temp+88), color="pink", size=1)+
   geom_line(mapping= aes(y=med_1000)) + 
   scale_y_continuous(expression(paste("Daily Median 1000 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
-                     sec.axis = sec_axis(~ . -80, name = "Daily Median Temperature (°C)")
+                     sec.axis = sec_axis(~ . -88, name = "Daily Median Temperature (°C)")
   )+
   geom_hline(yintercept = 100, col= "black")+
+  geom_hline(yintercept= 103, col= "pink", size= .75)+
   theme_bw()+
-  scale_x_date(limits= as.Date(c("2022-07-07", "2024-11-03")))+
+  scale_x_date(limits= as.Date(c("2022-06-10", "2024-11-07")))+
   labs(x= "Date (UTC)")
 
 DBOL_2000_dailyTemps_Plot = ggplot(data = DB01_OLtemps_daily, mapping = aes(x =UTC)) + 
-  geom_line(mapping = aes(y = med_temp+80), color="pink", size=1)+
+  geom_line(mapping = aes(y = med_temp+94), color="pink", size=1)+
   geom_line(mapping= aes(y=med_2000)) + 
   scale_y_continuous(expression(paste("Daily Median 2000 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
-                     sec.axis = sec_axis(~ . -80, name = "Daily Median Temperature (°C)")
+                     sec.axis = sec_axis(~ . -94, name = "Daily Median Temperature (°C)")
   )+
   geom_hline(yintercept = 100, col= "black")+
+  geom_hline(yintercept= 109, col= "pink", size= .75)+
   theme_bw()+
-  scale_x_date(limits= as.Date(c("2022-07-07", "2024-11-03")))+
+  scale_x_date(limits= as.Date(c("2022-06-10", "2024-11-07")))+
   labs(x= "Date (UTC)")
 
 DBOL_500_dailyTemps_Plot/DBOL_1000_dailyTemps_Plot/DBOL_2000_dailyTemps_Plot+ plot_layout(axis_titles = "collect", guides= "collect")
@@ -875,37 +878,37 @@ ES01_OLtemps_daily <- ES01_OLTemps %>%
 ES01_OLtemps_daily$UTC <- as.Date(ES01_OLtemps_daily$UTC, format= "%Y-%m-%d")
 
 ESOL_500_dailyTemps_Plot = ggplot(data = ES01_OLtemps_daily, mapping = aes(x =UTC)) + 
-  geom_line(mapping = aes(y = med_temp+80), color="pink", size=1)+
+  geom_line(mapping = aes(y = med_temp+94), color="orange", size=1)+
   geom_line(mapping= aes(y=med_500)) + 
   scale_y_continuous(expression(paste("Daily Median 500 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
-                     sec.axis = sec_axis(~ . -80, name = "Daily Median Temperature (°C)")
+                     sec.axis = sec_axis(~ . -94, name = "Daily Median Temperature (°C)")
   )+
   geom_hline(yintercept = 100, col= "black")+
   theme_bw()+
-  scale_x_date(limits= as.Date(c("2023-10-13", "2024-09-29")))+
+  scale_x_date(limits= as.Date(c("2022-06-10", "2024-11-07")))+
   labs(title= "ES01",
        x= "Date (UTC)")
 
 ESOL_1000_dailyTemps_Plot = ggplot(data = ES01_OLtemps_daily, mapping = aes(x =UTC)) + 
-  geom_line(mapping = aes(y = med_temp+80), color="pink", size=1)+
+  geom_line(mapping = aes(y = med_temp+91), color="orange", size=1)+
   geom_line(mapping= aes(y=med_1000)) + 
   scale_y_continuous(expression(paste("Daily Median 1000 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
-                     sec.axis = sec_axis(~ . -80, name = "Daily Median Temperature (°C)")
+                     sec.axis = sec_axis(~ . -91, name = "Daily Median Temperature (°C)")
   )+
   geom_hline(yintercept = 100, col= "black")+
   theme_bw()+
-  scale_x_date(limits= as.Date(c("2023-10-13", "2024-09-29")))+
+  scale_x_date(limits= as.Date(c("2022-06-10", "2024-11-07")))+
   labs(x= "Date (UTC)")
 
 ESOL_2000_dailyTemps_Plot = ggplot(data = ES01_OLtemps_daily, mapping = aes(x =UTC)) + 
-  geom_line(mapping = aes(y = med_temp+80), color="pink", size=1)+
+  geom_line(mapping = aes(y = med_temp+90), color="orange", size=1)+
   geom_line(mapping= aes(y=med_2000)) + 
   scale_y_continuous(expression(paste("Daily Median 2000 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
-                     sec.axis = sec_axis(~ . -80, name = "Daily Median Temperature (°C)")
+                     sec.axis = sec_axis(~ . -90, name = "Daily Median Temperature (°C)")
   )+
   geom_hline(yintercept = 100, col= "black")+
   theme_bw()+
-  scale_x_date(limits= as.Date(c("2023-10-13", "2024-09-29")))+
+  scale_x_date(limits= as.Date(c("2022-06-10", "2024-11-07")))+
   labs(x= "Date (UTC)")
 
 ESOL_500_dailyTemps_Plot/ESOL_1000_dailyTemps_Plot/ESOL_2000_dailyTemps_Plot+ plot_layout(axis_titles = "collect", guides= "collect")
@@ -928,10 +931,10 @@ CB01_OLtemps_daily <- CB01_OLTemps %>%
 CB01_OLtemps_daily$UTC <- as.Date(CB01_OLtemps_daily$UTC, format= "%Y-%m-%d")
 
 CBOL_500_dailyTemps_Plot = ggplot(data = CB01_OLtemps_daily, mapping = aes(x =UTC)) + 
-  geom_line(mapping = aes(y = med_temp+80), color="pink", size=1)+
+  geom_line(mapping = aes(y = med_temp+96), color="purple", size=1, alpha= 0.5)+
   geom_line(mapping= aes(y=med_500)) + 
   scale_y_continuous(expression(paste("Daily Median 500 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
-                     sec.axis = sec_axis(~ . -80, name = "Daily Median Temperature (°C)")
+                     sec.axis = sec_axis(~ . -96, name = "Daily Median Temperature (°C)")
   )+
   geom_hline(yintercept = 100, col= "black")+
   theme_bw()+
@@ -940,10 +943,10 @@ CBOL_500_dailyTemps_Plot = ggplot(data = CB01_OLtemps_daily, mapping = aes(x =UT
        x= "Date (UTC)")
 
 CBOL_1000_dailyTemps_Plot = ggplot(data = CB01_OLtemps_daily, mapping = aes(x =UTC)) + 
-  geom_line(mapping = aes(y = med_temp+80), color="pink", size=1)+
+  geom_line(mapping = aes(y = med_temp+90), color="purple", size=1, alpha= 0.5)+
   geom_line(mapping= aes(y=med_1000)) + 
   scale_y_continuous(expression(paste("Daily Median 1000 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
-                     sec.axis = sec_axis(~ . -80, name = "Daily Median Temperature (°C)")
+                     sec.axis = sec_axis(~ . -90, name = "Daily Median Temperature (°C)")
   )+
   geom_hline(yintercept = 100, col= "black")+
   theme_bw()+
@@ -951,10 +954,10 @@ CBOL_1000_dailyTemps_Plot = ggplot(data = CB01_OLtemps_daily, mapping = aes(x =U
   labs(x= "Date (UTC)")
 
 CBOL_2000_dailyTemps_Plot = ggplot(data = CB01_OLtemps_daily, mapping = aes(x =UTC)) + 
-  geom_line(mapping = aes(y = med_temp+80), color="pink", size=1)+
+  geom_line(mapping = aes(y = med_temp+90), color="purple", size=1, alpha= 0.5)+
   geom_line(mapping= aes(y=med_2000)) + 
   scale_y_continuous(expression(paste("Daily Median 2000 Hz OL SPL (dB re \u00b5Pa" ^ "2", "/Hz)")), 
-                     sec.axis = sec_axis(~ . -80, name = "Daily Median Temperature (°C)")
+                     sec.axis = sec_axis(~ . -90, name = "Daily Median Temperature (°C)")
   )+
   geom_hline(yintercept = 100, col= "black")+
   theme_bw()+
@@ -963,7 +966,12 @@ CBOL_2000_dailyTemps_Plot = ggplot(data = CB01_OLtemps_daily, mapping = aes(x =U
 
 CBOL_500_dailyTemps_Plot/CBOL_1000_dailyTemps_Plot/CBOL_2000_dailyTemps_Plot+ plot_layout(axis_titles = "collect", guides= "collect")
 
+#OL grouping
+DBOL_500_dailyTemps_Plot/ESOL_500_dailyTemps_Plot/CBOL_500_dailyTemps_Plot+ plot_layout(axis_titles = "collect", guides= "collect")
 
+DBOL_1000_dailyTemps_Plot/ESOL_1000_dailyTemps_Plot/CBOL_1000_dailyTemps_Plot+ plot_layout(axis_titles = "collect", guides= "collect")
+
+DBOL_2000_dailyTemps_Plot/ESOL_2000_dailyTemps_Plot/CBOL_2000_dailyTemps_Plot+ plot_layout(axis_titles = "collect", guides= "collect")
 ```
 #moon phases
 ```{r}
@@ -2001,8 +2009,51 @@ ggplot(all_site_temps, aes(x= UTC_fixed, y= Internal_temp_C, color= site))+
   xlab("Date")+
   ylab("Daily Median Temperature (°C)")
   
-boxplot(Internal_temp_C ~ site, data = all_site_temps, xlab= "Site", ylab= "Temp")
+all_site_temps$month <- month(all_site_temps$UTC_fixed) ##this dataframe is in the OL files combining "inshore/offshore grouping" section
+
+all_site_temps$season = case_when(all_site_temps$month == 1 ~ "winter",
+                            all_site_temps$month == 2 ~ "winter",
+                            all_site_temps$month == 3 ~ "spring",
+                            all_site_temps$month == 4 ~ "spring",
+                            all_site_temps$month == 5 ~ "spring",
+                            all_site_temps$month == 6 ~ "summer",
+                            all_site_temps$month == 7 ~ "summer",
+                            all_site_temps$month == 8 ~ "summer",
+                            all_site_temps$month == 9 ~ "fall",
+                            all_site_temps$month == 10 ~ "fall",
+                            all_site_temps$month == 11 ~ "fall",
+                            all_site_temps$month == 12 ~ "winter")
+boxplot(Internal_temp_C ~ season, data = all_site_temps, xlab= "Site", ylab= "Temp")
 kruskal.test(Internal_temp_C ~ site, data = all_site_temps)
+
+
+get_box_stats <- function(y, upper_limit = max(all_site_temps$Internal_temp_C) * 1.15) {
+  return(data.frame(
+    y = 0.95 * upper_limit,
+    label = paste(
+      "Count =", length(y), "\n"
+    )
+  ))
+}
+all_site_temps <- all_site_temps %>%
+  drop_na(season)
+
+ggplot(data = all_site_temps,
+       aes(x= season, y= Internal_temp_C, fill= season))+
+  stat_boxplot(geom = "errorbar", width = 0.6)+
+  geom_boxplot(width = 0.9)+
+  stat_summary(fun.data = get_box_stats, geom = "text", hjust = 0.5, vjust = 0.5)+
+  labs(x= "Site",
+       y= expression(paste("Temp")))+
+ # scale_x_discrete(labels = c("Winter", "Spring", "Summer", "Fall"))+
+  #scale_fill_manual(values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
+  theme_bw()+
+  facet_wrap(~site)+
+  theme(axis.title= element_text(size= 12),
+        axis.text= element_text(size= 11),
+        legend.position= "none",
+        strip.text= element_text(size= 12)
+  )
 
 ```
 #stats
@@ -2032,24 +2083,158 @@ ggline(all_suntimes, x= "PLATFORM", y= "OL_1000", color= "sun_time",
 
 #Do SPL vary based on site and temperature?
 
-all_OLTemps <- DB01_OLTemps %>%
-  full_join(ES01_OLTemps)%>%
-  full_join(CB01_OLTemps)
 
+#cor.test(DB01_OLTemps$OL_1000, DB01_OLTemps$Internal_temp_C, method= "kendall")
 
-all_OLTemps <- all_OLTemps %>%
-  drop_na(PLATFORM)
+```
+#seasonal temp correlation
+```{r}
+DB01_OLtemps_daily$month <- month(DB01_OLtemps_daily$UTC) 
 
-cor.test(DB01_OLTemps$OL_1000, DB01_OLTemps$Internal_temp_C, method= "kendall")
+DB01_OLtemps_daily$season = case_when(DB01_OLtemps_daily$month == 1 ~ "winter",
+                            DB01_OLtemps_daily$month == 2 ~ "winter",
+                            DB01_OLtemps_daily$month == 3 ~ "spring",
+                            DB01_OLtemps_daily$month == 4 ~ "spring",
+                            DB01_OLtemps_daily$month == 5 ~ "spring",
+                            DB01_OLtemps_daily$month == 6 ~ "summer",
+                            DB01_OLtemps_daily$month == 7 ~ "summer",
+                            DB01_OLtemps_daily$month == 8 ~ "summer",
+                            DB01_OLtemps_daily$month == 9 ~ "fall",
+                            DB01_OLtemps_daily$month == 10 ~ "fall",
+                            DB01_OLtemps_daily$month == 11 ~ "fall",
+                            DB01_OLtemps_daily$month == 12 ~ "winter")
+DB01_OLtemps_daily <- DB01_OLtemps_daily %>%
+  drop_na(season)
+DB01_OLtemps_daily$season = factor(DB01_OLtemps_daily$season,
+                                        levels= c("winter", "spring", "summer", "fall"),
+                                        labels= c("Winter", "Spring", "Summer", "Fall"))
 
-ggplot(all_OLTemps, aes(x = Internal_temp_C, y = OL_1000, group= PLATFORM, color= PLATFORM))+
+ES01_OLtemps_daily$month <- month(ES01_OLtemps_daily$UTC) 
+ES01_OLtemps_daily$season = case_when(ES01_OLtemps_daily$month == 1 ~ "winter",
+                            ES01_OLtemps_daily$month == 2 ~ "winter",
+                            ES01_OLtemps_daily$month == 3 ~ "spring",
+                            ES01_OLtemps_daily$month == 4 ~ "spring",
+                            ES01_OLtemps_daily$month == 5 ~ "spring",
+                            ES01_OLtemps_daily$month == 6 ~ "summer",
+                            ES01_OLtemps_daily$month == 7 ~ "summer",
+                            ES01_OLtemps_daily$month == 8 ~ "summer",
+                            ES01_OLtemps_daily$month == 9 ~ "fall",
+                            ES01_OLtemps_daily$month == 10 ~ "fall",
+                            ES01_OLtemps_daily$month == 11 ~ "fall",
+                            ES01_OLtemps_daily$month == 12 ~ "winter")
+ES01_OLtemps_daily <- ES01_OLtemps_daily %>%
+  drop_na(season)
+ES01_OLtemps_daily$season = factor(ES01_OLtemps_daily$season,
+                                        levels= c("winter", "spring", "summer", "fall"),
+                                        labels= c("Winter", "Spring", "Summer", "Fall"))
+
+CB01_OLtemps_daily$month <- month(CB01_OLtemps_daily$UTC) 
+
+CB01_OLtemps_daily$season = case_when(CB01_OLtemps_daily$month == 1 ~ "winter",
+                            CB01_OLtemps_daily$month == 2 ~ "winter",
+                            CB01_OLtemps_daily$month == 3 ~ "spring",
+                            CB01_OLtemps_daily$month == 4 ~ "spring",
+                            CB01_OLtemps_daily$month == 5 ~ "spring",
+                            CB01_OLtemps_daily$month == 6 ~ "summer",
+                            CB01_OLtemps_daily$month == 7 ~ "summer",
+                            CB01_OLtemps_daily$month == 8 ~ "summer",
+                            CB01_OLtemps_daily$month == 9 ~ "fall",
+                            CB01_OLtemps_daily$month == 10 ~ "fall",
+                            CB01_OLtemps_daily$month == 11 ~ "fall",
+                            CB01_OLtemps_daily$month == 12 ~ "winter")
+CB01_OLtemps_daily <- CB01_OLtemps_daily %>%
+  drop_na(season)
+CB01_OLtemps_daily$season = factor(CB01_OLtemps_daily$season,
+                                        levels= c("winter", "spring", "summer", "fall"),
+                                        labels= c("Winter", "Spring", "Summer", "Fall"))
+
+DB01_OLtemps_daily$site <- "DB01"
+ES01_OLtemps_daily$site <- "ES01"
+CB01_OLtemps_daily$site <- "CB01"
+
+all_OLTemps <- DB01_OLtemps_daily %>%
+  full_join(ES01_OLtemps_daily)%>%
+  full_join(CB01_OLtemps_daily)
+
+all_OLTemps$site = factor(all_OLTemps$site,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                        labels= c('DB01', 'ES01', 'CB01'))
+
+#plotting
+
+Corr_OL500 <- ggplot(all_OLTemps, aes(x = med_temp, y = med_500, group= season, color= season))+
   geom_point() +
   geom_smooth(method='glm', level= 0.90)+
   stat_poly_eq(formula = y ~ x, 
                aes(label = paste(..eq.label.., ..rr.label.., ..p.value.label.., sep = "*`,`~")), 
                parse = TRUE,
-               label.x = "right",
+               label.x = "left",
                vstep = 0.05)+
-  theme_bw()
+  xlab("Median daily temperature (°C))")+
+  ylab(expression(paste('Median 500 Hz Octave Level SPL (dB re 1 \u00b5Pa)')))+
+  scale_color_manual(labels= c("Winter", "Spring", "Summer", "Fall"), values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
+  scale_fill_manual(values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
+  theme_bw()+
+  guides(color= guide_legend(title= "Season"))+
+  facet_wrap(~site)+
+  theme(axis.text= element_text(size= 12),
+        axis.title= element_text(size= 14),
+        legend.text = element_text(size= 13),
+        legend.title= element_text(size= 14),
+        panel.grid.minor = element_blank(),
+        panel.background= element_blank()
+)
+
+Corr_OL1000 <- ggplot(all_OLTemps, aes(x = med_temp, y = med_1000, group= season, color= season))+
+  geom_point() +
+  geom_smooth(method='glm', level= 0.90)+
+  stat_poly_eq(formula = y ~ x, 
+               aes(label = paste(..eq.label.., ..rr.label.., ..p.value.label.., sep = "*`,`~")), 
+               parse = TRUE,
+               label.x = "left",
+               vstep = 0.05)+
+  xlab("Median daily temperature (°C))")+
+  ylab(expression(paste('Median 1000 Hz Octave Level SPL (dB re 1 \u00b5Pa)')))+
+  scale_color_manual(labels= c("Winter", "Spring", "Summer", "Fall"), values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
+  scale_fill_manual(values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
+  theme_bw()+
+  guides(color= guide_legend(title= "Season"))+
+  facet_wrap(~site)+
+  theme(axis.text= element_text(size= 12),
+        axis.title= element_text(size= 14),
+        legend.text = element_text(size= 13),
+        legend.title= element_text(size= 14),
+        panel.grid.minor = element_blank(),
+        panel.background= element_blank()
+)
+
+Corr_OL2000 <- ggplot(all_OLTemps, aes(x = med_temp, y = med_2000, group= season, color= season))+
+  geom_point() +
+  geom_smooth(method='glm', level= 0.90)+
+  stat_poly_eq(formula = y ~ x, 
+               aes(label = paste(..eq.label.., ..rr.label.., ..p.value.label.., sep = "*`,`~")), 
+               parse = TRUE,
+               label.x = "left",
+               vstep = 0.05)+
+  xlab("Median daily temperature (°C))")+
+  ylab(expression(paste('Median 2000 Hz Octave Level SPL (dB re 1 \u00b5Pa)')))+
+  scale_color_manual(labels= c("Winter", "Spring", "Summer", "Fall"), values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
+  scale_fill_manual(values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
+  theme_bw()+
+  guides(color= guide_legend(title= "Season"))+
+  facet_wrap(~site)+
+  theme(axis.text= element_text(size= 12),
+        axis.title= element_text(size= 14),
+        legend.text = element_text(size= 13),
+        legend.title= element_text(size= 14),
+        panel.grid.minor = element_blank(),
+        panel.background= element_blank()
+)
+
+plot(corr_allOL)
+
+corr_allOL<- Corr_OL500/Corr_OL1000/Corr_OL2000+ plot_layout(axis_titles = "collect", guides= "collect")
+
+#ggsave(here("figs", "corr_allOL.png"), corr_allOL, width= 36, height= 18, units= "in")
 
 ```
