@@ -44,6 +44,8 @@ library(reshape2)
 library(fishualize)
 library(gghighlight)
 library(ggrepel)
+library(multcompView)
+SE<- function(x)sd(x)/sqrt(length(x))
 
 ```
 
@@ -1409,6 +1411,8 @@ CB01_2000Hz <- ggplot(CB01_suntimes, aes(x= UTC_fixed, y= OL_2000, color= sun_ti
 
 CB01_500Hz/CB01_1000Hz/CB01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
 
+#by groupings
+DB01_500Hz/ES01_500Hz/CB01_500Hz+plot_layout(guides = "collect", axis_titles = "collect")
 
 ```
 #ES01
@@ -2058,17 +2062,16 @@ ggplot(data = all_site_temps,
 ```
 #stats
 ```{r}
-#two-way anova
-  #does SPL vary based on OL and time of day?
+#two-sample ttest- change to whatever site and OL is needed
 
-ES01_diel_shapiro <- ES01_suntimes %>%
+CB01_diel_shapiro <- CB01_suntimes %>%
   group_by(sun_time) %>%
   summarise(p.value= shapiro.test(OL_2000)$p.value)
-print(ES01_diel_shapiro) #failed normality (p-values less than 0.05)
-leveneTest(ES01_suntimes$OL_2000, ES01_suntimes$sun_time) #failed equal variances (p-value less than 0.001)
+print(CB01_diel_shapiro) #failed normality (p-values less than 0.05)
+leveneTest(CB01_suntimes$OL_2000, CB01_suntimes$sun_time) #failed equal variances (p-value less than 0.001)
 
-kruskal.test(OL_2000 ~ sun_time, data = ES01_suntimes)
-boxplot(OL_500 ~ sun_time, data = ES01_suntimes, xlab= "Time of day", ylab= "OL SPL")
+wilcox.test(OL_2000 ~ sun_time, data = CB01_suntimes)
+boxplot(OL_2000 ~ sun_time, data = DB01_suntimes, xlab= "Time of day", ylab= "OL SPL")
 
 #all sites combined
 
@@ -2076,13 +2079,214 @@ all_suntimes <- DB01_suntimes %>%
   full_join(ES01_suntimes)%>%
   full_join(CB01_suntimes)
 all_suntimes <- all_suntimes %>%
-  drop_na(PLATFORM)
+  drop_na(PLATFORM, OL_500)
 
-ggline(all_suntimes, x= "PLATFORM", y= "OL_1000", color= "sun_time",
+#two way ANOVA for OL_500 (diff between site and suntime)
+all_diel_shapiro <- all_suntimes %>%
+  group_by(sun_time, PLATFORM) %>%
+  summarise(p.value= shapiro.test(OL_500)$p.value) #change to diff OL needed
+print(all_diel_shapiro)
+leveneTest(OL_500 ~sun_time*PLATFORM, data= all_suntimes)
+ANOVAmodel500 <- aov(OL_500 ~ sun_time*PLATFORM, data= all_suntimes)
+summary(ANOVAmodel500)
+ggline(all_suntimes, x= "PLATFORM", y= "OL_500", color= "sun_time",
        add= c("mean_se"))
 
-#Do SPL vary based on site and temperature?
+#if significant
+tukey_500 <- TukeyHSD(ANOVAmodel500)
+print(tukey_500)
+tukeyGroups500 <- multcompLetters4(ANOVAmodel500, tukey_500)
+print(tukeyGroups500)
 
+summary500 <- all_suntimes %>%
+  group_by(sun_time, PLATFORM) %>%
+  summarise(median= median(OL_500), SE= SE(OL_500))
+
+tableTukey500 <- as.data.frame.list(tukeyGroups500$'sun_time:PLATFORM')
+summary500$tukey_500 <- tableTukey500$Letters
+print(summary500)
+
+library(agricolae)
+
+sun500.summarized = all_suntimes %>% 
+  group_by(sun_time, PLATFORM) %>% 
+  summarize(MaxSPL=max(OL_500))
+
+ggplot(all_suntimes,aes(x=sun_time,y=OL_500))+
+  geom_boxplot()+
+  geom_text(data=sun500.summarized,aes(x=sun_time,y=1+MaxSPL, label=summary500$tukey_500),vjust=0)+
+  facet_wrap(~PLATFORM)
+
+#OL_1000
+all_diel_shapiro <- all_suntimes %>%
+  group_by(sun_time, PLATFORM) %>%
+  summarise(p.value= shapiro.test(OL_1000)$p.value) #change to diff OL needed
+print(all_diel_shapiro)
+leveneTest(OL_1000 ~sun_time*PLATFORM, data= all_suntimes)
+ANOVAmodel1000 <- aov(OL_1000 ~ sun_time*PLATFORM, data= all_suntimes)
+summary(ANOVAmodel1000)
+ggline(all_suntimes, x= "PLATFORM", y= "OL_1000", color= "sun_time",
+       add= c("mean_se"))
+#if significant
+tukey_1000 <- TukeyHSD(ANOVAmodel1000)
+print(tukey_1000)
+tukeyGroups1000 <- multcompLetters4(ANOVAmodel1000, tukey_1000)
+print(tukeyGroups1000)
+
+summary1000 <- all_suntimes %>%
+  group_by(sun_time, PLATFORM) %>%
+  summarise(median= median(OL_1000), SE= SE(OL_1000)) 
+
+tableTukey1000 <- as.data.frame.list(tukeyGroups1000$'sun_time:PLATFORM')
+summary1000$tukey_1000 <- tableTukey1000$Letters
+print(summary1000)
+
+sun1000.summarized = all_suntimes %>% 
+  group_by(sun_time, PLATFORM) %>% 
+  summarize(MaxSPL=max(OL_1000))
+
+ggplot(all_suntimes,aes(x=sun_time,y=OL_1000))+
+  geom_boxplot()+
+  geom_text(data=sun1000.summarized,aes(x=sun_time,y=1+MaxSPL, label=summary1000$tukey_1000),vjust=0)+
+  facet_wrap(~PLATFORM)
+
+#OL_2000
+all_diel_shapiro <- all_suntimes %>%
+  group_by(sun_time, PLATFORM) %>%
+  summarise(p.value= shapiro.test(OL_2000)$p.value) #change to diff OL needed
+print(all_diel_shapiro)
+leveneTest(OL_2000 ~sun_time*PLATFORM, data= all_suntimes)
+ANOVAmodel2000 <- aov(OL_2000 ~ sun_time*PLATFORM, data= all_suntimes)
+summary(ANOVAmodel2000)
+ggline(all_suntimes, x= "PLATFORM", y= "OL_2000", color= "sun_time",
+       add= c("mean_se"))
+#if significant
+tukey_2000 <- TukeyHSD(ANOVAmodel2000)
+print(tukey_2000)
+tukeyGroups2000 <- multcompLetters4(ANOVAmodel2000, tukey_2000)
+print(tukeyGroups2000)
+
+summary2000 <- all_suntimes %>%
+  group_by(sun_time, PLATFORM) %>%
+  summarise(median= median(OL_2000), SE= SE(OL_1000)) 
+
+tableTukey2000 <- as.data.frame.list(tukeyGroups2000$'sun_time:PLATFORM')
+summary2000$tukey_2000 <- tableTukey2000$Letters
+print(summary2000)
+
+sun2000.summarized = all_suntimes %>% 
+  group_by(sun_time, PLATFORM) %>% 
+  summarize(MaxSPL=max(OL_2000))
+
+ggplot(all_suntimes,aes(x=sun_time,y=OL_2000))+
+  geom_boxplot()+
+  geom_text(data=sun2000.summarized,aes(x=sun_time,y=1+MaxSPL, label=summary2000$tukey_2000),vjust=0)+
+  facet_wrap(~PLATFORM)
+
+
+#plots
+sun1000.summarized$PLATFORM = factor(sun1000.summarized$PLATFORM,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                        labels= c('DB01', 'ES01', 'CB01'))
+all_suntimes$PLATFORM = factor(all_suntimes$PLATFORM,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                        labels= c('DB01', 'ES01', 'CB01'))
+
+get_box_stats_suntimes500 <- function(y, upper_limit = max(all_suntimes$OL_500) * 1.15) {
+  return(data.frame(
+    y = 0.95 * upper_limit,
+    label = paste(
+      "Count =", length(y), "\n"
+    )
+  ))
+}
+
+
+
+suntimes_500 <- ggplot(data = all_suntimes,
+       aes(x= sun_time, y= OL_500, fill= sun_time))+
+  stat_boxplot(geom = "errorbar", width = 0.6)+
+  geom_boxplot(width = 0.9)+
+  geom_text(data=sun500.summarized,aes(x=sun_time,y=1+MaxSPL, label=summary500$tukey_500),vjust=0)+
+  stat_summary(fun.data = get_box_stats_suntimes500, geom = "text", hjust = 0.5, vjust = 0.5)+
+  labs(x= "Time of day",
+       y= expression(paste("500Hz OL SPL")))+
+  scale_x_discrete(labels = c("Sunrise", "Sunset"))+
+  scale_fill_manual(values= c("#5761C0", "#DB2207"))+
+  theme_bw()+
+  facet_wrap(~PLATFORM)+
+  theme(axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        axis.text.x= element_blank(),
+        axis.ticks.x= element_blank(),
+        legend.position= "none",
+        strip.text= element_text(size= 16)
+  )
+
+
+get_box_stats_suntimes1000 <- function(y, upper_limit = max(all_suntimes$OL_1000) * 1.15) {
+  return(data.frame(
+    y = 0.95 * upper_limit,
+    label = paste(
+      "Count =", length(y), "\n"
+    )
+  ))
+}
+
+
+
+suntimes_1000 <- ggplot(data = all_suntimes,
+       aes(x= sun_time, y= OL_1000, fill= sun_time))+
+  stat_boxplot(geom = "errorbar", width = 0.6)+
+  geom_boxplot(width = 0.9)+
+  stat_summary(fun.data = get_box_stats_suntimes1000, geom = "text", hjust = 0.5, vjust = 0.5)+
+  labs(x= "Time of day",
+       y= expression(paste("1000Hz OL SPL")))+
+  scale_x_discrete(labels = c("Sunrise", "Sunset"))+
+  scale_fill_manual(values= c("#5761C0", "#DB2207"))+
+  theme_bw()+
+  facet_wrap(~PLATFORM)+
+  theme(axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        axis.text.x= element_blank(),
+        axis.ticks.x= element_blank(),
+        legend.position= "none",
+        strip.text.x = element_blank(),
+        strip.background = element_blank())
+
+get_box_stats_suntimes2000 <- function(y, upper_limit = max(all_suntimes$OL_2000) * 1.15) {
+  return(data.frame(
+    y = 0.95 * upper_limit,
+    label = paste(
+      "Count =", length(y), "\n"
+    )
+  ))
+}
+
+suntimes_2000 <- ggplot(data = all_suntimes,
+       aes(x= sun_time, y= OL_2000, fill= sun_time))+
+  stat_boxplot(geom = "errorbar", width = 0.6)+
+  geom_boxplot(width = 0.9)+
+  stat_summary(fun.data = get_box_stats_suntimes2000, geom = "text")+
+  labs(x= "Time of day",
+       y= expression(paste("2000Hz OL SPL")))+
+  scale_x_discrete(labels = c("Sunrise", "Sunset"))+
+  scale_fill_manual(values= c("#5761C0", "#DB2207"))+
+  theme_bw()+
+  facet_wrap(~PLATFORM)+
+  theme(axis.title= element_text(size= 18),
+        axis.text= element_text(size= 16),
+        axis.ticks.x= element_blank(),
+        legend.position= "none",
+        strip.text.x = element_blank(),
+        strip.background = element_blank())
+  
+
+plot(suntimes_500)
+
+sun_AllBoxplots <- suntimes_500/suntimes_1000/suntimes_2000 +plot_layout(guides = "collect", axis_titles = "collect")
+
+#ggsave(here("figs", "sun_AllBoxplots.png"), sun_AllBoxplots, width= 48, height= 32, units= "in")
 
 #cor.test(DB01_OLTemps$OL_1000, DB01_OLTemps$Internal_temp_C, method= "kendall")
 
@@ -2236,5 +2440,8 @@ plot(corr_allOL)
 corr_allOL<- Corr_OL500/Corr_OL1000/Corr_OL2000+ plot_layout(axis_titles = "collect", guides= "collect")
 
 #ggsave(here("figs", "corr_allOL.png"), corr_allOL, width= 36, height= 18, units= "in")
+
+mlrmodel <- lm(med_2000 ~ med_temp+site, data = all_OLTemps)
+summary(mlrmodel)
 
 ```
