@@ -2100,21 +2100,24 @@ print(tukeyGroups500)
 
 summary500 <- all_suntimes %>%
   group_by(sun_time, PLATFORM) %>%
-  summarise(median= median(OL_500), SE= SE(OL_500))
+  summarise(median= median(OL_500), SE= SE(OL_500)) %>%
+  arrange(desc(median))
 
 tableTukey500 <- as.data.frame.list(tukeyGroups500$'sun_time:PLATFORM')
 summary500$tukey_500 <- tableTukey500$Letters
 print(summary500)
 
-library(agricolae)
-
 sun500.summarized = all_suntimes %>% 
   group_by(sun_time, PLATFORM) %>% 
   summarize(MaxSPL=max(OL_500))
-
+sun500.summarized <- sun500.summarized %>%
+  full_join(summary500)
+sun500.summarized$PLATFORM = factor(sun500.summarized$PLATFORM,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                        labels= c('DB01', 'ES01', 'CB01'))
 ggplot(all_suntimes,aes(x=sun_time,y=OL_500))+
   geom_boxplot()+
-  geom_text(data=sun500.summarized,aes(x=sun_time,y=1+MaxSPL, label=summary500$tukey_500),vjust=0)+
+  geom_text(data=sun500.summarized,aes(x=sun_time,y=1+MaxSPL, label=tukey_500),vjust=0)+
   facet_wrap(~PLATFORM)
 
 #OL_1000
@@ -2135,7 +2138,8 @@ print(tukeyGroups1000)
 
 summary1000 <- all_suntimes %>%
   group_by(sun_time, PLATFORM) %>%
-  summarise(median= median(OL_1000), SE= SE(OL_1000)) 
+  summarise(median= median(OL_1000), SE= SE(OL_1000))%>%
+  arrange(desc(median))
 
 tableTukey1000 <- as.data.frame.list(tukeyGroups1000$'sun_time:PLATFORM')
 summary1000$tukey_1000 <- tableTukey1000$Letters
@@ -2143,11 +2147,16 @@ print(summary1000)
 
 sun1000.summarized = all_suntimes %>% 
   group_by(sun_time, PLATFORM) %>% 
-  summarize(MaxSPL=max(OL_1000))
+  summarize(MaxSPL=max(OL_1000)) 
 
+sun1000.summarized <- sun1000.summarized %>%
+  full_join(summary1000)
+sun1000.summarized$PLATFORM = factor(sun1000.summarized$PLATFORM,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                        labels= c('DB01', 'ES01', 'CB01'))
 ggplot(all_suntimes,aes(x=sun_time,y=OL_1000))+
   geom_boxplot()+
-  geom_text(data=sun1000.summarized,aes(x=sun_time,y=1+MaxSPL, label=summary1000$tukey_1000),vjust=0)+
+  geom_text(data=sun1000.summarized,aes(x=sun_time,y=1+MaxSPL, label=tukey_1000),vjust=0)+
   facet_wrap(~PLATFORM)
 
 #OL_2000
@@ -2168,7 +2177,8 @@ print(tukeyGroups2000)
 
 summary2000 <- all_suntimes %>%
   group_by(sun_time, PLATFORM) %>%
-  summarise(median= median(OL_2000), SE= SE(OL_1000)) 
+  summarise(median= median(OL_2000), SE= SE(OL_1000))%>%
+  arrange(desc(median))
 
 tableTukey2000 <- as.data.frame.list(tukeyGroups2000$'sun_time:PLATFORM')
 summary2000$tukey_2000 <- tableTukey2000$Letters
@@ -2177,17 +2187,18 @@ print(summary2000)
 sun2000.summarized = all_suntimes %>% 
   group_by(sun_time, PLATFORM) %>% 
   summarize(MaxSPL=max(OL_2000))
-
+sun2000.summarized <- sun2000.summarized %>%
+  full_join(summary2000)
+sun2000.summarized$PLATFORM = factor(sun2000.summarized$PLATFORM,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                        labels= c('DB01', 'ES01', 'CB01'))
 ggplot(all_suntimes,aes(x=sun_time,y=OL_2000))+
   geom_boxplot()+
-  geom_text(data=sun2000.summarized,aes(x=sun_time,y=1+MaxSPL, label=summary2000$tukey_2000),vjust=0)+
+  geom_text(data=sun2000.summarized,aes(x=sun_time,y=1+MaxSPL, label=tukey_2000),vjust=0)+
   facet_wrap(~PLATFORM)
 
 
 #plots
-sun1000.summarized$PLATFORM = factor(sun1000.summarized$PLATFORM,
-                                        levels= c('DB01', 'ES01', 'CB01'),
-                                        labels= c('DB01', 'ES01', 'CB01'))
 all_suntimes$PLATFORM = factor(all_suntimes$PLATFORM,
                                         levels= c('DB01', 'ES01', 'CB01'),
                                         labels= c('DB01', 'ES01', 'CB01'))
@@ -2202,13 +2213,12 @@ get_box_stats_suntimes500 <- function(y, upper_limit = max(all_suntimes$OL_500) 
 }
 
 
-
 suntimes_500 <- ggplot(data = all_suntimes,
        aes(x= sun_time, y= OL_500, fill= sun_time))+
   stat_boxplot(geom = "errorbar", width = 0.6)+
   geom_boxplot(width = 0.9)+
-  geom_text(data=sun500.summarized,aes(x=sun_time,y=1+MaxSPL, label=summary500$tukey_500),vjust=0)+
-  stat_summary(fun.data = get_box_stats_suntimes500, geom = "text", hjust = 0.5, vjust = 0.5)+
+  geom_text(data=sun500.summarized,aes(x=sun_time,y=1+MaxSPL, label=tukey_500),vjust=0, color= "#497381")+
+  stat_summary(fun.data = get_box_stats_suntimes500, geom = "text", hjust = 0.5, vjust = 1)+
   labs(x= "Time of day",
        y= expression(paste("500Hz OL SPL")))+
   scale_x_discrete(labels = c("Sunrise", "Sunset"))+
@@ -2239,7 +2249,8 @@ suntimes_1000 <- ggplot(data = all_suntimes,
        aes(x= sun_time, y= OL_1000, fill= sun_time))+
   stat_boxplot(geom = "errorbar", width = 0.6)+
   geom_boxplot(width = 0.9)+
-  stat_summary(fun.data = get_box_stats_suntimes1000, geom = "text", hjust = 0.5, vjust = 0.5)+
+  geom_text(data=sun1000.summarized,aes(x=sun_time,y=1+MaxSPL, label=tukey_1000),vjust=0, color= "orange")+
+  stat_summary(fun.data = get_box_stats_suntimes1000, geom = "text", hjust = 0.5, vjust = 1)+
   labs(x= "Time of day",
        y= expression(paste("1000Hz OL SPL")))+
   scale_x_discrete(labels = c("Sunrise", "Sunset"))+
@@ -2267,7 +2278,8 @@ suntimes_2000 <- ggplot(data = all_suntimes,
        aes(x= sun_time, y= OL_2000, fill= sun_time))+
   stat_boxplot(geom = "errorbar", width = 0.6)+
   geom_boxplot(width = 0.9)+
-  stat_summary(fun.data = get_box_stats_suntimes2000, geom = "text")+
+  geom_text(data=sun2000.summarized,aes(x=sun_time,y=1.5+MaxSPL, label=tukey_2000),vjust=0, color= "purple")+
+  stat_summary(fun.data = get_box_stats_suntimes2000, geom = "text", hjust = 0.5, vjust = 1)+
   labs(x= "Time of day",
        y= expression(paste("2000Hz OL SPL")))+
   scale_x_discrete(labels = c("Sunrise", "Sunset"))+
@@ -2280,11 +2292,11 @@ suntimes_2000 <- ggplot(data = all_suntimes,
         legend.position= "none",
         strip.text.x = element_blank(),
         strip.background = element_blank())
-  
 
-plot(suntimes_500)
 
 sun_AllBoxplots <- suntimes_500/suntimes_1000/suntimes_2000 +plot_layout(guides = "collect", axis_titles = "collect")
+
+plot(sun_AllBoxplots)
 
 #ggsave(here("figs", "sun_AllBoxplots.png"), sun_AllBoxplots, width= 48, height= 32, units= "in")
 
@@ -2381,13 +2393,13 @@ Corr_OL500 <- ggplot(all_OLTemps, aes(x = med_temp, y = med_500, group= season, 
   theme_bw()+
   guides(color= guide_legend(title= "Season"))+
   facet_wrap(~site)+
-  theme(axis.text= element_text(size= 12),
-        axis.title= element_text(size= 14),
-        legend.text = element_text(size= 13),
-        legend.title= element_text(size= 14),
-        panel.grid.minor = element_blank(),
-        panel.background= element_blank()
-)
+  theme(axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        axis.text.x= element_blank(),
+        axis.ticks.x= element_blank(),
+        legend.position= "none",
+        strip.text= element_text(size= 16)
+  )
 
 Corr_OL1000 <- ggplot(all_OLTemps, aes(x = med_temp, y = med_1000, group= season, color= season))+
   geom_point() +
@@ -2404,13 +2416,13 @@ Corr_OL1000 <- ggplot(all_OLTemps, aes(x = med_temp, y = med_1000, group= season
   theme_bw()+
   guides(color= guide_legend(title= "Season"))+
   facet_wrap(~site)+
-  theme(axis.text= element_text(size= 12),
-        axis.title= element_text(size= 14),
-        legend.text = element_text(size= 13),
-        legend.title= element_text(size= 14),
-        panel.grid.minor = element_blank(),
-        panel.background= element_blank()
-)
+  theme(axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        axis.text.x= element_blank(),
+        axis.ticks.x= element_blank(),
+        legend.position= "none",
+        strip.text.x = element_blank(),
+        strip.background = element_blank())
 
 Corr_OL2000 <- ggplot(all_OLTemps, aes(x = med_temp, y = med_2000, group= season, color= season))+
   geom_point() +
@@ -2427,17 +2439,18 @@ Corr_OL2000 <- ggplot(all_OLTemps, aes(x = med_temp, y = med_2000, group= season
   theme_bw()+
   guides(color= guide_legend(title= "Season"))+
   facet_wrap(~site)+
-  theme(axis.text= element_text(size= 12),
-        axis.title= element_text(size= 14),
+  theme(axis.title= element_text(size= 18),
+        axis.text= element_text(size= 16),
+        axis.ticks.x= element_blank(),
+        legend.title= element_text(size= 13),
         legend.text = element_text(size= 13),
-        legend.title= element_text(size= 14),
-        panel.grid.minor = element_blank(),
-        panel.background= element_blank()
-)
+        strip.text.x = element_blank(),
+        strip.background = element_blank())
 
-plot(corr_allOL)
 
 corr_allOL<- Corr_OL500/Corr_OL1000/Corr_OL2000+ plot_layout(axis_titles = "collect", guides= "collect")
+
+plot(corr_allOL)
 
 #ggsave(here("figs", "corr_allOL.png"), corr_allOL, width= 36, height= 18, units= "in")
 
