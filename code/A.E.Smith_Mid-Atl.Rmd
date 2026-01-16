@@ -2464,10 +2464,14 @@ DB01_202207_minOL <- read.csv(here("data/DB01_202207_minOL.csv"))
 DB01_202207_minOL$UTC <- as.POSIXct(DB01_202207_minOL$UTC, format= "%Y-%m-%dT%H:%M:%SZ")
 DB01_202207_minOL$PLATFORM = "DB01"
 
-ES01_202404_minOL <- createOctaveLevel(ES01_202404_min, type= 'ol')
+ES01_202404_minOL <- read.csv(here("data/ES01_202404_minOL.csv"))
+ES01_202404_minOL <- ES01_202404_minOL[-c(1)]
+ES01_202404_minOL$UTC <- as.POSIXct(ES01_202404_minOL$UTC, format= "%Y-%m-%dT%H:%M:%SZ")
 
+CB01_202206_minOL <- read.csv(here("data/CB01_202206_minOL.csv"))
+CB01_202206_minOL <- CB01_202206_minOL[-c(1)]
+CB01_202206_minOL$UTC <- as.POSIXct(CB01_202206_minOL$UTC, format= "%Y-%m-%dT%H:%M:%SZ")
 
-runSoundscapeExplorer(DB01_202207_minOL)
 ```
 #minute-level sunset OL
 ```{r}
