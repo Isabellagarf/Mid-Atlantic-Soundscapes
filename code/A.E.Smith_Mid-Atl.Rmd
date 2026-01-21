@@ -619,7 +619,7 @@ CB03_OL$Lat = "Chesapeake"
 ```
 #loading in chorus presence files
 ```{r}
-
+#DB01
 DB01_chorusPresence <- read.csv(here("data/DB01_chorusPresence.csv"))
 DB01_chorusPresence$X500_chorus = case_when(DB01_chorusPresence$X500_chorus == 1 ~ "yes",
                                             DB01_chorusPresence$X500_chorus == 0 ~ "no")
@@ -627,6 +627,9 @@ DB01_chorusPresence$X1000_chorus = case_when(DB01_chorusPresence$X1000_chorus ==
                                             DB01_chorusPresence$X1000_chorus == 0 ~ "no")
 DB01_chorusPresence$X2000_chorus = case_when(DB01_chorusPresence$X2000_chorus == 1 ~ "yes",
                                             DB01_chorusPresence$X2000_chorus == 0 ~ "no")
+DB01_chorusPresence$date <- as.Date(DB01_chorusPresence$date, format= "%m/%d/%Y")
+colnames(DB01_chorusPresence)[1] <- "UTC"
+
 ES01_chorusPresence <- read.csv(here("data/ES01_chorusPresence.csv"))
 ES01_chorusPresence$X500_chorus = case_when(ES01_chorusPresence$X500_chorus == 1 ~ "yes",
                                             ES01_chorusPresence$X500_chorus == 0 ~ "no")
@@ -634,6 +637,10 @@ ES01_chorusPresence$X1000_chorus = case_when(ES01_chorusPresence$X1000_chorus ==
                                             ES01_chorusPresence$X1000_chorus == 0 ~ "no")
 ES01_chorusPresence$X2000_chorus = case_when(ES01_chorusPresence$X2000_chorus == 1 ~ "yes",
                                             ES01_chorusPresence$X2000_chorus == 0 ~ "no")
+ES01_chorusPresence$date <- as.Date(ES01_chorusPresence$date, format= "%m/%d/%Y")
+colnames(ES01_chorusPresence)[1] <- "UTC"
+
+
 CB01_chorusPresence <- read.csv(here("data/CB01_chorusPresence.csv"))
 CB01_chorusPresence$X500_chorus = case_when(CB01_chorusPresence$X500_chorus == 1 ~ "yes",
                                             CB01_chorusPresence$X500_chorus == 0 ~ "no")
@@ -641,6 +648,8 @@ CB01_chorusPresence$X1000_chorus = case_when(CB01_chorusPresence$X1000_chorus ==
                                             CB01_chorusPresence$X1000_chorus == 0 ~ "no")
 CB01_chorusPresence$X2000_chorus = case_when(CB01_chorusPresence$X2000_chorus == 1 ~ "yes",
                                             CB01_chorusPresence$X2000_chorus == 0 ~ "no")
+CB01_chorusPresence$date <- as.Date(CB01_chorusPresence$date, format= "%m/%d/%Y")
+colnames(CB01_chorusPresence)[1] <- "UTC"
 
 ```
 #plotting sunrise/sunset with chorus presence
@@ -2524,4 +2533,51 @@ DB01_min500Hz/DB01_min1000Hz/DB01_min2000Hz +plot_layout(guides = "collect", axi
 
 
 
+```
+#chorus presence & temp
+``` {r}
+DB01_OLtemps_daily <- DB01_OLtemps_daily %>%
+  full_join(DB01_chorusPresence)
+DB01_OLtemps_daily$X500_chorus = factor(DB01_OLtemps_daily$X500_chorus,
+                                        levels= c("no", "yes"),
+                                        labels= c("Absent", "Present"))
+ES01_OLtemps_daily <- ES01_OLtemps_daily %>%
+  full_join(ES01_chorusPresence)
+ES01_OLtemps_daily$X500_chorus = factor(ES01_OLtemps_daily$X500_chorus,
+                                        levels= c("no", "yes"),
+                                        labels= c("Absent", "Present"))
+CB01_OLtemps_daily <- CB01_OLtemps_daily %>%
+  full_join(CB01_chorusPresence)
+CB01_OLtemps_daily$X500_chorus = factor(CB01_OLtemps_daily$X500_chorus,
+                                        levels= c("no", "yes"),
+                                        labels= c("Absent", "Present"))
+all_temp_presence <- DB01_OLtemps_daily %>%
+  full_join(ES01_OLtemps_daily) %>%
+  full_join(CB01_OLtemps_daily)
+all_temp_presence <- all_temp_presence %>%
+  drop_na(site)
+all_temp_presence <- all_temp_presence %>%
+  drop_na(X500_chorus)
+all_temp_presence$site = factor(all_temp_presence$site,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                        labels= c('DB01', 'ES01', 'CB01'))
+
+ggplot(all_temp_presence, aes(x = med_temp, y = med_500, group= X500_chorus, color= X500_chorus))+
+  geom_point() +
+  geom_smooth(method='glm', level= 0.90)+
+  stat_poly_eq(formula = y ~ x, 
+               aes(label = paste(..eq.label.., ..rr.label.., ..p.value.label.., sep = "*`,`~")), 
+               parse = TRUE,
+               label.x = "left",
+               vstep = 0.05)+
+  xlab("Median daily temperature (°C))")+
+  ylab(expression(paste('Median 500 Hz Octave Level SPL (dB re 1 \u00b5Pa)')))+
+  scale_color_manual(labels= c("Absent", "Present"), values= c("#DB2207", "#4B8320"))+
+  scale_fill_manual(values= c("#DB2207", "#4B8320"))+
+  theme_bw()+
+  guides(color= guide_legend(title= "Chrous Presence"))+
+  facet_wrap(~site)
+
+
+#repeat with no site differences and with each chorus
 ```
