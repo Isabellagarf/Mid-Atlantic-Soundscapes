@@ -46,6 +46,8 @@ library(gghighlight)
 library(ggrepel)
 library(multcompView)
 library(showtext)
+library(photobiology)
+library(ggdaynight)
 
 SE<- function(x)sd(x)/sqrt(length(x))
 
@@ -788,17 +790,6 @@ DB01_OL <- DB01_OL %>%
 DB01_OLTemps <- DB01_OL %>%
   select(UTC_fixed, Datetime_UTC, OL_500, OL_1000, OL_2000, Internal_temp_C, PLATFORM)
 
-#DB01_tempsPlot= ggplot(DB01_OLTemps, aes(x = Datetime_UTC, y = Internal_temp_C))+
-  geom_line()+
-  theme_bw()+
-  labs(x= "Date-time (UTC)", y= "Temperature (°C)")
-
-#DB01_500Plot= ggplot(DB01_OLTemps, aes(Datetime_UTC, OL_500))+
-  geom_line()+
-  theme_bw()+
-  labs(x= "Date-time (UTC)", y= (expression(paste("Median 500 Hz Octave Band SPL (dB re \u00b5Pa" ^ "2", "/Hz)"))))
-
-#DB01_tempsPlot/DB01_500Plot +plot_layout(axes= "collect", guides= "collect")
 
 DB01_OLTemps$UTC <- droplevels(cut(DB01_OLTemps$UTC_fixed, breaks= "day"))
 DB01_OLtemps_daily <- DB01_OLTemps %>% 
@@ -806,32 +797,6 @@ DB01_OLtemps_daily <- DB01_OLTemps %>%
   dplyr::summarize(med_500 = median(OL_500, na.rm=TRUE), med_1000= median(OL_1000, na.rm= TRUE), med_2000= median(OL_2000, na.rm= TRUE), med_temp= median(Internal_temp_C, na.rm= TRUE))
 
 DB01_OLtemps_daily$UTC <- as.Date(DB01_OLtemps_daily$UTC, format= "%Y-%m-%d")
-
-#DB01_OLtemps_daily <- DB01_OLTemps %>% 
-  group_by(UTC) %>% 
-  dplyr::summarize(med_temp = median(Internal_temp_C, na.rm=TRUE))
-
-#DB01_500OL <- DB01_OLTemps %>%
-  group_by(UTC) %>%
-  dplyr::summarize(Med_OL = median(OL_500, na.rm= TRUE))
-#DB01_500OL$OL_band <- "OL_500"
-#DB01_500OL$PLATFORM <- "DB01"
-#DB01_1000OL <- DB01_OLTemps %>%
-  group_by(UTC) %>%
-  dplyr::summarize(Med_OL = median(OL_1000, na.rm= TRUE))
-#DB01_1000OL$OL_band <- "OL_1000"
-#DB01_1000OL$PLATFORM <- "DB01"
-#DB01_2000OL <- DB01_OLTemps %>%
-  group_by(UTC) %>%
-  dplyr::summarize(Med_OL = median(OL_2000, na.rm= TRUE))
-#DB01_2000OL$OL_band <- "OL_2000"
-#DB01_2000OL$PLATFORM <- "DB01"
-#DB01_OLtemps_daily <- DB01_OLtemps_daily %>%
-  full_join(DB01_500OL) %>%
-  full_join(DB01_1000OL)%>%
-  full_join(DB01_2000OL)
-
-
 
 
 DBOL_500_dailyTemps_Plot = ggplot(data = DB01_OLtemps_daily, mapping = aes(x =UTC)) + 
@@ -2474,15 +2439,13 @@ DB01_202207_minOL <- read.csv(here("data/DB01_202207_minOL.csv"))
 DB01_202207_minOL$UTC <- as.POSIXct(DB01_202207_minOL$UTC, format= "%Y-%m-%dT%H:%M:%SZ")
 DB01_202207_minOL$PLATFORM = "DB01"
 
-ES01_202404_minOL <- read.csv(here("data/ES01_202404_minOL.csv"))
-ES01_202404_minOL <- ES01_202404_minOL[-c(1)]
+ES01_202404_minOL <- read.csv(here("data/ES01_202404_min.csv"))
 ES01_202404_minOL$UTC <- as.POSIXct(ES01_202404_minOL$UTC, format= "%Y-%m-%dT%H:%M:%SZ")
+ES01_202404_minOL$PLATFORM = "ES01"
 
-CB01_202206_min <- read.csv(here("data/CB01_202206_min.csv"))
-CB01_202206_minOL <- read.csv(here("data/CB01_202206_minOL.csv"))
-CB01_202206_minOL <- CB01_202206_minOL[-c(1)]
+CB01_202206_minOL <- read.csv(here("data/CB01_202206_min.csv"))
 CB01_202206_minOL$UTC <- as.POSIXct(CB01_202206_minOL$UTC, format= "%Y-%m-%dT%H:%M:%SZ")
-
+CB01_202206_minOL$PLATFORM = "CB01"
 ```
 #minute-level sunset OL
 ```{r}
@@ -2510,21 +2473,21 @@ DB01_minSunsetTimes <- DB01_202207_minOL %>%
 
 DB01_min500Hz <- ggplot(DB01_minSunsetTimes, aes(x= UTC, y= OL_500))+
   geom_line(linewidth = 0.75)+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  scale_x_datetime(date_breaks = "3 weeks", date_labels= "%m/%d", minor_breaks = NULL)+
   theme_bw()+
   xlab("Date")+
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   geom_hline(yintercept = 100, col= "black")
 DB01_min1000Hz <- ggplot(DB01_minSunsetTimes, aes(x= UTC, y= OL_1000))+
   geom_line(linewidth = 0.75)+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  scale_x_datetime(date_breaks = "3 weeks", date_labels= "%m/%d", minor_breaks = NULL)+
   theme_bw()+
   xlab("Date")+
   ylab(expression(paste('Median 1000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   geom_hline(yintercept = 100, col= "black")
 DB01_min2000Hz <- ggplot(DB01_minSunsetTimes, aes(x= UTC, y= OL_2000))+
   geom_line(linewidth = 0.75)+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  scale_x_datetime(date_breaks = "3 weeks", date_labels= "%m/%d", minor_breaks = NULL)+
   theme_bw()+
   xlab("Date")+
   ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
@@ -2554,21 +2517,21 @@ CB01_minSunsetTimes <- CB01_202206_minOL %>%
   right_join(CB01sunset_datehourmin, join_by(UTC))
 CB01_min500Hz <- ggplot(CB01_minSunsetTimes, aes(x= UTC, y= OL_500))+
   geom_line(linewidth = 0.75)+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  scale_x_datetime(date_breaks = "3 weeks", date_labels= "%b %Y", minor_breaks = NULL)+
   theme_bw()+
   xlab("Date")+
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   geom_hline(yintercept = 100, col= "black")
 CB01_min1000Hz <- ggplot(CB01_minSunsetTimes, aes(x= UTC, y= OL_1000))+
   geom_line(linewidth = 0.75)+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  scale_x_datetime(date_breaks = "3 weeks", date_labels= "%b %Y", minor_breaks = NULL)+
   theme_bw()+
   xlab("Date")+
   ylab(expression(paste('Median 1000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   geom_hline(yintercept = 100, col= "black")
 CB01_min2000Hz <- ggplot(CB01_minSunsetTimes, aes(x= UTC, y= OL_2000))+
   geom_line(linewidth = 0.75)+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  scale_x_datetime(date_breaks = "3 weeks", date_labels= "%b %Y", minor_breaks = NULL)+
   theme_bw()+
   xlab("Date")+
   ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
@@ -2581,6 +2544,53 @@ CB01_min500Hz/CB01_min1000Hz/CB01_min2000Hz +plot_layout(guides = "collect", axi
 ES01_location <- matrix(c(-75.29, 37.69), nrow = 1)
 ES01_date_Time <- seq(ymd_hms("2023-10-13 00:00:00"), ymd_hms("2024-09-29 18:00:00"), by = "1 hour")
 
+```
+#one week minute level SPL
+```{r}
+DB01subset_0916_0923 <-  seq(ymd_hms("2022-09-16 04:00:00"), ymd_hms("2022-09-24 04:00:00"), by = "1 min")
+
+DB01subset_0916_0923 <- data.frame(UTC= DB01subset_0916_0923)
+DB01join_0916_0923 <- DB01_202207_minOL %>%
+  semi_join(DB01subset_0916_0923, by= join_by(UTC))
+
+my.geocode <- data.frame(lon = -74.82,
+                         lat= 38.71,
+                         address= "DB01")
+mygeocode <- day_night(DB01subset_0916_0923, tz= "UTC",
+          geocode= my.geocode)
+
+
+DB_500 <- ggplot(DB01join_0916_0923, aes(x= UTC, y= OL_500))+
+  geom_daynight()+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "1 day", date_labels= "%m/%d", minor_breaks = NULL)+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("DB01 2022")
+
+
+CB01subset_0916_0923 <-  seq(ymd_hms("2022-09-16 04:00:00"), ymd_hms("2022-09-24 04:00:00"), by = "1 min")
+
+CB01subset_0916_0923 <- data.frame(UTC= CB01subset_0916_0923)
+CB01join_0916_0923 <- CB01_202206_minOL %>%
+  semi_join(CB01subset_0916_0923, by= join_by(UTC))
+
+my.CBgeocode <- data.frame(lon = -75.67,
+                         lat= 36.98,
+                         address= "CB01")
+myCBgeocode <- day_night(CB01subset_0916_0923, tz= "UTC",
+          geocode= my.CBgeocode)
+CB_500<- ggplot(CB01join_0916_0923, aes(x= UTC, y= OL_500))+
+  geom_daynight()+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "1 day", date_labels= "%m/%d", minor_breaks = NULL)+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("CB01 2022")
+
+DB_500/CB_500 + plot_layout(guides= "collect", axis_titles = "collect")
 ```
 #chorus presence & temp
 ``` {r}
@@ -2635,11 +2645,11 @@ allSite500 <- ggplot(all_temp_presence, aes(x = med_temp, y = med_500, group= X5
                label.x = "left",
                vstep = 0.05)+
   xlab("Median daily temperature (°C))")+
-  ylab(expression(paste('Median 500 Hz Octave Level SPL (dB re 1 \u00b5Pa)')))+
+#  ylab(expression(paste('Median 500 Hz Octave Level SPL (dB re 1 \u00b5Pa)')))+
   scale_color_manual(labels= c("Absent:DB01", "Absent:ES01", "Absent:CB01","Present:DB01","Present:ES01",  "Present:CB01"), values= c("grey", "grey","grey", "#4B8320",  "red",  "blue"))+
   scale_fill_manual(values= c("grey", "grey","grey", "#4B8320",  "red",  "blue"))+
   theme_bw()+
-  guides(color= guide_legend(title= "Chrous Presence"))+
+  guides(color= guide_legend(title= "Chorus Presence"))+
   ylim(72, 120)+
   theme(axis.title= element_text(size= 18),
         axis.text.y= element_text(size= 16),
@@ -2656,11 +2666,11 @@ allSite1000 <- ggplot(all_temp_presence, aes(x = med_temp, y = med_1000, group= 
                label.x = "left",
                vstep = 0.05)+
   xlab("Median daily temperature (°C))")+
-  ylab(expression(paste('Median 1000 Hz Octave Level SPL (dB re 1 \u00b5Pa)')))+
+#  ylab(expression(paste('Median 1000 Hz Octave Level SPL (dB re 1 \u00b5Pa)')))+
   scale_color_manual(labels= c("Absent:DB01", "Absent:ES01", "Absent:CB01","Present:DB01","Present:ES01",  "Present:CB01"), values= c("grey", "grey","grey", "#4B8320",  "red",  "blue"))+
   scale_fill_manual(values= c("grey", "grey","grey", "#4B8320",  "red",  "blue"))+
   theme_bw()+
-  guides(color= guide_legend(title= "Chrous Presence"))+
+  guides(color= guide_legend(title= "Chorus Presence"))+
   ylim(72, 120)+
   theme(axis.title= element_text(size= 18),
         axis.text.y= element_text(size= 16),
@@ -2677,11 +2687,11 @@ allSite2000 <- ggplot(all_temp_presence, aes(x = med_temp, y = med_2000, group= 
                label.x = "left",
                vstep = 0.05)+
   xlab("Median daily temperature (°C))")+
-  ylab(expression(paste('Median 2000 Hz Octave Level SPL (dB re 1 \u00b5Pa)')))+
+#  ylab(expression(paste('Median 2000 Hz Octave Level SPL (dB re 1 \u00b5Pa)')))+
   scale_color_manual(labels= c("Absent:DB01", "Absent:ES01", "Absent:CB01","Present:DB01","Present:ES01",  "Present:CB01"), values= c("grey", "grey","grey", "#4B8320",  "red",  "blue"))+
   scale_fill_manual(values= c("grey", "grey","grey", "#4B8320",  "red",  "blue"))+
   theme_bw()+
-  guides(color= guide_legend(title= "Chrous Presence"))+
+  guides(color= guide_legend(title= "Chorus Presence"))+
   ylim(72, 120)+
   theme(axis.title= element_text(size= 18),
         axis.text= element_text(size= 16),
@@ -2693,5 +2703,72 @@ all_siteOL<- allSite500/allSite1000/allSite2000+ plot_layout(axis_titles = "coll
 
 plot(all_siteOL)
 
-ggsave(here("figs", "all_siteTempsOL.png"), all_siteOL, width= 36, height= 24, units= "in")
+#ggsave(here("figs", "all_siteTempsOL.png"), all_siteOL, width= 36, height= 24, units= "in")
+```
+#minute level data with confirmed fish presence
+```{r}
+#need to combine present days and plot those with the minute data- days with chorusing vs days without at minute level
+#DB01 202207: 2022-07-10 to 2022-12-16
+DB01_202207_minOL <- DB01_202207_minOL %>%
+  mutate(UTC_date = date(UTC))
+DB01_chorusPresence <- DB01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+
+DB01subset_0610_1216 <-  seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2022-12-16 00:00:00"), by = "1 min")
+DB01subset_0610_1216 <- data.frame(UTC= DB01subset_0610_1216)
+DB01subset_0610_1216 <- DB01subset_0610_1216 %>%
+  mutate(UTC_date = date(UTC))
+
+DB01_chorusExpanded <- DB01subset_0610_1216 %>%
+  left_join(DB01_chorusPresence, by = "UTC_date")
+DB01_chorusExpanded <- DB01_chorusExpanded[-c(2,3)]
+colnames(DB01_chorusExpanded)[1] <- "UTC"
+
+DB01_202206_minOLChorus <- DB01_202207_minOL %>%
+  full_join(DB01_chorusExpanded)
+
+
+
+DB01_minuteChorus <- ggplot(DB01_202206_minOLChorus, aes(x= UTC, y= OL_1000, group= X1000_chorus, color= X1000_chorus))+
+  geom_point(size = 0.5)+
+  scale_x_datetime(date_breaks = "3 weeks", date_labels= "%m/%d", minor_breaks = NULL)+
+  scale_color_manual(labels= c("no", "yes"), values= c("black", "#4B8320"))+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 1000 HzOctave Level SPL (db re 1 \u00b5Pa)')))+
+  guides(color= guide_legend(title= "DB01 Chorus Presence"))
+  
+
+
+#CB01
+CB01_202206_minOL <- CB01_202206_minOL %>%
+  mutate(UTC_date = date(UTC))
+CB01_chorusPresence <- CB01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+
+CB01subset_0610_1216 <-  seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2022-12-16 00:00:00"), by = "1 min")
+CB01subset_0610_1216 <- data.frame(UTC= CB01subset_0610_1216)
+CB01subset_0610_1216 <- CB01subset_0610_1216 %>%
+  mutate(UTC_date = date(UTC))
+
+CB01_chorusExpanded <- CB01subset_0610_1216 %>%
+  left_join(CB01_chorusPresence, by = "UTC_date")
+CB01_chorusExpanded <- CB01_chorusExpanded[-c(2,3)]
+colnames(CB01_chorusExpanded)[1] <- "UTC"
+
+CB01_202206_minOLChorus <- CB01_202206_minOL %>%
+  full_join(CB01_chorusExpanded)
+
+
+
+CB01_minuteChorus <- ggplot(CB01_202206_minOLChorus, aes(x= UTC, y= OL_1000, group= X1000_chorus, color= X1000_chorus))+
+  geom_point(size = 0.5)+
+  scale_x_datetime(date_breaks = "3 weeks", date_labels= "%m/%d", minor_breaks = NULL)+
+  scale_color_manual(labels= c("no", "yes"), values= c("black", "blue"))+
+  theme_bw()+
+  xlab("Date")+
+  ylab(expression(paste('Median 1000 HzOctave Level SPL (db re 1 \u00b5Pa)')))+
+  guides(color= guide_legend(title= "CB01 Chorus Presence"))
+
+DB01_minuteChorus/CB01_minuteChorus +plot_layout(guides= "collect", axis_titles = "collect" )
 ```
