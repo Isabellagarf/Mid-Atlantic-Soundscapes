@@ -2553,12 +2553,13 @@ DB01subset_0916_0923 <- data.frame(UTC= DB01subset_0916_0923)
 DB01join_0916_0923 <- DB01_202207_minOL %>%
   semi_join(DB01subset_0916_0923, by= join_by(UTC))
 
-my.geocode <- data.frame(lon = -74.82,
-                         lat= 38.71,
-                         address= "DB01")
-mygeocode <- day_night(DB01subset_0916_0923, tz= "UTC",
-          geocode= my.geocode)
+DB01join_0916_0923 <- DB01join_0916_0923 %>%
+  mutate(UTC_date = date(UTC))
 
+DB01join_500_max <- DB01join_0916_0923 %>%
+   group_by(UTC_date) %>%
+   slice(which.max(OL_500))
+DB01join_500_max <- DB01join_500_max [-c(5:8, 10:16)]
 
 DB_500 <- ggplot(DB01join_0916_0923, aes(x= UTC, y= OL_500))+
   geom_daynight()+
@@ -2567,8 +2568,18 @@ DB_500 <- ggplot(DB01join_0916_0923, aes(x= UTC, y= OL_500))+
   theme_bw()+
   xlab("Date")+
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
-  ggtitle("DB01 2022")
+  ggtitle("DB01 2022")+
+  annotate(geom= "point", x=as.POSIXct("2022-09-20 23:59:00"), y= 135.0901, color= "red", size= 2)+
+#  annotate(geom= "point", x=as.POSIXct("2022-09-21 00:00:00"), y= 135.0280, color= "green", size= 1)+
+  annotate(geom= "point", x=as.POSIXct("2022-09-22 00:00:00"), y= 132.2585, color= "red", size= 2)+
+  annotate(geom= "point", x=as.POSIXct("2022-09-23 00:05:00"), y= 130.7967, color= "red", size= 2)+
+  annotate(geom= "point", x=as.POSIXct("2022-09-18 23:47:00"), y= 130.5401, color= "red", size= 2)+
+#  annotate(geom= "point", x=as.POSIXct("2022-09-19 00:11:00"), y= 130.4963, color= "green", size= 1)+
+  annotate(geom= "point", x=as.POSIXct("2022-09-17 23:57:00"), y= 126.0715, color= "red", size= 2)+
+  annotate(geom= "point", x=as.POSIXct("2022-09-16 23:59:00"), y= 124.8383, color= "red", size= 2)+
+  annotate(geom= "point", x=as.POSIXct("2022-09-24 00:00:00"), y= 129.6342, color= "red", size= 2)
 
+plot(DB_500)
 
 CB01subset_0916_0923 <-  seq(ymd_hms("2022-09-16 04:00:00"), ymd_hms("2022-09-24 04:00:00"), by = "1 min")
 
@@ -2576,11 +2587,14 @@ CB01subset_0916_0923 <- data.frame(UTC= CB01subset_0916_0923)
 CB01join_0916_0923 <- CB01_202206_minOL %>%
   semi_join(CB01subset_0916_0923, by= join_by(UTC))
 
-my.CBgeocode <- data.frame(lon = -75.67,
-                         lat= 36.98,
-                         address= "CB01")
-myCBgeocode <- day_night(CB01subset_0916_0923, tz= "UTC",
-          geocode= my.CBgeocode)
+CB01join_0916_0923 <- CB01join_0916_0923 %>%
+  mutate(UTC_date = date(UTC))
+
+CB01join_500_max <- CB01join_0916_0923 %>%
+   group_by(UTC_date) %>%
+   slice(which.max(OL_500))
+CB01join_500_max <- CB01join_500_max [-c(5:8, 10:16)]
+
 CB_500<- ggplot(CB01join_0916_0923, aes(x= UTC, y= OL_500))+
   geom_daynight()+
   geom_line(linewidth = 0.75)+
