@@ -2447,7 +2447,7 @@ CB01_202206_minOL <- read.csv(here("data/CB01_202206_min.csv"))
 CB01_202206_minOL$UTC <- as.POSIXct(CB01_202206_minOL$UTC, format= "%Y-%m-%dT%H:%M:%SZ")
 CB01_202206_minOL$PLATFORM = "CB01"
 ```
-#minute-level sunset OL
+#minute-level sunset OL full deployment
 ```{r}
 DB01_minlocation <- matrix(c(-74.82, 38.71), nrow = 1)
 DB01_mindate_Time <- seq(ymd_hms("2022-07-07 00:00:00"), ymd_hms("2022-12-16 17:44:00"), by = "1 min")
@@ -2557,27 +2557,33 @@ DB01join_0916_0923 <- DB01join_0916_0923 %>%
   mutate(UTC_date = date(UTC))
 
 DB01join_500_max <- DB01join_0916_0923 %>%
-   group_by(UTC_date) %>%
+   group_by(UTC_date,
+            UTC >= "2022-09-20 00:00",
+            UTC < "2022-09-19 23:50") %>%
    slice(which.max(OL_500))
 DB01join_500_max <- DB01join_500_max [-c(5:8, 10:16)]
 
 DB_500 <- ggplot(DB01join_0916_0923, aes(x= UTC, y= OL_500))+
-  geom_daynight()+
+  geom_daynight(sunrise= 11, sunset= 23)+
   geom_line(linewidth = 0.75)+
   scale_x_datetime(date_breaks = "1 day", date_labels= "%m/%d", minor_breaks = NULL)+
   theme_bw()+
-  xlab("Date")+
+#  xlab("Date (UTC)")+
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   ggtitle("DB01 2022")+
-  annotate(geom= "point", x=as.POSIXct("2022-09-20 23:59:00"), y= 135.0901, color= "red", size= 2)+
+  annotate(geom= "text", x=as.POSIXct("2022-09-20 23:59:00"), y= 136.0901, label = "23:59", color= "red", size= 4)+
 #  annotate(geom= "point", x=as.POSIXct("2022-09-21 00:00:00"), y= 135.0280, color= "green", size= 1)+
-  annotate(geom= "point", x=as.POSIXct("2022-09-22 00:00:00"), y= 132.2585, color= "red", size= 2)+
-  annotate(geom= "point", x=as.POSIXct("2022-09-23 00:05:00"), y= 130.7967, color= "red", size= 2)+
-  annotate(geom= "point", x=as.POSIXct("2022-09-18 23:47:00"), y= 130.5401, color= "red", size= 2)+
-#  annotate(geom= "point", x=as.POSIXct("2022-09-19 00:11:00"), y= 130.4963, color= "green", size= 1)+
-  annotate(geom= "point", x=as.POSIXct("2022-09-17 23:57:00"), y= 126.0715, color= "red", size= 2)+
-  annotate(geom= "point", x=as.POSIXct("2022-09-16 23:59:00"), y= 124.8383, color= "red", size= 2)+
-  annotate(geom= "point", x=as.POSIXct("2022-09-24 00:00:00"), y= 129.6342, color= "red", size= 2)
+  annotate(geom= "text", x=as.POSIXct("2022-09-22 00:00:00"), y= 134.2585, label= "00:00", color= "red", size= 4)+
+  annotate(geom= "text", x=as.POSIXct("2022-09-23 00:05:00"), y= 132.7967, label= "00:05", color= "red", size= 4)+
+  annotate(geom= "text", x=as.POSIXct("2022-09-18 23:47:00"), y= 132.5401, label= "23:47", color= "red", size= 4)+
+  annotate(geom= "text", x=as.POSIXct("2022-09-19 23:55:00"), y= 132.1972, label= "23:55", color= "red", size= 4)+
+  annotate(geom= "text", x=as.POSIXct("2022-09-17 23:57:00"), y= 128.0715, label= "23:57",  color= "red", size= 4)+
+  annotate(geom= "text", x=as.POSIXct("2022-09-16 23:59:00"), y= 126.8383, label= "23:59", color= "red", size= 4)+
+#  annotate(geom= "text", x=as.POSIXct("2022-09-24 00:00:00"), y= 131.6342, label= "00:00", color= "red", size= 4)+
+  ylim(90, 137)+
+  theme(axis.text.x= element_blank(),
+        axis.ticks.x= element_blank(),
+        axis.title.x= element_blank())
 
 plot(DB_500)
 
@@ -2596,15 +2602,51 @@ CB01join_500_max <- CB01join_0916_0923 %>%
 CB01join_500_max <- CB01join_500_max [-c(5:8, 10:16)]
 
 CB_500<- ggplot(CB01join_0916_0923, aes(x= UTC, y= OL_500))+
-  geom_daynight()+
+  geom_daynight(sunrise= 11, sunset= 23)+
   geom_line(linewidth = 0.75)+
   scale_x_datetime(date_breaks = "1 day", date_labels= "%m/%d", minor_breaks = NULL)+
   theme_bw()+
-  xlab("Date")+
+  xlab("Date (UTC)")+
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
-  ggtitle("CB01 2022")
+  ggtitle("CB01 2022")+
+  ylim(90, 137)+
+  annotate(geom= "text", x=as.POSIXct("2022-09-16 03:10:00"), y= 130.4991, label = "03:10", color= "red", size= 4)+
+  annotate(geom= "text", x=as.POSIXct("2022-09-17 17:38:00"), y= 129.4855, label = "17:38", color= "red", size= 4)+
+  annotate(geom= "text", x=as.POSIXct("2022-09-18 03:17:00"), y= 130.1897, label = "03:17", color= "red", size= 4)+
+#  annotate(geom= "text", x=as.POSIXct("2022-09-19 23:58:00"), y= 127.3293, label = "23:58", color= "red", size= 4)+
+  annotate(geom= "text", x=as.POSIXct("2022-09-20 00:34:00"), y= 129.5519, label = "00:34", color= "red", size= 4)+
+  annotate(geom= "text", x=as.POSIXct("2022-09-21 00:38:00"), y= 131.2127, label = "00:38", color= "red", size= 4)+
+  annotate(geom= "text", x=as.POSIXct("2022-09-22 23:56:00"), y= 130.2560, label = "23:56", color= "red", size= 4)+
+  annotate(geom= "text", x=as.POSIXct("2022-09-23 04:57:00"), y= 133.6289, label = "04:57", color= "red", size= 4)
+
+
+plot(CB_500)
 
 DB_500/CB_500 + plot_layout(guides= "collect", axis_titles = "collect")
+
+DB_2000 <- ggplot(DB01join_0916_0923, aes(x= UTC, y= OL_2000))+
+  geom_daynight(sunrise= 11, sunset= 23)+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "1 day", date_labels= "%m/%d", minor_breaks = NULL)+
+  theme_bw()+
+#  xlab("Date (UTC)")+
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("DB01 2022")+
+  ylim(90, 137)+
+  theme(axis.text.x= element_blank(),
+        axis.ticks.x= element_blank(),
+        axis.title.x= element_blank())
+CB_2000<- ggplot(CB01join_0916_0923, aes(x= UTC, y= OL_2000))+
+  geom_daynight(sunrise= 11, sunset= 23)+
+  geom_line(linewidth = 0.75)+
+  scale_x_datetime(date_breaks = "1 day", date_labels= "%m/%d", minor_breaks = NULL)+
+  theme_bw()+
+  xlab("Date (UTC)")+
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("CB01 2022")+
+  ylim(90, 137)
+
+DB_2000/CB_2000 + plot_layout(guides= "collect", axis_titles = "collect")
 ```
 #chorus presence & temp
 ``` {r}
@@ -2659,7 +2701,7 @@ allSite500 <- ggplot(all_temp_presence, aes(x = med_temp, y = med_500, group= X5
                label.x = "left",
                vstep = 0.05)+
   xlab("Median daily temperature (°C))")+
-#  ylab(expression(paste('Median 500 Hz Octave Level SPL (dB re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 500 Hz Octave Level SPL (dB re 1 \u00b5Pa)')))+
   scale_color_manual(labels= c("Absent:DB01", "Absent:ES01", "Absent:CB01","Present:DB01","Present:ES01",  "Present:CB01"), values= c("grey", "grey","grey", "#4B8320",  "red",  "blue"))+
   scale_fill_manual(values= c("grey", "grey","grey", "#4B8320",  "red",  "blue"))+
   theme_bw()+
@@ -2680,7 +2722,7 @@ allSite1000 <- ggplot(all_temp_presence, aes(x = med_temp, y = med_1000, group= 
                label.x = "left",
                vstep = 0.05)+
   xlab("Median daily temperature (°C))")+
-#  ylab(expression(paste('Median 1000 Hz Octave Level SPL (dB re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 1000 Hz Octave Level SPL (dB re 1 \u00b5Pa)')))+
   scale_color_manual(labels= c("Absent:DB01", "Absent:ES01", "Absent:CB01","Present:DB01","Present:ES01",  "Present:CB01"), values= c("grey", "grey","grey", "#4B8320",  "red",  "blue"))+
   scale_fill_manual(values= c("grey", "grey","grey", "#4B8320",  "red",  "blue"))+
   theme_bw()+
@@ -2690,7 +2732,8 @@ allSite1000 <- ggplot(all_temp_presence, aes(x = med_temp, y = med_1000, group= 
         axis.text.y= element_text(size= 16),
         axis.text.x= element_blank(),
         axis.ticks.x= element_blank(),
-        legend.position= "none")
+        legend.position= "none")+
+  facet_wrap("site")
 
 allSite2000 <- ggplot(all_temp_presence, aes(x = med_temp, y = med_2000, group= X2000_chorus:site, color= X2000_chorus:site))+
   geom_point(size= 0.85) +
@@ -2701,7 +2744,7 @@ allSite2000 <- ggplot(all_temp_presence, aes(x = med_temp, y = med_2000, group= 
                label.x = "left",
                vstep = 0.05)+
   xlab("Median daily temperature (°C))")+
-#  ylab(expression(paste('Median 2000 Hz Octave Level SPL (dB re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 2000 Hz Octave Level SPL (dB re 1 \u00b5Pa)')))+
   scale_color_manual(labels= c("Absent:DB01", "Absent:ES01", "Absent:CB01","Present:DB01","Present:ES01",  "Present:CB01"), values= c("grey", "grey","grey", "#4B8320",  "red",  "blue"))+
   scale_fill_manual(values= c("grey", "grey","grey", "#4B8320",  "red",  "blue"))+
   theme_bw()+
@@ -2715,11 +2758,11 @@ allSite2000 <- ggplot(all_temp_presence, aes(x = med_temp, y = med_2000, group= 
 
 all_siteOL<- allSite500/allSite1000/allSite2000+ plot_layout(axis_titles = "collect", guides= "collect")
 
-plot(all_siteOL)
+plot(allSite1000)
 
 #ggsave(here("figs", "all_siteTempsOL.png"), all_siteOL, width= 36, height= 24, units= "in")
 ```
-#minute level data with confirmed fish presence
+#minute level data with confirmed chorus presence
 ```{r}
 #need to combine present days and plot those with the minute data- days with chorusing vs days without at minute level
 #DB01 202207: 2022-07-10 to 2022-12-16
@@ -2741,8 +2784,6 @@ colnames(DB01_chorusExpanded)[1] <- "UTC"
 DB01_202206_minOLChorus <- DB01_202207_minOL %>%
   full_join(DB01_chorusExpanded)
 
-
-
 DB01_minuteChorus <- ggplot(DB01_202206_minOLChorus, aes(x= UTC, y= OL_1000, group= X1000_chorus, color= X1000_chorus))+
   geom_point(size = 0.5)+
   scale_x_datetime(date_breaks = "3 weeks", date_labels= "%m/%d", minor_breaks = NULL)+
@@ -2752,7 +2793,20 @@ DB01_minuteChorus <- ggplot(DB01_202206_minOLChorus, aes(x= UTC, y= OL_1000, gro
   ylab(expression(paste('Median 1000 HzOctave Level SPL (db re 1 \u00b5Pa)')))+
   guides(color= guide_legend(title= "DB01 Chorus Presence"))
   
+#combo of sunset times w/ fish chorus presence
+DB01_minSunsetChorus <- DB01_minSunsetTimes %>%
+  left_join(DB01_chorusExpanded, by = "UTC")
+DB01_minSunsetChorus <- DB01_minSunsetChorus %>%
+  drop_na(X500_chorus)
 
+ggplot(DB01_minSunsetChorus, aes(x= UTC, y= OL_2000, group= X2000_chorus, color= X2000_chorus))+
+  geom_point()+
+  scale_x_datetime(date_breaks = "3 weeks", date_labels= "%m/%d", minor_breaks = NULL)+
+  scale_color_manual(labels= c("no", "yes"), values= c("black", "#4B8320"))+
+  theme_bw()+
+  xlab("Date- sunset times")+
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  guides(color= guide_legend(title= "DB01 Chorus Presence"))
 
 #CB01
 CB01_202206_minOL <- CB01_202206_minOL %>%
