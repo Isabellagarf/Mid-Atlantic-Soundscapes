@@ -90,7 +90,7 @@ CB03_HMD$UTC <- as.POSIXct(CB03_HMD$UTC, format= "%m/%d/%Y %H", tz = "GMT")
 CB03_HMD <- CB03_HMD[-c(1)]
 CB03_HMD$PLATFORM = "CB03"
 
- all_sites <- DB01_HMD%>%
+# all_sites <- DB01_HMD%>%
   full_join(DB02_HMD)%>%
   full_join(DB03_HMD)%>%
   full_join(ES01_HMD)%>%
