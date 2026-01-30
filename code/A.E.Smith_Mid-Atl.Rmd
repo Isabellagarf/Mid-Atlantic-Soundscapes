@@ -106,7 +106,7 @@ CB03_HMD$PLATFORM = "CB03"
 #all_test <- read.csv(here("data/all_sites_HMD.csv"))
  
 ```
-#converting to TOLs
+#converting to TOLs- shaded plot
 ```{r}
 DB01_TOL <- createOctaveLevel(DB01_HMD, type= 'tol')
 DB02_TOL <- createOctaveLevel(DB02_HMD, type= 'tol')
@@ -147,22 +147,140 @@ all_TOLSites$season = case_when(all_TOLSites$month == 1 ~ "Winter",
                             all_TOLSites$month == 11 ~ "Fall",
                             all_TOLSites$month == 12 ~ "Winter")
 
-all_TOLSiteSeason<- all_TOLSites %>% 
-  group_by(season, PLATFORM) %>% 
-  dplyr::summarize(med_25 = median(TOL_25, na.rm=TRUE), med_31.5 = median(TOL_31.5, na.rm=TRUE), med_40 = median(TOL_40, na.rm=TRUE), med_50 = median(TOL_50, na.rm=TRUE), med_63 = median(TOL_63, na.rm=TRUE),med_80 = median(TOL_80, na.rm=TRUE), med_100 = median(TOL_100, na.rm=TRUE), med_125 = median(TOL_125, na.rm=TRUE),med_160 = median(TOL_160, na.rm=TRUE), med_200 = median(TOL_200, na.rm=TRUE), med_250 = median(TOL_250, na.rm=TRUE), med_315 = median(TOL_315, na.rm=TRUE), med_400 = median(TOL_400, na.rm=TRUE),med_500 = median(TOL_500, na.rm=TRUE), med_630 = median(TOL_630, na.rm=TRUE), med_800 = median(TOL_800, na.rm=TRUE),med_1000 = median(TOL_1000, na.rm=TRUE), med_1250 = median(TOL_1250, na.rm=TRUE), med_1600 = median(TOL_1600, na.rm=TRUE),med_2000= median(TOL_2000, na.rm= TRUE),med_2500 = median(TOL_2500, na.rm=TRUE), med_3150 = median(TOL_3150, na.rm=TRUE),med_4000 = median(TOL_4000, na.rm=TRUE), med_5000 = median(TOL_5000, na.rm=TRUE), med_6300 = median(TOL_6300, na.rm=TRUE),med_8000= median(TOL_8000, na.rm= TRUE),med_10000 = median(TOL_10000, na.rm=TRUE), med_12500 = median(TOL_12500, na.rm=TRUE),med_16000 = median(TOL_16000, na.rm=TRUE), med_20000 = median(TOL_20000, na.rm=TRUE))
+all_TOLSitesMed <- all_TOLSites%>%
+  dplyr::group_by(season, PLATFORM)%>%
+  dplyr::summarise(
+    med_25= median(TOL_25, na.rm= TRUE),
+    med_31.5= median(TOL_31.5, na.rm= TRUE),
+    med_40= median(TOL_40, na.rm= TRUE),
+    med_50= median(TOL_50, na.rm= TRUE),
+    med_63= median(TOL_63, na.rm= TRUE),
+    med_80= median(TOL_80, na.rm= TRUE),
+    med_100= median(TOL_100, na.rm= TRUE),
+    med_125= median(TOL_125, na.rm= TRUE),
+    med_160= median(TOL_160, na.rm= TRUE),
+    med_200= median(TOL_200, na.rm= TRUE),,
+    med_250= median(TOL_250, na.rm= TRUE),
+    med_315= median(TOL_315, na.rm= TRUE),
+    med_400= median(TOL_400, na.rm= TRUE),
+    med_500= median(TOL_500, na.rm= TRUE),
+    med_630= median(TOL_630, na.rm= TRUE),
+    med_800= median(TOL_800, na.rm= TRUE),
+    med_1000= median(TOL_1000, na.rm= TRUE),
+    med_1250= median(TOL_1250, na.rm= TRUE),
+    med_1600= median(TOL_1600, na.rm= TRUE),
+    med_2000= median(TOL_2000, na.rm= TRUE),
+    med_2500= median(TOL_2500, na.rm= TRUE),
+    med_3150= median(TOL_3150, na.rm= TRUE),
+    med_4000= median(TOL_4000, na.rm= TRUE),
+    med_5000= median(TOL_5000, na.rm= TRUE),
+    med_6300= median(TOL_6300, na.rm= TRUE),
+    med_8000= median(TOL_8000, na.rm= TRUE),
+    med_10000= median(TOL_10000, na.rm= TRUE),
+    med_12500= median(TOL_12500, na.rm= TRUE),
+    med_16000= median(TOL_16000, na.rm= TRUE),
+    med_20000= median(TOL_20000, na.rm= TRUE))
 
-melted_all_TOLSiteSeason <- melt(all_TOLSiteSeason, id= c("season", "PLATFORM"), variable.name= "TOL_band",
-                                value.name= "med_seasonal_SPL")
-melted_all_TOLSiteSeason$season = factor(melted_all_TOLSiteSeason$season,
+all_TOLSitesMed <- all_TOLSitesMed %>%
+  pivot_longer(
+    cols= !(season:PLATFORM),
+    names_to= c(".value", "TOL_band"),
+    names_sep = "_",
+    values_drop_na = TRUE
+  ) 
+
+quants= c(0.05, 0.95)
+
+all_TOLSitesQuant <- all_TOLSites %>%
+  group_by(season, PLATFORM) %>%
+  summarize(quant05_25 = quantile(TOL_25, probs= quants[1], na.rm= TRUE),
+            quant95_25 = quantile(TOL_25, probs= quants[2], na.rm= TRUE),
+            quant05_31.5 = quantile(TOL_31.5, probs= quants[1], na.rm= TRUE),
+            quant95_31.5 = quantile(TOL_31.5, probs= quants[2], na.rm= TRUE),
+            quant05_40 = quantile(TOL_40, probs= quants[1], na.rm= TRUE),
+            quant95_40 = quantile(TOL_40, probs= quants[2], na.rm= TRUE),
+            quant05_50 = quantile(TOL_50, probs= quants[1], na.rm= TRUE),
+            quant95_50 = quantile(TOL_50, probs= quants[2], na.rm= TRUE),
+            quant05_63 = quantile(TOL_63, probs= quants[1], na.rm= TRUE),
+            quant95_63 = quantile(TOL_63, probs= quants[2], na.rm= TRUE),
+            quant05_80 = quantile(TOL_80, probs= quants[1], na.rm= TRUE),
+            quant95_80 = quantile(TOL_80, probs= quants[2], na.rm= TRUE),
+            quant05_100 = quantile(TOL_100, probs= quants[1], na.rm= TRUE),
+            quant95_100 = quantile(TOL_100, probs= quants[2], na.rm= TRUE),
+            quant05_125 = quantile(TOL_125, probs= quants[1], na.rm= TRUE),
+            quant95_125 = quantile(TOL_125, probs= quants[2], na.rm= TRUE),
+            quant05_160 = quantile(TOL_160, probs= quants[1], na.rm= TRUE),
+            quant95_160 = quantile(TOL_160, probs= quants[2], na.rm= TRUE),
+            quant05_200 = quantile(TOL_200, probs= quants[1], na.rm= TRUE),
+            quant95_200 = quantile(TOL_200, probs= quants[2], na.rm= TRUE),
+            quant05_250 = quantile(TOL_250, probs= quants[1], na.rm= TRUE),
+            quant95_250 = quantile(TOL_250, probs= quants[2], na.rm= TRUE),
+            quant05_315 = quantile(TOL_315, probs= quants[1], na.rm= TRUE),
+            quant95_315 = quantile(TOL_315, probs= quants[2], na.rm= TRUE),
+            quant05_400 = quantile(TOL_400, probs= quants[1], na.rm= TRUE),
+            quant95_400 = quantile(TOL_400, probs= quants[2], na.rm= TRUE),
+            quant05_500 = quantile(TOL_500, probs= quants[1], na.rm= TRUE),
+            quant95_500 = quantile(TOL_500, probs= quants[2], na.rm= TRUE),
+            quant05_630 = quantile(TOL_630, probs= quants[1], na.rm= TRUE),
+            quant95_630 = quantile(TOL_630, probs= quants[2], na.rm= TRUE),
+            quant05_800 = quantile(TOL_800, probs= quants[1], na.rm= TRUE),
+            quant95_800 = quantile(TOL_800, probs= quants[2], na.rm= TRUE),
+            quant05_1000 = quantile(TOL_1000, probs= quants[1], na.rm= TRUE),
+            quant95_1000 = quantile(TOL_1000, probs= quants[2], na.rm= TRUE),
+            quant05_1250 = quantile(TOL_1250, probs= quants[1], na.rm= TRUE),
+            quant95_1250 = quantile(TOL_1250, probs= quants[2], na.rm= TRUE),
+            quant05_1600 = quantile(TOL_1600, probs= quants[1], na.rm= TRUE),
+            quant95_1600 = quantile(TOL_1600, probs= quants[2], na.rm= TRUE),
+            quant05_2000 = quantile(TOL_2000, probs= quants[1], na.rm= TRUE),
+            quant95_2000 = quantile(TOL_2000, probs= quants[2], na.rm= TRUE),
+            quant05_2500 = quantile(TOL_2500, probs= quants[1], na.rm= TRUE),
+            quant95_2500 = quantile(TOL_2500, probs= quants[2], na.rm= TRUE),
+            quant05_3150 = quantile(TOL_3150, probs= quants[1], na.rm= TRUE),
+            quant95_3150 = quantile(TOL_3150, probs= quants[2], na.rm= TRUE),
+            quant05_4000 = quantile(TOL_4000, probs= quants[1], na.rm= TRUE),
+            quant95_4000 = quantile(TOL_4000, probs= quants[2], na.rm= TRUE),
+            quant05_5000 = quantile(TOL_5000, probs= quants[1], na.rm= TRUE),
+            quant95_5000 = quantile(TOL_5000, probs= quants[2], na.rm= TRUE),
+            quant05_6300 = quantile(TOL_6300, probs= quants[1], na.rm= TRUE),
+            quant95_6300 = quantile(TOL_6300, probs= quants[2], na.rm= TRUE),
+            quant05_8000 = quantile(TOL_8000, probs= quants[1], na.rm= TRUE),
+            quant95_8000 = quantile(TOL_8000, probs= quants[2], na.rm= TRUE),
+            quant05_10000 = quantile(TOL_10000, probs= quants[1], na.rm= TRUE),
+            quant95_10000 = quantile(TOL_10000, probs= quants[2], na.rm= TRUE),
+            quant05_12500 = quantile(TOL_12500, probs= quants[1], na.rm= TRUE),
+            quant95_12500 = quantile(TOL_12500, probs= quants[2], na.rm= TRUE),
+            quant05_16000 = quantile(TOL_16000, probs= quants[1], na.rm= TRUE),
+            quant95_16000 = quantile(TOL_16000, probs= quants[2], na.rm= TRUE),
+            quant05_20000 = quantile(TOL_20000, probs= quants[1], na.rm= TRUE),
+            quant95_20000 = quantile(TOL_20000, probs= quants[2], na.rm= TRUE))
+
+all_TOLSitesQuant <- all_TOLSitesQuant %>%
+  pivot_longer(
+    cols= !(season:PLATFORM),
+    names_to= c(".value", "TOL_band"),
+    names_sep = "_",
+    values_drop_na = TRUE
+  ) 
+
+long_all_TOLSites <- all_TOLSitesMed %>%
+  full_join(all_TOLSitesQuant)
+
+long_all_TOLSites$TOL_band = factor(long_all_TOLSites$TOL_band,
+                                        levels= c("25", "31.5", "40", "50", "63", "80", "100", "125", "160", "200", "250", "315", "400", "500", "630", "800", "1000", "1250", "1600", "2000", "2500", "3150", "4000", "5000", "6300", "8000", "10000", "12500", "16000", "20000"),
+                                        labels= c("25", "31.5", "40", "50", "63", "80", "100", "125", "160", "200", "250", "315", "400", "500", "630", "800", "1000", "1250", "1600", "2000", "2500", "3150", "4000", "5000", "6300", "8000", "10000", "12500", "16000", "20000"))
+
+long_all_TOLSites$season = factor(long_all_TOLSites$season,
                                         levels= c("Winter", "Spring", "Summer", "Fall"),
                                         labels= c("Winter", "Spring", "Summer", "Fall"))
 
-melted_all_TOLSiteSeason$TOL_band = factor(melted_all_TOLSiteSeason$TOL_band,
-                                        levels= c("med_25","med_31.5","med_40","med_50", "med_63","med_80","med_100", "med_125","med_160","med_200", "med_250","med_315","med_400", "med_500","med_630","med_800", "med_1000","med_1250","med_1600", "med_2000","med_2500","med_3150", "med_4000","med_5000","med_6300", "med_8000","med_10000","med_12500", "med_16000", "med_20000"),
-                                        labels= c("25", "31.5", "40", "50", "63", "80", "100", "125", "160", "200", "250", "315", "400", "500", "630", "800", "1000", "1250", "1600", "2000", "2500", "3150", "4000", "5000", "6300", "8000", "10000", "12500", "16000", "20000"))
 
-ggplot(melted_all_TOLSiteSeason, aes(x= TOL_band, y = med_seasonal_SPL, color= season, group= season))+
-  geom_point(size= 1)+ geom_line() +
+ggplot(long_all_TOLSites, aes(x= TOL_band, y= med, color= season, group= season))+
+  geom_ribbon(aes(ymin= quant05,
+                  ymax= quant95,
+              fill= season, color= season), linetype= 1, linewidth= 0.2, alpha= 0.1)+
+  scale_fill_manual(values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
+  geom_point(size= 1.5)+ geom_line(linewidth= 1)+
+  guides(fill= guide_legend(title= "Season"))+
   facet_wrap(factor(PLATFORM, levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))~., ncol= 3)+
   theme_bw()+
   xlab("Third-octave band (Hz)")+
@@ -170,6 +288,7 @@ ggplot(melted_all_TOLSiteSeason, aes(x= TOL_band, y = med_seasonal_SPL, color= s
   scale_color_manual(values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
   guides(color= guide_legend(title= "Season"))+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
 
 ```
 #seasonal sound level medians
