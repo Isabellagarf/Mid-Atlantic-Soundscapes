@@ -278,14 +278,14 @@ ggplot(long_all_TOLSites, aes(x= TOL_band, y= med, color= season, group= season)
   geom_ribbon(aes(ymin= quant05,
                   ymax= quant95,
               fill= season, color= season), linetype= 1, linewidth= 0.2, alpha= 0.1)+
-  scale_fill_manual(values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
+  scale_fill_manual(values= c("#a6cee3", "#1f78b4", "#d7191c","#fdae61"))+
   geom_point(size= 1.5)+ geom_line(linewidth= 1)+
   guides(fill= guide_legend(title= "Season"))+
   facet_wrap(factor(PLATFORM, levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))~., ncol= 3)+
   theme_bw()+
   xlab("Third-octave band (Hz)")+
   ylab(expression(paste('Median sound pressure levels (db re 1 \u00b5Pa)')))+
-  scale_color_manual(values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
+  scale_color_manual(values= c("#a6cee3", "#1f78b4", "#d7191c","#fdae61"))+
   guides(color= guide_legend(title= "Season"))+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
@@ -1075,8 +1075,19 @@ DBOL_2000_dailyTemps_Plot/ESOL_2000_dailyTemps_Plot/CBOL_2000_dailyTemps_Plot+ p
 ```{r}
 moon_phases <- read.csv(here("data/moon_phases.csv"))
 moon_phases$Date <- as.Date(moon_phases$Date, format= "%Y %b %e")
-colnames(moon_phases)[2] <- "UTC"
+colnames(moon_phases)[2] <- "UTC_date"
+moon_phases$Time..Universal.Time. <- as.POSIXct(moon_phases$Time..Universal.Time., format= "%H:%M")
+moon_phases <- moon_phases %>%
+  mutate(UTC_hour = hour(Time..Universal.Time.))%>%
+  mutate(UTC_minute = minute(Time..Universal.Time.))
+moon_phases$UTC_hour <- as.character(moon_phases$UTC_hour)
+moon_phases$UTC_minute <- as.character(moon_phases$UTC_minute)
+moon_phasesUTC_date <- as.character(moon_phases$UTC_date)
 moon_phases <- moon_phases[-c(3)]
+moon_phases$UTC_1 <- paste(moon_phases$UTC_date, moon_phases$UTC_hour, sep = " ")
+moon_phases$UTC <- paste(moon_phases$UTC_1, moon_phases$UTC_minute , sep = ":")
+moon_phases$UTC = as.POSIXct(moon_phases$UTC, format = "%Y-%m-%d %H:%M", tz= "UTC")
+
 
 moon_phases2 <- read.csv(here("data/moon_phases2.csv"))
 moon_phases2$Date <- as.Date(moon_phases2$Date, format= "%Y %b %e")
@@ -2881,7 +2892,7 @@ plot(allSite1000)
 
 #ggsave(here("figs", "all_siteTempsOL.png"), all_siteOL, width= 36, height= 24, units= "in")
 ```
-#minute level data with confirmed chorus presence
+#minute level data with confirmed chorus presence & moons
 ```{r}
 #need to combine present days and plot those with the minute data- days with chorusing vs days without at minute level
 #DB01 202207: 2022-07-10 to 2022-12-16
@@ -2958,4 +2969,21 @@ CB01_minuteChorus <- ggplot(CB01_202206_minOLChorus, aes(x= UTC, y= OL_1000, gro
   guides(color= guide_legend(title= "CB01 Chorus Presence"))
 
 DB01_minuteChorus/CB01_minuteChorus +plot_layout(guides= "collect", axis_titles = "collect" )
+
+
+
+#adding in moon data
+DB01_202206_minOLChorus <- DB01_202206_minOLChorus %>%
+  left_join(moon_phases)
+
+
+
+
+
+
+
+
+
+
+
 ```
