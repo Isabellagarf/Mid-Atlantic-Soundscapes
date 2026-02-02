@@ -90,7 +90,7 @@ CB03_HMD$UTC <- as.POSIXct(CB03_HMD$UTC, format= "%m/%d/%Y %H", tz = "GMT")
 CB03_HMD <- CB03_HMD[-c(1)]
 CB03_HMD$PLATFORM = "CB03"
 
-# all_sites <- DB01_HMD%>%
+ all_sites <- DB01_HMD%>%
   full_join(DB02_HMD)%>%
   full_join(DB03_HMD)%>%
   full_join(ES01_HMD)%>%
@@ -99,7 +99,25 @@ CB03_HMD$PLATFORM = "CB03"
   full_join(CB01_HMD)%>%
   full_join(CB02_HMD)%>%
   full_join(CB03_HMD)
-#all_sites$PLATFORM_order= factor(all_sites$PLATFORM, levels = c("DB01","DB02","DB03","ES01","ES02", "ES03", "CB01", "CB02","CB03"))
+
+all_sites$month <- month(all_sites$UTC)
+
+all_sites$season = case_when(all_sites$month == 1 ~ "Winter",
+                            all_sites$month == 2 ~ "Winter",
+                            all_sites$month == 3 ~ "Spring",
+                            all_sites$month == 4 ~ "Spring",
+                            all_sites$month == 5 ~ "Spring",
+                            all_sites$month == 6 ~ "Summer",
+                            all_sites$month == 7 ~ "Summer",
+                            all_sites$month == 8 ~ "Summer",
+                            all_sites$month == 9 ~ "Fall",
+                            all_sites$month == 10 ~ "Fall",
+                            all_sites$month == 11 ~ "Fall",
+                            all_sites$month == 12 ~ "Winter")
+ 
+
+ 
+ #all_sites$PLATFORM_order= factor(all_sites$PLATFORM, levels = c("DB01","DB02","DB03","ES01","ES02", "ES03", "CB01", "CB02","CB03"))
 
 #write.csv(all_sites, here("data", "all_sites_HMD.csv")) #need to save after joining all sites again
 
@@ -291,7 +309,7 @@ ggplot(long_all_TOLSites, aes(x= TOL_band, y= med, color= season, group= season)
 
 
 ```
-#seasonal sound level medians
+#seasonal PSDs- below OLs
 ```{r}
 all_OLSites$month <- month(all_OLSites$UTC) ##this dataframe is in the OL files combining "inshore/offshore grouping" section
 
@@ -363,7 +381,7 @@ plotPSD(x=all_sites, style='quantile', q=0.01, by='season', facet='PLATFORM')+
   scale_fill_manual(values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
   theme_bw()+
   guides(color= guide_legend(title= "Season"))#+
-  facet_grid(factor(PLATFORM, levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))~.)
+  facet_wrap(factor('PLATFORM', levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))~., ncol= 3)
   
 
 
@@ -411,8 +429,8 @@ all_sites$PLATFORM = factor(all_sites$PLATFORM,
                                         levels= c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'),
                                         labels= c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))
 
-plotPSD(x=all_sites, style='quantile', q=0.01, dbRange= c(30, 120),facet='PLATFORM', ncol = 3)+
-#  facet_grid(factor('PLATFORM', levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03')))+
+plotPSD(x=all_sites, style='quantile', q=0.01, dbRange= c(30, 120),facet='PLATFORM', by= "season")+
+  facet_wrap(factor(PLATFORM, levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))~., ncol= 3)+
   theme_bw()+
   labs(y= (expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz"))))
 
