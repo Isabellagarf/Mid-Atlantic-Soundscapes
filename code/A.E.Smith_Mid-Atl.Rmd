@@ -48,6 +48,7 @@ library(multcompView)
 library(showtext)
 library(photobiology)
 library(ggdaynight)
+library(khroma)
 
 SE<- function(x)sd(x)/sqrt(length(x))
 
@@ -115,7 +116,40 @@ all_sites$season = case_when(all_sites$month == 1 ~ "Winter",
                             all_sites$month == 11 ~ "Fall",
                             all_sites$month == 12 ~ "Winter")
  
+all_sites$season = factor(all_sites$season,
+                                        levels= c("Winter", "Spring", "Summer", "Fall"),
+                                        labels= c("Winter", "Spring", "Summer", "Fall"))
 
+all_sites$PLATFORM = factor(all_sites$PLATFORM,
+                                        levels= c("DB01", "DB02", "DB03", "ES01", "ES02", "ES03", "CB01", "CB02", "CB03"),
+                                        labels= c("DB01", "DB02", "DB03", "ES01", "ES02", "ES03", "CB01", "CB02", "CB03"))
+
+#by season
+plotPSD(x=all_sites, style='quantile', Q= 0.01, by='season', facet='PLATFORM')+
+  labs(y= (expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz"))))+
+  theme(axis.text= element_text(size= 10),
+        axis.title= element_text(size= 14),
+        legend.text = element_text(size= 13),
+        legend.title= element_text(size= 13.5),
+        strip.text= element_text(size= 12))+
+  scale_color_manual(labels= c("Winter", "Spring", "Summer", "Fall" ), values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
+  scale_fill_manual(values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
+  theme_bw()+
+  guides(color= guide_legend(title= "Season"))
+
+#by month
+discrete_rainbow <- color("discrete rainbow", )
+plotPSD(x=all_sites, style='quantile', by='month', facet='PLATFORM')+
+  labs(y= (expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz"))))+
+  theme(axis.text= element_text(size= 10),
+        axis.title= element_text(size= 14),
+        legend.text = element_text(size= 13),
+        legend.title= element_text(size= 13.5),
+        strip.text= element_text(size= 12))+
+  scale_color_manual(labels= c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"), values= c(discrete_rainbow(12)))+
+  scale_fill_manual(values= c(discrete_rainbow(12)))+
+  theme_bw()+
+  guides(color= guide_legend(title= "month"))
  
  #all_sites$PLATFORM_order= factor(all_sites$PLATFORM, levels = c("DB01","DB02","DB03","ES01","ES02", "ES03", "CB01", "CB02","CB03"))
 
