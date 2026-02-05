@@ -50,7 +50,7 @@ library(photobiology)
 library(ggdaynight)
 library(khroma)
 
-SE<- function(x)sd(x)/sqrt(length(x))
+PAMscapes
 
 ```
 
@@ -800,8 +800,11 @@ DB01_chorusPresence$X500_chorus = case_when(DB01_chorusPresence$X500_chorus == 1
                                             DB01_chorusPresence$X500_chorus == 0 ~ "no")
 DB01_chorusPresence$X1000_chorus = case_when(DB01_chorusPresence$X1000_chorus == 1 ~ "yes",
                                             DB01_chorusPresence$X1000_chorus == 0 ~ "no")
-DB01_chorusPresence$X2000_chorus = case_when(DB01_chorusPresence$X2000_chorus == 1 ~ "yes",
-                                            DB01_chorusPresence$X2000_chorus == 0 ~ "no")
+DB01_chorusPresence$cusk_chorus = case_when(DB01_chorusPresence$cusk_chorus == 1 ~ "yes",
+                                            DB01_chorusPresence$cusk_chorus == 0 ~ "no")
+DB01_chorusPresence$oyster_chorus = case_when(DB01_chorusPresence$oyster_chorus == 1 ~ "yes",
+                                            DB01_chorusPresence$oyster_chorus == 0 ~ "no")
+
 DB01_chorusPresence$date <- as.Date(DB01_chorusPresence$date, format= "%m/%d/%Y")
 colnames(DB01_chorusPresence)[1] <- "UTC"
 DB01_chorusPresence$site = "DB01"
@@ -2621,6 +2624,9 @@ DB01_202207_minOL <- read.csv(here("data/DB01_202207_minOL.csv"))
 DB01_202207_minOL$UTC <- as.POSIXct(DB01_202207_minOL$UTC, format= "%Y-%m-%dT%H:%M:%SZ")
 DB01_202207_minOL$PLATFORM = "DB01"
 
+DB01_202207_Folder <- paste0("//Z:/PassiveAcoustics/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202207_DB01/NC")
+runDailyLTSAReview(DB01_202207_Folder)
+
 ES01_202404_minOL <- read.csv(here("data/ES01_202404_min.csv"))
 ES01_202404_minOL$UTC <- as.POSIXct(ES01_202404_minOL$UTC, format= "%Y-%m-%dT%H:%M:%SZ")
 ES01_202404_minOL$PLATFORM = "ES01"
@@ -2801,21 +2807,21 @@ CB_500<- ggplot(CB01join_0916_0923, aes(x= UTC, y= OL_500))+
   annotate(geom= "text", x=as.POSIXct("2022-09-22 23:56:00"), y= 130.2560, label = "23:56", color= "red", size= 4)+
   annotate(geom= "text", x=as.POSIXct("2022-09-23 04:57:00"), y= 133.6289, label = "04:57", color= "red", size= 4)
 
-lims <- as.POSIXct(strptime(c("2022-09-17 00:00:00", "2022-09-17 23:59:59"),
-                            format= "%Y-%m-%d %H:%M:%S"))
+#lims <- as.POSIXct(strptime(c("2022-09-17 00:00:00", "2022-09-17 23:59:59"),
+#                            format= "%Y-%m-%d %H:%M:%S"))
 
-ggplot(CB01join_0916_0923, aes(x= UTC, y= OL_1000))+
-  geom_daynight(sunrise= 11, sunset= 23)+
-  geom_line(linewidth = 0.75)+
-  scale_x_datetime(date_breaks = "5 hours", date_labels= "%H:%M", minor_breaks = NULL,
-                   limits= lims)+
-  theme_bw()+
-  xlab("Date (UTC)")+
-  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
-  ggtitle("CB01 2022")+
-  ylim(90, 137)
+#ggplot(CB01join_0916_0923, aes(x= UTC, y= OL_1000))+
+#  geom_daynight(sunrise= 11, sunset= 23)+
+#  geom_line(linewidth = 0.75)+
+#  scale_x_datetime(date_breaks = "5 hours", date_labels= "%H:%M", minor_breaks = NULL,
+#                   limits= lims)+
+#  theme_bw()+
+#  xlab("Date (UTC)")+
+#  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+#  ggtitle("CB01 2022")+
+#  ylim(90, 137)
 
-runSoundscapeExplorer(CB01join_0916_0923)
+#runSoundscapeExplorer(CB01join_0916_0923)
 
 plot(CB_500)
 
@@ -2969,6 +2975,7 @@ DB01_chorusPresence <- DB01_chorusPresence %>%
   mutate(UTC_date = date(UTC))
 
 DB01subset_0610_1216 <-  seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2022-12-16 00:00:00"), by = "1 min")
+with_tz(DB01subset_0610_1216, "GMT")
 DB01subset_0610_1216 <- data.frame(UTC= DB01subset_0610_1216)
 DB01subset_0610_1216 <- DB01subset_0610_1216 %>%
   mutate(UTC_date = date(UTC))
@@ -2980,6 +2987,7 @@ colnames(DB01_chorusExpanded)[1] <- "UTC"
 
 DB01_202206_minOLChorus <- DB01_202207_minOL %>%
   full_join(DB01_chorusExpanded)
+DB01_202206_minOLChorus <- with_tz(DB01_202206_minOLChorus, "EST")
 
 DB01_minuteChorus <- ggplot(DB01_202206_minOLChorus, aes(x= UTC, y= OL_1000, group= X1000_chorus, color= X1000_chorus))+
   geom_point(size = 0.5)+
@@ -2990,6 +2998,8 @@ DB01_minuteChorus <- ggplot(DB01_202206_minOLChorus, aes(x= UTC, y= OL_1000, gro
   ylab(expression(paste('Median 1000 HzOctave Level SPL (db re 1 \u00b5Pa)')))+
   guides(color= guide_legend(title= "DB01 Chorus Presence"))
   
+plot(DB01_minuteChorus)
+
 #combo of sunset times w/ fish chorus presence
 DB01_minSunsetChorus <- DB01_minSunsetTimes %>%
   left_join(DB01_chorusExpanded, by = "UTC")
