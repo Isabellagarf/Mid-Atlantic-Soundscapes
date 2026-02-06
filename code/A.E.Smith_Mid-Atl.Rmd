@@ -50,8 +50,6 @@ library(photobiology)
 library(ggdaynight)
 library(khroma)
 
-PAMscapes
-
 ```
 
 # loading full HMD files per site
@@ -125,7 +123,7 @@ all_sites$PLATFORM = factor(all_sites$PLATFORM,
                                         labels= c("DB01", "DB02", "DB03", "ES01", "ES02", "ES03", "CB01", "CB02", "CB03"))
 
 #by season
-plotPSD(x=all_sites, style='quantile', Q= 0.01, by='season', facet='PLATFORM')+
+plotPSD(x=all_sites, style='quantile', q= 0.01, by='season', facet='PLATFORM')+
   labs(y= (expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz"))))+
   theme(axis.text= element_text(size= 10),
         axis.title= element_text(size= 14),
