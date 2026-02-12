@@ -88,7 +88,9 @@ CB03_HMD <- read.csv(here("data/dataCB03_HMD.csv"))
 CB03_HMD$UTC <- as.POSIXct(CB03_HMD$UTC, format= "%m/%d/%Y %H", tz = "GMT")
 CB03_HMD <- CB03_HMD[-c(1)]
 CB03_HMD$PLATFORM = "CB03"
+```
 
+```{r}
  all_sites <- DB01_HMD%>%
   full_join(DB02_HMD)%>%
   full_join(DB03_HMD)%>%
@@ -3051,6 +3053,30 @@ DB01_minuteChorus/CB01_minuteChorus +plot_layout(guides= "collect", axis_titles 
 DB01_202206_minOLChorus <- DB01_202206_minOLChorus %>%
   left_join(moon_phases)
 
+```
+#plot acoustic scene
+```{r}
+DB01_chorusPresence <- DB01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+
+DB01subset_0707_1104 <-  seq(ymd_hms("2022-07-06 19:00:00"), ymd_hms("2024-11-03 19:00:00"), by = "1 hour")
+with_tz(DB01subset_0707_1104, "GMT")
+DB01subset_0707_1104 <- data.frame(UTC= DB01subset_0707_1104)
+DB01subset_0707_1104 <- DB01subset_0707_1104 %>%
+  mutate(UTC_date = date(UTC))
+
+DB01_hourchorusExpanded <- DB01subset_0707_1104 %>%
+  left_join(DB01_chorusPresence, by = "UTC_date")
+DB01_hourchorusExpanded <- DB01_hourchorusExpanded[-c(2,3)]
+colnames(DB01_hourchorusExpanded)[1] <- "UTC_fixed"
+
+DB01_OLChorus <- DB01_OL %>%
+  full_join(DB01_hourchorusExpanded)
+DB01_OLChorus <- DB01_OLChorus[-c(1)]
+colnames(DB01_OLChorus)[16] <- "UTC"
+
+
+plotAcousticScene(DB01_OLChorus)
 
 
 
