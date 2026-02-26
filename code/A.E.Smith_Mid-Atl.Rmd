@@ -796,19 +796,19 @@ CB03_OL$Lat = "Chesapeake"
 ```{r}
 #DB01
 DB01_chorusPresence <- read.csv(here("data/DB01_chorusPresence.csv"))
-DB01_chorusPresence$X500_chorus = case_when(DB01_chorusPresence$X500_chorus == 1 ~ "yes",
-                                            DB01_chorusPresence$X500_chorus == 0 ~ "no")
-DB01_chorusPresence$X1000_chorus = case_when(DB01_chorusPresence$X1000_chorus == 1 ~ "yes",
-                                            DB01_chorusPresence$X1000_chorus == 0 ~ "no")
-DB01_chorusPresence$cusk_chorus = case_when(DB01_chorusPresence$cusk_chorus == 1 ~ "yes",
-                                            DB01_chorusPresence$cusk_chorus == 0 ~ "no")
-DB01_chorusPresence$oyster_chorus = case_when(DB01_chorusPresence$oyster_chorus == 1 ~ "yes",
-                                            DB01_chorusPresence$oyster_chorus == 0 ~ "no")
+#DB01_chorusPresence$X500_chorus = case_when(DB01_chorusPresence$X500_chorus == 1 ~ "yes",
+ #                                           DB01_chorusPresence$X500_chorus == 0 ~ "no")
+#DB01_chorusPresence$X1000_chorus = case_when(DB01_chorusPresence$X1000_chorus == 1 ~ "yes",
+#                                            DB01_chorusPresence$X1000_chorus == 0 ~ "no")
+#DB01_chorusPresence$cusk_chorus = case_when(DB01_chorusPresence$cusk_chorus == 1 ~ "yes",
+#                                            DB01_chorusPresence$cusk_chorus == 0 ~ "no")
+#DB01_chorusPresence$oyster_chorus = case_when(DB01_chorusPresence$oyster_chorus == 1 ~ "yes",
+#                                            DB01_chorusPresence$oyster_chorus == 0 ~ "no")
 
 DB01_chorusPresence$date <- as.Date(DB01_chorusPresence$date, format= "%m/%d/%Y")
 colnames(DB01_chorusPresence)[1] <- "UTC"
 DB01_chorusPresence$site = "DB01"
-
+#not updated below
 ES01_chorusPresence <- read.csv(here("data/ES01_chorusPresence.csv"))
 ES01_chorusPresence$X500_chorus = case_when(ES01_chorusPresence$X500_chorus == 1 ~ "yes",
                                             ES01_chorusPresence$X500_chorus == 0 ~ "no")
@@ -3079,8 +3079,9 @@ DB01_OLChorus <- DB01_OLChorus[-c(1)]
 colnames(DB01_OLChorus)[16] <- "UTC"
 
 
-plotAcousticScene(DB01_OLChorus)
+runDetectionExplorer(DB01_chorusPresence)
 
+plotAcousticScene(x=DB01_chorusPresence, combineYears=FALSE, freqMap=data.frame(species=c('X1000_chorus', 'X500_chorus', 'cusk_chorus', 'oyster_chorus'), freqMin=c(140, 61, 1200, 150), freqMax=c(6500, 930, 2600, 3500)))
 
 
 
