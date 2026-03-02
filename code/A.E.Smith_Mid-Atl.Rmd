@@ -3142,21 +3142,21 @@ DB01_202206_minOLChorus <- DB01_202206_minOLChorus %>%
 DB01_chorusPresence <- DB01_chorusPresence %>%
   mutate(UTC_date = date(UTC))
 
-DB01subset_0707_1104 <-  seq(ymd_hms("2022-07-06 19:00:00"), ymd_hms("2024-11-03 19:00:00"), by = "1 hour")
-with_tz(DB01subset_0707_1104, "GMT")
-DB01subset_0707_1104 <- data.frame(UTC= DB01subset_0707_1104)
-DB01subset_0707_1104 <- DB01subset_0707_1104 %>%
-  mutate(UTC_date = date(UTC))
+#DB01subset_0707_1104 <-  seq(ymd_hms("2022-07-06 19:00:00"), ymd_hms("2024-11-03 19:00:00"), by = "1 hour")
+#with_tz(DB01subset_0707_1104, "GMT")
+#DB01subset_0707_1104 <- data.frame(UTC= DB01subset_0707_1104)
+#DB01subset_0707_1104 <- DB01subset_0707_1104 %>%
+#  mutate(UTC_date = date(UTC))
 
-DB01_hourchorusExpanded <- DB01subset_0707_1104 %>%
-  left_join(DB01_chorusPresence, by = "UTC_date")
-DB01_hourchorusExpanded <- DB01_hourchorusExpanded[-c(2,3)]
-colnames(DB01_hourchorusExpanded)[1] <- "UTC_fixed"
+#DB01_hourchorusExpanded <- DB01subset_0707_1104 %>%
+#  left_join(DB01_chorusPresence, by = "UTC_date")
+#DB01_hourchorusExpanded <- DB01_hourchorusExpanded[-c(2,3)]
+#colnames(DB01_hourchorusExpanded)[1] <- "UTC_fixed"
 
-DB01_OLChorus <- DB01_OL %>%
-  full_join(DB01_hourchorusExpanded)
-DB01_OLChorus <- DB01_OLChorus[-c(1)]
-colnames(DB01_OLChorus)[16] <- "UTC"
+#DB01_OLChorus <- DB01_OL %>%
+#  full_join(DB01_hourchorusExpanded)
+#DB01_OLChorus <- DB01_OLChorus[-c(1)]
+#colnames(DB01_OLChorus)[16] <- "UTC"
 
 
 allSite_chorusPresence <- DB01_chorusPresence%>%
@@ -3169,13 +3169,44 @@ allSite_chorusPresence <- allSite_chorusPresence %>%
 runDetectionExplorer(allSite_chorusPresence)
 
 #this won't plot for some reason- "need cols 'UTC', typecol, must have columns UTC, species"
+
 plotAcousticScene(x=allSite_chorusPresence, by='site', combineYears=FALSE, freqMap=data.frame(species=c('X1000_chorus', 'X500_chorus', 'cusk_chorus', 'oyster_chorus'), freqMin=c(140, 60, 1200, 150), freqMax=c(6500, 930, 2600, 3650)))
 
+```
+#inital diel patterens for each chorus between sites- weekly medians
+```{r}
+#DB01 500 chorus: 9/10-9/16/2024
 
+DB01subset_0910_0916 <-  seq(ymd_hms("2024-09-10 04:00:00"), ymd_hms("2024-09-17 03:00:00"), by = "1 hour")
+DB01500 <- data.frame(UTC= DB01subset_0910_0916)
+DB01500$UTC <- as.POSIXct(DB01500$UTC)
+colnames(DB01500)[1] <- "UTC_fixed"
+DB01500 <- DB01500 %>%
+  left_join(DB01_OL, by= "UTC_fixed")
 
+DB01500Med <- DB01500%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_500= median(OL_500, na.rm= TRUE))
+quants= c(0.05, 0.95)
+DB01500Quants <- DB01500 %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
+            quant95_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
+DB01500MedQuants <- DB01500Med %>%
+  full_join(DB01500Quants)
+ggplot(DB01500MedQuants, aes(x= UTC_hour, y= med_500, group= 1))+
+  geom_ribbon(aes(ymin= quant05_500,
+                  ymax= quant95_500), 
+              linetype= 1, linewidth= 0.2, alpha= 0.1)+
+  geom_point(size= 1.5) + geom_line()+
+  theme_bw()+
+  xlab("Hour (UTC)")+
+  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("DB01 unknown pulse- peak week median")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
-
-
+#now add in diel times (sunset, sunrise, twilight etc etc) and do this for other choruses & sites
 
 
 ```
