@@ -810,23 +810,23 @@ colnames(DB01_chorusPresence)[1] <- "UTC"
 DB01_chorusPresence$site = "DB01"
 #not updated below
 ES01_chorusPresence <- read.csv(here("data/ES01_chorusPresence.csv"))
-ES01_chorusPresence$X500_chorus = case_when(ES01_chorusPresence$X500_chorus == 1 ~ "yes",
-                                            ES01_chorusPresence$X500_chorus == 0 ~ "no")
-ES01_chorusPresence$X1000_chorus = case_when(ES01_chorusPresence$X1000_chorus == 1 ~ "yes",
-                                            ES01_chorusPresence$X1000_chorus == 0 ~ "no")
-ES01_chorusPresence$X2000_chorus = case_when(ES01_chorusPresence$X2000_chorus == 1 ~ "yes",
-                                            ES01_chorusPresence$X2000_chorus == 0 ~ "no")
+#ES01_chorusPresence$X500_chorus = case_when(ES01_chorusPresence$X500_chorus == 1 ~ "yes",
+#                                            ES01_chorusPresence$X500_chorus == 0 ~ "no")
+#ES01_chorusPresence$X1000_chorus = case_when(ES01_chorusPresence$X1000_chorus == 1 ~ "yes",
+#                                            ES01_chorusPresence$X1000_chorus == 0 ~ "no")
+#ES01_chorusPresence$X2000_chorus = case_when(ES01_chorusPresence$X2000_chorus == 1 ~ "yes",
+#                                            ES01_chorusPresence$X2000_chorus == 0 ~ "no")
 ES01_chorusPresence$date <- as.Date(ES01_chorusPresence$date, format= "%m/%d/%Y")
 colnames(ES01_chorusPresence)[1] <- "UTC"
 ES01_chorusPresence$site = "ES01"
 
 CB01_chorusPresence <- read.csv(here("data/CB01_chorusPresence.csv"))
-CB01_chorusPresence$X500_chorus = case_when(CB01_chorusPresence$X500_chorus == 1 ~ "yes",
-                                            CB01_chorusPresence$X500_chorus == 0 ~ "no")
-CB01_chorusPresence$X1000_chorus = case_when(CB01_chorusPresence$X1000_chorus == 1 ~ "yes",
-                                            CB01_chorusPresence$X1000_chorus == 0 ~ "no")
-CB01_chorusPresence$X2000_chorus = case_when(CB01_chorusPresence$X2000_chorus == 1 ~ "yes",
-                                            CB01_chorusPresence$X2000_chorus == 0 ~ "no")
+#CB01_chorusPresence$X500_chorus = case_when(CB01_chorusPresence$X500_chorus == 1 ~ "yes",
+#                                            CB01_chorusPresence$X500_chorus == 0 ~ "no")
+#CB01_chorusPresence$X1000_chorus = case_when(CB01_chorusPresence$X1000_chorus == 1 ~ "yes",
+#                                            CB01_chorusPresence$X1000_chorus == 0 ~ "no")
+#CB01_chorusPresence$X2000_chorus = case_when(CB01_chorusPresence$X2000_chorus == 1 ~ "yes",
+#                                            CB01_chorusPresence$X2000_chorus == 0 ~ "no")
 CB01_chorusPresence$date <- as.Date(CB01_chorusPresence$date, format= "%m/%d/%Y")
 colnames(CB01_chorusPresence)[1] <- "UTC"
 CB01_chorusPresence$site = "CB01"
@@ -1228,28 +1228,83 @@ Env2000OL_plot = ggplot(data = DB01_envData_daily, mapping = aes(x =UTC)) +
 Env500OL_plot/Env1000OL_plot/Env2000OL_plot+ plot_layout(axis_titles = "collect", guides= "collect")
 
 ```
-# inshore/offshore gradient using OL
+# plotting 22:00 hour for cusk eel w/ presence
 ```{r}
-inshore_sites_OL <- DB01_OL %>%
-  full_join(ES01_OL)%>%
-  full_join(CB01_OL)
+#inshore_sites_OL <- DB01_OL %>%
+#  full_join(ES01_OL)%>%
+#  full_join(CB01_OL)
 
-DB_OL <- DB01_OL %>%
-  full_join(DB02_OL) %>%
-  full_join(DB03_OL)
+#inshore_sites_OL_22 <- inshore_sites_OL%>%
+#  filter(inshore_sites_OL$UTC_hour== c("22:00:00"))
+#inshore_sites_OL_22$UTC_date <- as.Date(inshore_sites_OL_22$UTC_date)
+#colnames(inshore_sites_OL_22)[18] <- "site"
+#inshore_sites_22_presence <- inshore_sites_OL_22 %>%
+#  full_join(allSite_chorusPresence, by= "UTC_date" & "site")
 
-inshore_sites_OL_22 <- inshore_sites_OL%>%
-  filter(inshore_sites_OL$UTC_hour== c("22:00:00"))
+DB01_OL_22 <- DB01_OL %>%
+  filter(DB01_OL$UTC_hour== c("22:00:00"))
+DB01_OL_22$UTC_date <- as.Date(DB01_OL_22$UTC_date)
+colnames(DB01_OL_22)[18] <- "site"
+DB01_chorusPresence <- DB01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+DB01_OL_22presence <- DB01_OL_22 %>%
+  full_join(DB01_chorusPresence, by= "UTC_date")
+DB01_OL_22presence <- DB01_OL_22presence %>%
+dplyr::mutate(cusk_chorus = factor(cusk_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
+ES01_OL_22 <- ES01_OL %>%
+  filter(ES01_OL$UTC_hour== c("22:00:00"))
+ES01_OL_22$UTC_date <- as.Date(ES01_OL_22$UTC_date)
+colnames(ES01_OL_22)[18] <- "site"
+ES01_chorusPresence <- ES01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+ES01_OL_22presence <- ES01_OL_22 %>%
+  full_join(ES01_chorusPresence, by= "UTC_date")
+ES01_OL_22presence <- ES01_OL_22presence %>%
+dplyr::mutate(cusk_chorus = factor(cusk_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
 
-ggplot(inshore_sites_OL_22, aes(x= UTC_fixed, y= OL_2000, color = PLATFORM))+
+CB01_OL_22 <- CB01_OL %>%
+  filter(CB01_OL$UTC_hour== c("22:00:00"))
+CB01_OL_22$UTC_date <- as.Date(CB01_OL_22$UTC_date)
+colnames(CB01_OL_22)[18] <- "site"
+CB01_chorusPresence <- CB01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+CB01_OL_22presence <- CB01_OL_22 %>%
+  full_join(CB01_chorusPresence, by= "UTC_date")
+CB01_OL_22presence <- CB01_OL_22presence %>%
+dplyr::mutate(cusk_chorus = factor(cusk_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
+
+inshore_sites_22_presence <- DB01_OL_22presence%>%
+  full_join(ES01_OL_22presence)%>%
+  full_join(CB01_OL_22presence)
+inshore_sites_22_presence <- inshore_sites_22_presence %>%
+  drop_na(cusk_chorus)
+inshore_sites_22_presence$site.y = factor(inshore_sites_22_presence$site.y,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                        labels= c('DB01', 'ES01', 'CB01'))
+
+ggplot(inshore_sites_22_presence, aes(x= UTC_fixed, y= OL_2000, color= cusk_chorus:site.y, group= cusk_chorus:site.y))+
   geom_line(linewidth= 0.75)+
   theme_bw()+
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   xlab("Date")+
-  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))
-#  scale_color_manual(values= c("#00797F90","#00308790", "#B7130090"))
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  scale_color_manual(labels= c("Absent:DB01", "Absent:ES01", "Absent:CB01","Present:DB01","Present:ES01",  "Present:CB01"), values= c("grey90", "grey90","grey90", "#00797F95",  "#00308795",  "#B7130095"))+
+  scale_fill_manual(values= c("grey90", "grey90","grey90", "#00797F95",  "#00308795",  "#B7130095"))+
+  guides(color= guide_legend(title= "Cusk Eel Chorus Presence"))+
+  theme(axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        axis.text.x= element_text(size= 16),
+        legend.title= element_text(size= 18),
+        legend.text = element_text(size= 16))
+
 ```
-#only plotting sunset hours
+#only plotting sunset hours- with chorus presence
 ```{r}
 #DB01
 DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
@@ -1268,25 +1323,27 @@ sunset_datehour$UTC_date <- as.character(sunset_datehour$UTC_date)
 sunset_datehour <- sunset_datehour[-c(3)]
 sunset_datehour$UTC_fixed <- paste(sunset_datehour$UTC_date, sunset_datehour$sunset_UTC_hour, sep = " ")
 sunset_datehour$UTC_fixed = as.POSIXct(sunset_datehour$UTC_fixed, format = "%Y-%m-%d %H")
+sunset_datehour$UTC_date <- as.Date(sunset_datehour$UTC_date)
 
-
+DB01_sunsetPresence <- DB01_chorusPresence %>%
+  right_join(sunset_datehour, join_by(UTC_date))
 DB01_sunset <- DB01_OL %>%
-  right_join(sunset_datehour, join_by(UTC_fixed))
+  right_join(DB01_sunsetPresence, join_by(UTC_fixed))
 
-DB01_500Hz <- ggplot(DB01_sunset, aes(x= UTC_fixed, y= OL_500))+
-  geom_line(linewidth = 0.75)+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
-  theme_bw()+
-  xlab("Date")+
-  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))
-DB01_2000Hz <- ggplot(DB01_sunset, aes(x= UTC_fixed, y= OL_2000))+
-  geom_line(linewidth = 0.75)+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
-  theme_bw()+
-  xlab("Date")+
-  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))
+#DB01_500Hz <- ggplot(DB01_sunset, aes(x= UTC_fixed, y= OL_500))+
+#  geom_line(linewidth = 0.75)+
+#  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+#  theme_bw()+
+#  xlab("Date")+
+#  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))
+#DB01_2000Hz <- ggplot(DB01_sunset, aes(x= UTC_fixed, y= OL_2000))+
+#  geom_line(linewidth = 0.75)+
+#  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+#  theme_bw()+
+#  xlab("Date")+
+#  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))
 
-DB01_500Hz/DB01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
+#DB01_500Hz/DB01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
 
 #ES01
 ES01_location <- matrix(c(-75.29, 37.69), nrow = 1)
@@ -1304,24 +1361,27 @@ ES01sunset_datehour$UTC_date <- as.character(ES01sunset_datehour$UTC_date)
 ES01sunset_datehour <- ES01sunset_datehour[-c(3)]
 ES01sunset_datehour$UTC_fixed <- paste(ES01sunset_datehour$UTC_date, ES01sunset_datehour$sunset_UTC_hour, sep = " ")
 ES01sunset_datehour$UTC_fixed = as.POSIXct(ES01sunset_datehour$UTC_fixed, format = "%Y-%m-%d %H")
+ES01sunset_datehour$UTC_date <- as.Date(ES01sunset_datehour$UTC_date)
 
+ES01_sunsetPresence <- ES01_chorusPresence %>%
+  right_join(ES01sunset_datehour, join_by(UTC_date))
 ES01_sunset <- ES01_OL %>%
-  right_join(ES01sunset_datehour, join_by(UTC_fixed))
+  right_join(ES01_sunsetPresence, join_by(UTC_fixed))
 
-ES01_500Hz <- ggplot(ES01_sunset, aes(x= UTC_fixed, y= OL_500))+
-  geom_line(linewidth = 0.75)+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
-  theme_bw()+
-  xlab("Date")+
-  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))
-ES01_2000Hz <- ggplot(ES01_sunset, aes(x= UTC_fixed, y= OL_2000))+
-  geom_line(linewidth = 0.75)+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
-  theme_bw()+
-  xlab("Date")+
-  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))
+#ES01_500Hz <- ggplot(ES01_sunset, aes(x= UTC_fixed, y= OL_500))+
+#  geom_line(linewidth = 0.75)+
+#  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+#  theme_bw()+
+#  xlab("Date")+
+#  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))
+#ES01_2000Hz <- ggplot(ES01_sunset, aes(x= UTC_fixed, y= OL_2000))+
+#  geom_line(linewidth = 0.75)+
+#  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+#  theme_bw()+
+#  xlab("Date")+
+#  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))
 
-ES01_500Hz/ES01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
+#ES01_500Hz/ES01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
 
 
 #CB01
@@ -1340,39 +1400,59 @@ CB01sunset_datehour$UTC_date <- as.character(CB01sunset_datehour$UTC_date)
 CB01sunset_datehour <- CB01sunset_datehour[-c(3)]
 CB01sunset_datehour$UTC_fixed <- paste(CB01sunset_datehour$UTC_date, CB01sunset_datehour$sunset_UTC_hour, sep = " ")
 CB01sunset_datehour$UTC_fixed = as.POSIXct(CB01sunset_datehour$UTC_fixed, format = "%Y-%m-%d %H")
+CB01sunset_datehour$UTC_date <- as.Date(CB01sunset_datehour$UTC_date)
 
+CB01_sunsetPresence <- CB01_chorusPresence %>%
+  right_join(CB01sunset_datehour, join_by(UTC_date))
 CB01_sunset <- CB01_OL %>%
-  right_join(CB01sunset_datehour, join_by(UTC_fixed))
+  right_join(CB01_sunsetPresence, join_by(UTC_fixed)) #includes fish chorusing presence/absence
 
-CB01_500Hz <- ggplot(CB01_sunset, aes(x= UTC_fixed, y= OL_500))+
-  geom_line(linewidth = 0.75)+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
-  theme_bw()+
-  xlab("Date")+
-  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))
-CB01_2000Hz <- ggplot(CB01_sunset, aes(x= UTC_fixed, y= OL_2000))+
-  geom_line(linewidth = 0.75)+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
-  theme_bw()+
-  xlab("Date")+
-  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))
+#CB01_500Hz <- ggplot(CB01_sunset, aes(x= UTC_fixed, y= OL_500))+
+#  geom_line(linewidth = 0.75)+
+#  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+#  theme_bw()+
+#  xlab("Date")+
+#  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))
+#CB01_2000Hz <- ggplot(CB01_sunset, aes(x= UTC_fixed, y= OL_2000))+
+#  geom_line(linewidth = 0.75)+
+#  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+#  theme_bw()+
+#  xlab("Date")+
+#  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))
 
-CB01_500Hz/CB01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
-
-
+#CB01_500Hz/CB01_2000Hz +plot_layout(guides = "collect", axis_titles = "collect")
 
 #ALL INSHORE
 
 inshore_sunsets <- DB01_sunset %>%
   full_join(ES01_sunset) %>%
   full_join(CB01_sunset)
+inshore_sunsets <- inshore_sunsets %>%
+dplyr::mutate(cusk_chorus = factor(cusk_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
+inshore_sunsets <- inshore_sunsets %>%
+  drop_na(cusk_chorus)
+inshore_sunsets$site = factor(inshore_sunsets$site,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                        labels= c('DB01', 'ES01', 'CB01'))
 
-ggplot(inshore_sunsets, aes(x= UTC_fixed, y= OL_500, color= PLATFORM))+
-  geom_line(linewidth = 0.75)+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+
+ggplot(inshore_sunsets, aes(x= UTC_fixed, y= OL_2000, color= cusk_chorus:site, group= cusk_chorus:site))+
+  geom_line(linewidth= 0.75)+
   theme_bw()+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   xlab("Date")+
-  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  scale_color_manual(labels= c("Absent:DB01", "Absent:ES01", "Absent:CB01","Present:DB01","Present:ES01",  "Present:CB01"), values= c("grey90", "grey90","grey90", "#00797F95",  "#00308795",  "#B7130095"))+
+  scale_fill_manual(values= c("grey90", "grey90","grey90", "#00797F95",  "#00308795",  "#B7130095"))+
+  guides(color= guide_legend(title= "Cusk Eel Chorus Presence"))+
+  theme(axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        axis.text.x= element_text(size= 16),
+        legend.title= element_text(size= 18),
+        legend.text = element_text(size= 16))
+
 
 ggplot(inshore_sunsets, aes(x= UTC_fixed, y= OL_2000, color= PLATFORM))+
   geom_line(linewidth = 0.75)+
@@ -3079,10 +3159,17 @@ DB01_OLChorus <- DB01_OLChorus[-c(1)]
 colnames(DB01_OLChorus)[16] <- "UTC"
 
 
-runDetectionExplorer(DB01_chorusPresence)
+allSite_chorusPresence <- DB01_chorusPresence%>%
+  full_join(ES01_chorusPresence)%>%
+  full_join(CB01_chorusPresence)
 
-plotAcousticScene(x=DB01_chorusPresence, combineYears=FALSE, freqMap=data.frame(species=c('X1000_chorus', 'X500_chorus', 'cusk_chorus', 'oyster_chorus'), freqMin=c(140, 61, 1200, 150), freqMax=c(6500, 930, 2600, 3500)))
+allSite_chorusPresence <- allSite_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
 
+runDetectionExplorer(allSite_chorusPresence)
+
+#this won't plot for some reason- "need cols 'UTC', typecol, must have columns UTC, species"
+plotAcousticScene(x=allSite_chorusPresence, by='site', combineYears=FALSE, freqMap=data.frame(species=c('X1000_chorus', 'X500_chorus', 'cusk_chorus', 'oyster_chorus'), freqMin=c(140, 60, 1200, 150), freqMax=c(6500, 930, 2600, 3650)))
 
 
 
