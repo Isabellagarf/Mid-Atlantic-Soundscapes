@@ -3235,6 +3235,7 @@ DB01500_astrdusk_dechour <- DB01500_astrdusk %>%
   mutate(min = minute(time)) %>%
   mutate(sec = second(time)) %>%
   mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
 ##########DB01 1000##########
 DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
 DB011000_date_Time <- seq(ymd_hms("2023-07-31 00:00:00"), ymd_hms("2023-08-06 23:00:00"), by = "1 hour")
@@ -3297,7 +3298,130 @@ DB011000_astrdusk_dechour <- DB011000_astrdusk %>%
   mutate(sec = second(time)) %>%
   mutate(decimal_hour = hour + (min/60) + (sec/3600))
 
-################ES01 500################
+##########DB01 oyster#######
+DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
+DB01oyster_date_Time <- seq(ymd_hms("2023-09-09 00:00:00"), ymd_hms("2023-09-15 23:00:00"), by = "1 hour")
+
+DB01oyster_sunrise <- sunriset(crds = DB01_location, dateTime = DB01oyster_date_Time, direction = "sunrise", POSIXct.out = TRUE)
+DB01oyster_sunrise_dechour <- DB01oyster_sunrise %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+
+DB01oyster_sunset <- sunriset(crds = DB01_location, dateTime = DB01oyster_date_Time, direction = "sunset", POSIXct.out = TRUE)
+DB01oyster_sunset_dechour <- DB01oyster_sunset %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+DB01oyster_civdawn <- crepuscule(crds = DB01_location, dateTime = DB01oyster_date_Time, solarDep = 6, direction = "dawn", POSIXct.out = TRUE)
+DB01oyster_civdawn_dechour <- DB01oyster_civdawn %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+DB01oyster_nautdawn <- crepuscule(crds = DB01_location, dateTime = DB01oyster_date_Time, solarDep = 12, direction = "dawn", POSIXct.out = TRUE)
+DB01oyster_nautdawn_dechour <- DB01oyster_nautdawn %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+DB01oyster_astrdawn <- crepuscule(crds = DB01_location, dateTime = DB01oyster_date_Time, solarDep = 18, direction = "dawn", POSIXct.out = TRUE)
+DB01oyster_astrdawn_dechour <- DB01oyster_astrdawn %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+DB01oyster_civdusk <- crepuscule(crds = DB01_location, dateTime = DB01oyster_date_Time, solarDep = 6, direction = "dusk", POSIXct.out = TRUE)
+DB01oyster_civdusk_dechour <- DB01oyster_civdusk %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+DB01oyster_nautdusk <- crepuscule(crds = DB01_location, dateTime = DB01oyster_date_Time, solarDep = 12, direction = "dusk", POSIXct.out = TRUE)
+DB01oyster_nautdusk_dechour <- DB01oyster_nautdusk %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+DB01oyster_astrdusk <- crepuscule(crds = DB01_location, dateTime = DB01oyster_date_Time, solarDep = 18, direction = "dusk", POSIXct.out = TRUE)
+DB01oyster_astrdusk_dechour <- DB01oyster_astrdusk %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+##########DB01 cusk##########
+DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
+DB01cusk_date_Time <- seq(ymd_hms("2022-09-11 00:00:00"), ymd_hms("2022-09-17 23:00:00"), by = "1 hour")
+
+DB01cusk_sunrise <- sunriset(crds = DB01_location, dateTime = DB01cusk_date_Time, direction = "sunrise", POSIXct.out = TRUE)
+DB01cusk_sunrise_dechour <- DB01cusk_sunrise %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+
+DB01cusk_sunset <- sunriset(crds = DB01_location, dateTime = DB01cusk_date_Time, direction = "sunset", POSIXct.out = TRUE)
+DB01cusk_sunset_dechour <- DB01cusk_sunset %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+DB01cusk_civdawn <- crepuscule(crds = DB01_location, dateTime = DB01cusk_date_Time, solarDep = 6, direction = "dawn", POSIXct.out = TRUE)
+DB01cusk_civdawn_dechour <- DB01cusk_civdawn %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+DB01cusk_nautdawn <- crepuscule(crds = DB01_location, dateTime = DB01cusk_date_Time, solarDep = 12, direction = "dawn", POSIXct.out = TRUE)
+DB01cusk_nautdawn_dechour <- DB01cusk_nautdawn %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+DB01cusk_astrdawn <- crepuscule(crds = DB01_location, dateTime = DB01cusk_date_Time, solarDep = 18, direction = "dawn", POSIXct.out = TRUE)
+DB01cusk_astrdawn_dechour <- DB01cusk_astrdawn %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+
+DB01cusk_civdusk <- crepuscule(crds = DB01_location, dateTime = DB01cusk_date_Time, solarDep = 6, direction = "dusk", POSIXct.out = TRUE)
+DB01cusk_civdusk_dechour <- DB01cusk_civdusk %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+DB01cusk_nautdusk <- crepuscule(crds = DB01_location, dateTime = DB01cusk_date_Time, solarDep = 12, direction = "dusk", POSIXct.out = TRUE)
+DB01cusk_nautdusk_dechour <- DB01cusk_nautdusk %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+DB01cusk_astrdusk <- crepuscule(crds = DB01_location, dateTime = DB01cusk_date_Time, solarDep = 18, direction = "dusk", POSIXct.out = TRUE)
+DB01cusk_astrdusk_dechour <- DB01cusk_astrdusk %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+##########ES01 500################
 ES01_location <- matrix(c(-75.29, 37.69), nrow = 1)
 ES01500_date_Time <- seq(ymd_hms("2024-09-10 00:00:00"), ymd_hms("2024-09-16 23:00:00"), by = "1 hour")
 
@@ -3359,7 +3483,7 @@ ES01500_astrdusk_dechour <- ES01500_astrdusk %>%
   mutate(sec = second(time)) %>%
   mutate(decimal_hour = hour + (min/60) + (sec/3600))
 
-#######ES01 1000#######
+##########ES01 1000#######
 ES011000_date_Time <- seq(ymd_hms("2024-05-26 00:00:00"), ymd_hms("2024-06-01 23:00:00"), by = "1 hour")
 
 ES011000_sunrise <- sunriset(crds = ES01_location, dateTime = ES011000_date_Time, direction = "sunrise", POSIXct.out = TRUE)
@@ -3420,7 +3544,71 @@ ES011000_astrdusk_dechour <- ES011000_astrdusk %>%
   mutate(sec = second(time)) %>%
   mutate(decimal_hour = hour + (min/60) + (sec/3600))
 
-###########CB01 500###########
+##########ES01 oyster AND cusk eel########
+ES01_location <- matrix(c(-75.29, 37.69), nrow = 1)
+ES01oysterCusk_date_Time <- seq(ymd_hms("2024-09-15 00:00:00"), ymd_hms("2024-09-21 23:00:00"), by = "1 hour")
+
+ES01oysterCusk_sunrise <- sunriset(crds = ES01_location, dateTime = ES01oysterCusk_date_Time, direction = "sunrise", POSIXct.out = TRUE)
+ES01oysterCusk_sunrise_dechour <- ES01oysterCusk_sunrise %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+
+ES01oysterCusk_sunset <- sunriset(crds = ES01_location, dateTime = ES01oysterCusk_date_Time, direction = "sunset", POSIXct.out = TRUE)
+ES01oysterCusk_sunset_dechour <- ES01oysterCusk_sunset %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+ES01oysterCusk_civdawn <- crepuscule(crds = ES01_location, dateTime = ES01oysterCusk_date_Time, solarDep = 6, direction = "dawn", POSIXct.out = TRUE)
+ES01oysterCusk_civdawn_dechour <- ES01oysterCusk_civdawn %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+ES01oysterCusk_nautdawn <- crepuscule(crds = ES01_location, dateTime = ES01oysterCusk_date_Time, solarDep = 12, direction = "dawn", POSIXct.out = TRUE)
+ES01oysterCusk_nautdawn_dechour <- ES01oysterCusk_nautdawn %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+ES01oysterCusk_astrdawn <- crepuscule(crds = ES01_location, dateTime = ES01oysterCusk_date_Time, solarDep = 18, direction = "dawn", POSIXct.out = TRUE)
+ES01oysterCusk_astrdawn_dechour <- ES01oysterCusk_astrdawn %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+
+ES01oysterCusk_civdusk <- crepuscule(crds = ES01_location, dateTime = ES01oysterCusk_date_Time, solarDep = 6, direction = "dusk", POSIXct.out = TRUE)
+ES01oysterCusk_civdusk_dechour <- ES01oysterCusk_civdusk %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+ES01oysterCusk_nautdusk <- crepuscule(crds = ES01_location, dateTime = ES01oysterCusk_date_Time, solarDep = 12, direction = "dusk", POSIXct.out = TRUE)
+ES01oysterCusk_nautdusk_dechour <- ES01oysterCusk_nautdusk %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+ES01oysterCusk_astrdusk <- crepuscule(crds = ES01_location, dateTime = ES01oysterCusk_date_Time, solarDep = 18, direction = "dusk", POSIXct.out = TRUE)
+ES01oysterCusk_astrdusk_dechour <- ES01oysterCusk_astrdusk %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+
+
+##########CB01 500###########
 CB01_location <- matrix(c(-75.67, 36.98), nrow = 1)
 CB01500_date_Time <- seq(ymd_hms("2024-05-23 00:00:00"), ymd_hms("2024-05-29 23:00:00"), by = "1 hour")
 
@@ -3543,8 +3731,131 @@ CB011000_astrdusk_dechour <- CB011000_astrdusk %>%
   mutate(min = minute(time)) %>%
   mutate(sec = second(time)) %>%
   mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+##########CB01 cusk eel########
+CB01_location <- matrix(c(-75.67, 36.98), nrow = 1)
+CB01cusk_date_Time <- seq(ymd_hms("2024-09-10 00:00:00"), ymd_hms("2024-09-16 23:00:00"), by = "1 hour")
+
+CB01cusk_sunrise <- sunriset(crds = CB01_location, dateTime = CB01cusk_date_Time, direction = "sunrise", POSIXct.out = TRUE)
+CB01cusk_sunrise_dechour <- CB01cusk_sunrise %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+
+CB01cusk_sunset <- sunriset(crds = CB01_location, dateTime = CB01cusk_date_Time, direction = "sunset", POSIXct.out = TRUE)
+CB01cusk_sunset_dechour <- CB01cusk_sunset %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+CB01cusk_civdawn <- crepuscule(crds = CB01_location, dateTime = CB01cusk_date_Time, solarDep = 6, direction = "dawn", POSIXct.out = TRUE)
+CB01cusk_civdawn_dechour <- CB01cusk_civdawn %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+CB01cusk_nautdawn <- crepuscule(crds = CB01_location, dateTime = CB01cusk_date_Time, solarDep = 12, direction = "dawn", POSIXct.out = TRUE)
+CB01cusk_nautdawn_dechour <- CB01cusk_nautdawn %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+CB01cusk_astrdawn <- crepuscule(crds = CB01_location, dateTime = CB01cusk_date_Time, solarDep = 18, direction = "dawn", POSIXct.out = TRUE)
+CB01cusk_astrdawn_dechour <- CB01cusk_astrdawn %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+
+CB01cusk_civdusk <- crepuscule(crds = CB01_location, dateTime = CB01cusk_date_Time, solarDep = 6, direction = "dusk", POSIXct.out = TRUE)
+CB01cusk_civdusk_dechour <- CB01cusk_civdusk %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+CB01cusk_nautdusk <- crepuscule(crds = CB01_location, dateTime = CB01cusk_date_Time, solarDep = 12, direction = "dusk", POSIXct.out = TRUE)
+CB01cusk_nautdusk_dechour <- CB01cusk_nautdusk %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+CB01cusk_astrdusk <- crepuscule(crds = CB01_location, dateTime = CB01cusk_date_Time, solarDep = 18, direction = "dusk", POSIXct.out = TRUE)
+CB01cusk_astrdusk_dechour <- CB01cusk_astrdusk %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+##########CB01 oyster#########
+CB01_location <- matrix(c(-75.67, 36.98), nrow = 1)
+CB01oyster_date_Time <- seq(ymd_hms("2023-09-02 00:00:00"), ymd_hms("2023-09-08 23:00:00"), by = "1 hour")
+
+CB01oyster_sunrise <- sunriset(crds = CB01_location, dateTime = CB01oyster_date_Time, direction = "sunrise", POSIXct.out = TRUE)
+CB01oyster_sunrise_dechour <- CB01oyster_sunrise %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+
+CB01oyster_sunset <- sunriset(crds = CB01_location, dateTime = CB01oyster_date_Time, direction = "sunset", POSIXct.out = TRUE)
+CB01oyster_sunset_dechour <- CB01oyster_sunset %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+CB01oyster_civdawn <- crepuscule(crds = CB01_location, dateTime = CB01oyster_date_Time, solarDep = 6, direction = "dawn", POSIXct.out = TRUE)
+CB01oyster_civdawn_dechour <- CB01oyster_civdawn %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+CB01oyster_nautdawn <- crepuscule(crds = CB01_location, dateTime = CB01oyster_date_Time, solarDep = 12, direction = "dawn", POSIXct.out = TRUE)
+CB01oyster_nautdawn_dechour <- CB01oyster_nautdawn %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+CB01oyster_astrdawn <- crepuscule(crds = CB01_location, dateTime = CB01oyster_date_Time, solarDep = 18, direction = "dawn", POSIXct.out = TRUE)
+CB01oyster_astrdawn_dechour <- CB01oyster_astrdawn %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+
+CB01oyster_civdusk <- crepuscule(crds = CB01_location, dateTime = CB01oyster_date_Time, solarDep = 6, direction = "dusk", POSIXct.out = TRUE)
+CB01oyster_civdusk_dechour <- CB01oyster_civdusk %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+CB01oyster_nautdusk <- crepuscule(crds = CB01_location, dateTime = CB01oyster_date_Time, solarDep = 12, direction = "dusk", POSIXct.out = TRUE)
+CB01oyster_nautdusk_dechour <- CB01oyster_nautdusk %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
+
+CB01oyster_astrdusk <- crepuscule(crds = CB01_location, dateTime = CB01oyster_date_Time, solarDep = 18, direction = "dusk", POSIXct.out = TRUE)
+CB01oyster_astrdusk_dechour <- CB01oyster_astrdusk %>%
+  mutate(hour = hour(time)) %>%
+  mutate(min = minute(time)) %>%
+  mutate(sec = second(time)) %>%
+  mutate(decimal_hour = hour + (min/60) + (sec/3600))
 ```
-#inital diel patterns for 500/unknown pulse chorus between sites- weekly medians
+#inital diel patterns for 500/unknown pulse chorus between sites- weekly medians- USING
 ```{r}
 #DB01 500 chorus: 9/10-9/16/2024
 
@@ -3697,13 +4008,15 @@ inshore500_MedQuants$site = factor(inshore500_MedQuants$site,
                                         levels= c("DB01", "ES01", "CB01"),
                                         labels= c("DB01", "ES01", "CB01"))
 
-ggplot(inshore500_MedQuants, aes(x= UTC_hour, y= med_500, group= site, color= site))+
+ggplot(inshore500_MedQuants, aes(x= hour, y= med_500, group= site, color= site))+
   geom_ribbon(aes(ymin= quant05_500,
                   ymax= quant95_500,
                   fill= site, color= site), linetype= 0, linewidth= 0.2, alpha= 0.1)+
   scale_fill_manual(values= c("#00797F",  "#003087",  "#B71300"))+
   guides(fill= guide_legend(title= "Site"))+
+  scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
   geom_point(size= 1.5) + geom_line()+
+  ylim(72, 135)+
   theme_bw()+
   xlab("Hour (UTC)")+
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
@@ -3719,7 +4032,7 @@ ggplot(inshore500_MedQuants, aes(x= UTC_hour, y= med_500, group= site, color= si
   
 
 ```
-#initial diel patterns for 1000/unknown knock chorus between sites- weekly medians
+#initial diel patterns for 1000/unknown knock chorus between sites- weekly medians- uSING
 ```{r}
 #DB01 1000 chorus: 7/31-8/6/2023
 
@@ -3741,6 +4054,7 @@ DB011000Quants <- DB011000 %>%
             quant95_1000 = quantile(OL_1000, probs= quants[2], na.rm= TRUE))
 DB011000MedQuants <- DB011000Med %>%
   full_join(DB011000Quants)
+DB011000MedQuants$site = "DB01"
 DB011000MedQuants$UTC_hour <- hms(DB011000MedQuants$UTC_hour)
 DB011000MedQuants$hour <- hour(DB011000MedQuants$UTC_hour)
 
@@ -3787,6 +4101,7 @@ ES011000Quants <- ES011000 %>%
             quant95_1000 = quantile(OL_1000, probs= quants[2], na.rm= TRUE))
 ES011000MedQuants <- ES011000Med %>%
   full_join(ES011000Quants)
+ES011000MedQuants$site = "ES01"
 ES011000MedQuants$UTC_hour <- hms(ES011000MedQuants$UTC_hour)
 ES011000MedQuants$hour <- hour(ES011000MedQuants$UTC_hour)
 
@@ -3834,6 +4149,7 @@ CB011000Quants <- CB011000 %>%
             quant95_1000 = quantile(OL_1000, probs= quants[2], na.rm= TRUE))
 CB011000MedQuants <- CB011000Med %>%
   full_join(CB011000Quants)
+CB011000MedQuants$site = "CB01"
 CB011000MedQuants$UTC_hour <- hms(CB011000MedQuants$UTC_hour)
 CB011000MedQuants$hour <- hour(CB011000MedQuants$UTC_hour)
 
@@ -3859,6 +4175,392 @@ ggplot(CB011000MedQuants, aes(x= hour, y= med_1000, group= 1))+
   geom_vline(xintercept = CB011000_astrdawn_dechour$decimal_hour, color = "#740580", linetype = "solid",size =  .4, alpha = .5) +
   geom_vline(xintercept = CB011000_sunrise_dechour$decimal_hour, color = "#F2C447", linetype = "solid", size =  2, alpha = .5) +
   geom_vline(xintercept = CB011000_sunset_dechour$decimal_hour, color = "#F2C447", linetype = "solid", size = 2, alpha = .5)
+
+inshore1000_MedQuants <- DB011000MedQuants %>%
+  full_join(ES011000MedQuants) %>%
+  full_join(CB011000MedQuants)
+
+inshore1000_MedQuants$site = factor(inshore1000_MedQuants$site,
+                                        levels= c("DB01", "ES01", "CB01"),
+                                        labels= c("DB01", "ES01", "CB01"))
+
+ggplot(inshore1000_MedQuants, aes(x= hour, y= med_1000, group= site, color= site))+
+  geom_ribbon(aes(ymin= quant05_1000,
+                  ymax= quant95_1000,
+                  fill= site, color= site), linetype= 0, linewidth= 0.2, alpha= 0.1)+
+  scale_fill_manual(values= c("#00797F",  "#003087",  "#B71300"))+
+  guides(fill= guide_legend(title= "Site"))+
+  scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
+  geom_point(size= 1.5) + geom_line()+
+  ylim(72, 135)+
+  theme_bw()+
+  xlab("Hour (UTC)")+
+  ylab(expression(paste('Median 1000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("Unknown knocks: peak one-week period")+
+  scale_color_manual(values= c("#00797F",  "#003087",  "#B71300"))+
+  guides(color= guide_legend(title= "Site"))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 19),
+        legend.title= element_text(size= 18),
+        legend.text= element_text(size= 16))
+  
+```
+#initial diel patterns for oyster toadfish chorus between sites- weekly medians- USING
+```{r}
+#DB01 oyster chorus: 9/9-9/15/2023
+
+DB01subset_0909_0915 <-  seq(ymd_hms("2023-09-09 04:00:00"), ymd_hms("2023-09-16 03:00:00"), by = "1 hour")
+DB01oyster <- data.frame(UTC= DB01subset_0909_0915)
+DB01oyster$UTC <- as.POSIXct(DB01oyster$UTC)
+colnames(DB01oyster)[1] <- "UTC_fixed"
+DB01oyster <- DB01oyster %>%
+  left_join(DB01_OL, by= "UTC_fixed")
+
+DB01oysterMed <- DB01oyster%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_250= median(OL_250, na.rm= TRUE))
+quants= c(0.05, 0.95)
+DB01oysterQuants <- DB01oyster %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_250 = quantile(OL_250, probs= quants[1], na.rm= TRUE),
+            quant95_250 = quantile(OL_250, probs= quants[2], na.rm= TRUE))
+DB01oysterMedQuants <- DB01oysterMed %>%
+  full_join(DB01oysterQuants)
+DB01oysterMedQuants$site <- "DB01"
+DB01oysterMedQuants$UTC_hour <- hms(DB01oysterMedQuants$UTC_hour)
+DB01oysterMedQuants$hour <- hour(DB01oysterMedQuants$UTC_hour)
+
+ggplot(DB01oysterMedQuants, aes(x= hour, y= med_250, group= 1))+
+  geom_ribbon(aes(ymin= quant05_250,
+                  ymax= quant95_250), 
+              linetype= 1, linewidth= 0.2, alpha= 0.1)+
+  geom_point(size= 1.5) + geom_line()+
+  theme_bw()+
+  xlab("Hour (UTC)")+
+  ylab(expression(paste('Median 250Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("DB01 oyster toadfish- peak week median (9/9-9/15/2023)")+
+   scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 19))+
+  geom_vline(xintercept = DB01oyster_civdusk_dechour$decimal_hour, color = "#F76218", linetype = "solid",size =  1, alpha = .5) +
+  geom_vline(xintercept = DB01oyster_nautdusk_dechour$decimal_hour, color = "#B10065", linetype = "solid",size =  .7, alpha = .5) +
+  geom_vline(xintercept = DB01oyster_astrdusk_dechour$decimal_hour, color = "#740580", linetype = "solid",size =  .4, alpha = .5) +
+  geom_vline(xintercept = DB01oyster_civdawn_dechour$decimal_hour, color = "#F76218", linetype = "solid",size =  1, alpha = .5) +
+  geom_vline(xintercept = DB01oyster_nautdawn_dechour$decimal_hour, color = "#B10065", linetype = "solid",size =  .7, alpha = .5) +
+  geom_vline(xintercept = DB01oyster_astrdawn_dechour$decimal_hour, color = "#740580", linetype = "solid",size =  .4, alpha = .5) +
+  geom_vline(xintercept = DB01oyster_sunrise_dechour$decimal_hour, color = "#F2C447", linetype = "solid", size =  2, alpha = .5) +
+  geom_vline(xintercept = DB01oyster_sunset_dechour$decimal_hour, color = "#F2C447", linetype = "solid", size = 2, alpha = .5)
+
+
+#ES01 oyster chorus: 9/15-9/21/2024
+
+ES01subset_0915_0921 <-  seq(ymd_hms("2024-09-15 04:00:00"), ymd_hms("2024-09-22 03:00:00"), by = "1 hour")
+ES01oyster <- data.frame(UTC= ES01subset_0915_0921)
+ES01oyster$UTC <- as.POSIXct(ES01oyster$UTC)
+colnames(ES01oyster)[1] <- "UTC_fixed"
+ES01oyster <- ES01oyster %>%
+  left_join(ES01_OL, by= "UTC_fixed")
+
+ES01oysterMed <- ES01oyster%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_250= median(OL_250, na.rm= TRUE))
+quants= c(0.05, 0.95)
+ES01oysterQuants <- ES01oyster %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_250 = quantile(OL_250, probs= quants[1], na.rm= TRUE),
+            quant95_250 = quantile(OL_250, probs= quants[2], na.rm= TRUE))
+ES01oysterMedQuants <- ES01oysterMed %>%
+  full_join(ES01oysterQuants)
+ES01oysterMedQuants$site <- "ES01"
+ES01oysterMedQuants$UTC_hour <- hms(ES01oysterMedQuants$UTC_hour)
+ES01oysterMedQuants$hour <- hour(ES01oysterMedQuants$UTC_hour)
+
+ggplot(ES01oysterMedQuants, aes(x= hour, y= med_250, group= 1))+
+  geom_ribbon(aes(ymin= quant05_250,
+                  ymax= quant95_250), 
+              linetype= 1, linewidth= 0.2, alpha= 0.1)+
+  geom_point(size= 1.5) + geom_line()+
+  theme_bw()+
+  xlab("Hour (UTC)")+
+  ylab(expression(paste('Median 250Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("ES01 oyster toadfish- peak week median (9/15-9/21/2024)")+
+   scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 19))+
+  geom_vline(xintercept = ES01oysterCusk_civdusk_dechour$decimal_hour, color = "#F76218", linetype = "solid",size =  1, alpha = .5) +
+  geom_vline(xintercept = ES01oysterCusk_nautdusk_dechour$decimal_hour, color = "#B10065", linetype = "solid",size =  .7, alpha = .5) +
+  geom_vline(xintercept = ES01oysterCusk_astrdusk_dechour$decimal_hour, color = "#740580", linetype = "solid",size =  .4, alpha = .5) +
+  geom_vline(xintercept = ES01oysterCusk_civdawn_dechour$decimal_hour, color = "#F76218", linetype = "solid",size =  1, alpha = .5) +
+  geom_vline(xintercept = ES01oysterCusk_nautdawn_dechour$decimal_hour, color = "#B10065", linetype = "solid",size =  .7, alpha = .5) +
+  geom_vline(xintercept = ES01oysterCusk_astrdawn_dechour$decimal_hour, color = "#740580", linetype = "solid",size =  .4, alpha = .5) +
+  geom_vline(xintercept = ES01oysterCusk_sunrise_dechour$decimal_hour, color = "#F2C447", linetype = "solid", size =  2, alpha = .5) +
+  geom_vline(xintercept = ES01oysterCusk_sunset_dechour$decimal_hour, color = "#F2C447", linetype = "solid", size = 2, alpha = .5)
+
+#CB01 oyster chorus: 9/02-9/08/2023
+
+CB01subset_0902_0908 <-  seq(ymd_hms("2023-09-02 04:00:00"), ymd_hms("2023-09-09 03:00:00"), by = "1 hour")
+CB01oyster <- data.frame(UTC= CB01subset_0902_0908)
+CB01oyster$UTC <- as.POSIXct(CB01oyster$UTC)
+colnames(CB01oyster)[1] <- "UTC_fixed"
+CB01oyster <- CB01oyster %>%
+  left_join(CB01_OL, by= "UTC_fixed")
+
+CB01oysterMed <- CB01oyster%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_250= median(OL_250, na.rm= TRUE))
+quants= c(0.05, 0.95)
+CB01oysterQuants <- CB01oyster %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_250 = quantile(OL_250, probs= quants[1], na.rm= TRUE),
+            quant95_250 = quantile(OL_250, probs= quants[2], na.rm= TRUE))
+CB01oysterMedQuants <- CB01oysterMed %>%
+  full_join(CB01oysterQuants)
+CB01oysterMedQuants$site <- "CB01"
+CB01oysterMedQuants$UTC_hour <- hms(CB01oysterMedQuants$UTC_hour)
+CB01oysterMedQuants$hour <- hour(CB01oysterMedQuants$UTC_hour)
+
+ggplot(CB01oysterMedQuants, aes(x= hour, y= med_250, group= 1))+
+  geom_ribbon(aes(ymin= quant05_250,
+                  ymax= quant95_250), 
+              linetype= 1, linewidth= 0.2, alpha= 0.1)+
+  geom_point(size= 1.5) + geom_line()+
+  theme_bw()+
+  xlab("Hour (UTC)")+
+  ylab(expression(paste('Median 250Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("CB01 oyster toadfish- peak week median (9/02-9/08/2023)")+
+   scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 19))+
+  geom_vline(xintercept = CB01oyster_civdusk_dechour$decimal_hour, color = "#F76218", linetype = "solid",size =  1, alpha = .5) +
+  geom_vline(xintercept = CB01oyster_nautdusk_dechour$decimal_hour, color = "#B10065", linetype = "solid",size =  .7, alpha = .5) +
+  geom_vline(xintercept = CB01oyster_astrdusk_dechour$decimal_hour, color = "#740580", linetype = "solid",size =  .4, alpha = .5) +
+  geom_vline(xintercept = CB01oyster_civdawn_dechour$decimal_hour, color = "#F76218", linetype = "solid",size =  1, alpha = .5) +
+  geom_vline(xintercept = CB01oyster_nautdawn_dechour$decimal_hour, color = "#B10065", linetype = "solid",size =  .7, alpha = .5) +
+  geom_vline(xintercept = CB01oyster_astrdawn_dechour$decimal_hour, color = "#740580", linetype = "solid",size =  .4, alpha = .5) +
+  geom_vline(xintercept = CB01oyster_sunrise_dechour$decimal_hour, color = "#F2C447", linetype = "solid", size =  2, alpha = .5) +
+  geom_vline(xintercept = CB01oyster_sunset_dechour$decimal_hour, color = "#F2C447", linetype = "solid", size = 2, alpha = .5)
+
+#COMBO PLOT
+inshoreOyster_MedQuants <- DB01oysterMedQuants %>%
+  full_join(ES01oysterMedQuants) %>%
+  full_join(CB01oysterMedQuants)
+
+inshoreOyster_MedQuants$site = factor(inshoreOyster_MedQuants$site,
+                                        levels= c("DB01", "ES01", "CB01"),
+                                        labels= c("DB01", "ES01", "CB01"))
+
+ggplot(inshoreOyster_MedQuants, aes(x= hour, y= med_250, group= site, color= site))+
+  geom_ribbon(aes(ymin= quant05_250,
+                  ymax= quant95_250,
+                  fill= site, color= site), linetype= 0, linewidth= 0.2, alpha= 0.1)+
+  scale_fill_manual(values= c("#00797F",  "#003087",  "#B71300"))+
+  guides(fill= guide_legend(title= "Site"))+
+   scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
+  geom_point(size= 1.5) + geom_line()+
+  ylim(72, 135)+
+  theme_bw()+
+  xlab("Hour (UTC)")+
+  ylab(expression(paste('Median 250Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("Oyster Toadfish: peak one-week period")+
+  scale_color_manual(values= c("#00797F",  "#003087",  "#B71300"))+
+  guides(color= guide_legend(title= "Site"))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 19),
+        legend.title= element_text(size= 18),
+        legend.text= element_text(size= 16))
+
+
+```
+#initial diel patterns for cusk eel chorus between sites- weekly medians- USING
+```{r}
+#DB01 cusk eel chorus: 9/11-9/17/2022
+
+DB01subset_0911_0917 <-  seq(ymd_hms("2022-09-11 04:00:00"), ymd_hms("2022-09-18 03:00:00"), by = "1 hour")
+DB01cusk <- data.frame(UTC= DB01subset_0911_0917)
+DB01cusk$UTC <- as.POSIXct(DB01cusk$UTC)
+colnames(DB01cusk)[1] <- "UTC_fixed"
+DB01cusk <- DB01cusk %>%
+  left_join(DB01_OL, by= "UTC_fixed")
+
+DB01cuskMed <- DB01cusk%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+quants= c(0.05, 0.95)
+DB01cuskQuants <- DB01cusk %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_2000 = quantile(OL_2000, probs= quants[1], na.rm= TRUE),
+            quant95_2000 = quantile(OL_2000, probs= quants[2], na.rm= TRUE))
+DB01cuskMedQuants <- DB01cuskMed %>%
+  full_join(DB01cuskQuants)
+DB01cuskMedQuants$site <- "DB01"
+DB01cuskMedQuants$UTC_hour <- hms(DB01cuskMedQuants$UTC_hour)
+DB01cuskMedQuants$hour <- hour(DB01cuskMedQuants$UTC_hour)
+
+ggplot(DB01cuskMedQuants, aes(x= hour, y= med_2000, group= 1))+
+  geom_ribbon(aes(ymin= quant05_2000,
+                  ymax= quant95_2000), 
+              linetype= 1, linewidth= 0.2, alpha= 0.1)+
+  geom_point(size= 1.5) + geom_line()+
+  theme_bw()+
+  xlab("Hour (UTC)")+
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("DB01 cusk eel- peak week median (9/11-9/17/2022)")+
+   scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 19))+
+  geom_vline(xintercept = DB01cusk_civdusk_dechour$decimal_hour, color = "#F76218", linetype = "solid",size =  1, alpha = .5) +
+  geom_vline(xintercept = DB01cusk_nautdusk_dechour$decimal_hour, color = "#B10065", linetype = "solid",size =  .7, alpha = .5) +
+  geom_vline(xintercept = DB01cusk_astrdusk_dechour$decimal_hour, color = "#740580", linetype = "solid",size =  .4, alpha = .5) +
+  geom_vline(xintercept = DB01cusk_civdawn_dechour$decimal_hour, color = "#F76218", linetype = "solid",size =  1, alpha = .5) +
+  geom_vline(xintercept = DB01cusk_nautdawn_dechour$decimal_hour, color = "#B10065", linetype = "solid",size =  .7, alpha = .5) +
+  geom_vline(xintercept = DB01cusk_astrdawn_dechour$decimal_hour, color = "#740580", linetype = "solid",size =  .4, alpha = .5) +
+  geom_vline(xintercept = DB01cusk_sunrise_dechour$decimal_hour, color = "#F2C447", linetype = "solid", size =  2, alpha = .5) +
+  geom_vline(xintercept = DB01cusk_sunset_dechour$decimal_hour, color = "#F2C447", linetype = "solid", size = 2, alpha = .5)
+
+#ES01 cusk eel- 9/15-9/21/2024
+ES01subset_0915_0921 <-  seq(ymd_hms("2024-09-15 04:00:00"), ymd_hms("2024-09-22 03:00:00"), by = "1 hour")
+ES01cusk <- data.frame(UTC= ES01subset_0915_0921)
+ES01cusk$UTC <- as.POSIXct(ES01cusk$UTC)
+colnames(ES01cusk)[1] <- "UTC_fixed"
+ES01cusk<- ES01cusk %>%
+  left_join(ES01_OL, by= "UTC_fixed")
+
+ES01cuskMed <- ES01cusk%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+quants= c(0.05, 0.95)
+ES01cuskQuants <- ES01cusk %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_2000 = quantile(OL_2000, probs= quants[1], na.rm= TRUE),
+            quant95_2000 = quantile(OL_2000, probs= quants[2], na.rm= TRUE))
+ES01cuskMedQuants <- ES01cuskMed %>%
+  full_join(ES01cuskQuants)
+ES01cuskMedQuants$site <- "ES01"
+ES01cuskMedQuants$UTC_hour <- hms(ES01cuskMedQuants$UTC_hour)
+ES01cuskMedQuants$hour <- hour(ES01cuskMedQuants$UTC_hour)
+
+ggplot(ES01cuskMedQuants, aes(x= hour, y= med_2000, group= 1))+
+  geom_ribbon(aes(ymin= quant05_2000,
+                  ymax= quant95_2000), 
+              linetype= 1, linewidth= 0.2, alpha= 0.1)+
+  geom_point(size= 1.5) + geom_line()+
+  theme_bw()+
+  xlab("Hour (UTC)")+
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("ES01 cusk eel- peak week median (9/15-9/21/2024)")+
+   scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 19))+
+  geom_vline(xintercept = ES01oysterCusk_civdusk_dechour$decimal_hour, color = "#F76218", linetype = "solid",size =  1, alpha = .5) +
+  geom_vline(xintercept = ES01oysterCusk_nautdusk_dechour$decimal_hour, color = "#B10065", linetype = "solid",size =  .7, alpha = .5) +
+  geom_vline(xintercept = ES01oysterCusk_astrdusk_dechour$decimal_hour, color = "#740580", linetype = "solid",size =  .4, alpha = .5) +
+  geom_vline(xintercept = ES01oysterCusk_civdawn_dechour$decimal_hour, color = "#F76218", linetype = "solid",size =  1, alpha = .5) +
+  geom_vline(xintercept = ES01oysterCusk_nautdawn_dechour$decimal_hour, color = "#B10065", linetype = "solid",size =  .7, alpha = .5) +
+  geom_vline(xintercept = ES01oysterCusk_astrdawn_dechour$decimal_hour, color = "#740580", linetype = "solid",size =  .4, alpha = .5) +
+  geom_vline(xintercept = ES01oysterCusk_sunrise_dechour$decimal_hour, color = "#F2C447", linetype = "solid", size =  2, alpha = .5) +
+  geom_vline(xintercept = ES01oysterCusk_sunset_dechour$decimal_hour, color = "#F2C447", linetype = "solid", size = 2, alpha = .5)
+
+#CB01 cusk eel- 9/10-9/16/2024
+
+CB01subset_0910_0916 <-  seq(ymd_hms("2024-09-10 04:00:00"), ymd_hms("2024-09-17 03:00:00"), by = "1 hour")
+CB01cusk <- data.frame(UTC= CB01subset_0910_0916)
+CB01cusk$UTC <- as.POSIXct(CB01cusk$UTC)
+colnames(CB01cusk)[1] <- "UTC_fixed"
+CB01cusk<- CB01cusk %>%
+  left_join(CB01_OL, by= "UTC_fixed")
+
+CB01cuskMed <- CB01cusk%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+quants= c(0.05, 0.95)
+CB01cuskQuants <- CB01cusk %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_2000 = quantile(OL_2000, probs= quants[1], na.rm= TRUE),
+            quant95_2000 = quantile(OL_2000, probs= quants[2], na.rm= TRUE))
+CB01cuskMedQuants <- CB01cuskMed %>%
+  full_join(CB01cuskQuants)
+CB01cuskMedQuants$site <- "CB01"
+CB01cuskMedQuants$UTC_hour <- hms(CB01cuskMedQuants$UTC_hour)
+CB01cuskMedQuants$hour <- hour(CB01cuskMedQuants$UTC_hour)
+
+ggplot(CB01cuskMedQuants, aes(x= hour, y= med_2000, group= 1))+
+  geom_ribbon(aes(ymin= quant05_2000,
+                  ymax= quant95_2000), 
+              linetype= 1, linewidth= 0.2, alpha= 0.1)+
+  geom_point(size= 1.5) + geom_line()+
+  theme_bw()+
+  xlab("Hour (UTC)")+
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("CB01 cusk eel- peak week median (9/10-9/16/2024)")+
+   scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 19))+
+  geom_vline(xintercept = CB01cusk_civdusk_dechour$decimal_hour, color = "#F76218", linetype = "solid",size =  1, alpha = .5) +
+  geom_vline(xintercept = CB01cusk_nautdusk_dechour$decimal_hour, color = "#B10065", linetype = "solid",size =  .7, alpha = .5) +
+  geom_vline(xintercept = CB01cusk_astrdusk_dechour$decimal_hour, color = "#740580", linetype = "solid",size =  .4, alpha = .5) +
+  geom_vline(xintercept = CB01cusk_civdawn_dechour$decimal_hour, color = "#F76218", linetype = "solid",size =  1, alpha = .5) +
+  geom_vline(xintercept = CB01cusk_nautdawn_dechour$decimal_hour, color = "#B10065", linetype = "solid",size =  .7, alpha = .5) +
+  geom_vline(xintercept = CB01cusk_astrdawn_dechour$decimal_hour, color = "#740580", linetype = "solid",size =  .4, alpha = .5) +
+  geom_vline(xintercept = CB01cusk_sunrise_dechour$decimal_hour, color = "#F2C447", linetype = "solid", size =  2, alpha = .5) +
+  geom_vline(xintercept = CB01cusk_sunset_dechour$decimal_hour, color = "#F2C447", linetype = "solid", size = 2, alpha = .5)
+
+
+
+#COMBO PLOT
+inshorecusk_MedQuants <- DB01cuskMedQuants %>%
+  full_join(ES01cuskMedQuants) %>%
+  full_join(CB01cuskMedQuants)
+
+inshorecusk_MedQuants$site = factor(inshorecusk_MedQuants$site,
+                                        levels= c("DB01", "ES01", "CB01"),
+                                        labels= c("DB01", "ES01", "CB01"))
+
+ggplot(inshorecusk_MedQuants, aes(x= hour, y= med_2000, group= site, color= site))+
+  geom_ribbon(aes(ymin= quant05_2000,
+                  ymax= quant95_2000,
+                  fill= site, color= site), linetype= 0, linewidth= 0.2, alpha= 0.1)+
+  scale_fill_manual(values= c("#00797F",  "#003087",  "#B71300"))+
+  guides(fill= guide_legend(title= "Site"))+
+  geom_point(size= 1.5) + geom_line()+
+  scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
+  ylim(72, 135)+
+  theme_bw()+
+  xlab("Hour (UTC)")+
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("Cusk Eel: peak one-week period")+
+  scale_color_manual(values= c("#00797F",  "#003087",  "#B71300"))+
+  guides(color= guide_legend(title= "Site"))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 19),
+        legend.title= element_text(size= 18),
+        legend.text= element_text(size= 16))
+
+
+
 
 
 ```
