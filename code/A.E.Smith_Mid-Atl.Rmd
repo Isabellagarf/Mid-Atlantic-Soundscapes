@@ -3148,28 +3148,42 @@ DB01_202206_minOLChorus <- DB01_202206_minOLChorus %>%
 allSite_chorusPresence <- DB01_chorusPresence%>%
   full_join(ES01_chorusPresence)%>%
   full_join(CB01_chorusPresence)
+colnames(allSite_chorusPresence)[2] <- "Unknown pulses"
+colnames(allSite_chorusPresence)[3] <- "Unknown knocks"
+colnames(allSite_chorusPresence)[4] <- "Cusk eel chorus"
+colnames(allSite_chorusPresence)[5] <- "Toadfish chorus"
 
 allSite_chorusPresenceFormatted <- loadDetectionData(x=allSite_chorusPresence, source='csv', detectionType='presence', wide=TRUE, 
-tz='UTC', presenceDuration='1day', extraCols=c('site', 'UTC_date'), 
-speciesCols=c('X500_chorus', 'X1000_chorus', 'cusk_chorus', 'oyster_chorus'), detectedValues='1') #this formats csv file so it can be used for detectionExplorer
+tz='UTC', presenceDuration='1day', extraCols='site', 
+speciesCols=c('Unknown pulses', 'Unknown knocks', 'Cusk eel chorus', 'Toadfish chorus'), detectedValues='1') #this formats csv file so it can be used for detectionExplorer
 
-runDetectionExplorer(allSite_chorusPresenceFormatted)
+#runDetectionExplorer(allSite_chorusPresence)
 
 allSite_chorusPresenceFormatted$site = factor(allSite_chorusPresenceFormatted$site,
                                         levels= c("DB01", "ES01", "CB01"),
                                         labels= c("DB01", "ES01", "CB01"))
 
-plotAcousticScene(x=allSite_chorusPresenceFormatted, by='site', combineYears=FALSE, freqMap=data.frame(species=c('X1000_chorus', 'X500_chorus', 'cusk_chorus', 'oyster_chorus'), freqMin=c(140, 60, 1200, 150), freqMax=c(6500, 930, 2600, 3650)))+
+ES01_gaps <- data.frame(
+   xmin = as_datetime(c("2022-06-10")),
+   xmax= as_datetime(c("2023-10-12")),
+   ymin= 15,
+   ymax= 8000,
+   fill= c("grey"))
+  
+plotAcousticScene(x=allSite_chorusPresenceFormatted, by='site', combineYears=FALSE, freqMap=data.frame(species=c('Unknown knocks', 'Unknown pulses', 'Cusk eel chorus', 'Toadfish chorus'), freqMin=c(140, 60, 1200, 150), freqMax=c(6500, 930, 2600, 3650)), alpha= .85)+
   theme_bw()+
-  ylim(15, 8000)+
-  scale_fill_manual(values= c("#4B8320", "#00008B", "#DB2207","#FFAB38"))+
+  ylim(15, 7500)+
+  scale_fill_manual(values= c("#4B8320", "#00008B", "#DB2207","#FFAB38", "grey"))+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
         axis.title= element_text(size= 18),
         axis.text.y= element_text(size= 16),
         legend.text = element_text(size= 16),
         legend.title= element_text(size=18),
        strip.text= element_text(size= 16))+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b-%Y", minor_breaks = NULL)
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b-%Y", minor_breaks = NULL)+
+  geom_rect(data=data.frame(site= factor("ES01")), aes(xmin = as_datetime("2022-06-10"), xmax = as_datetime("2023-10-12"), 
+                                           ymin = -Inf, ymax = Inf, fill = ""),
+                                           alpha = 0.3, inherit.aes = FALSE, show.legend= "none")
 
 ```
 #diel plot data- loading all diel times for inshore sites during peak weeks per chorus- USING
@@ -3610,7 +3624,7 @@ ES01oysterCusk_astrdusk_dechour <- ES01oysterCusk_astrdusk %>%
 
 ##########CB01 500###########
 CB01_location <- matrix(c(-75.67, 36.98), nrow = 1)
-CB01500_date_Time <- seq(ymd_hms("2024-05-23 00:00:00"), ymd_hms("2024-05-29 23:00:00"), by = "1 hour")
+CB01500_date_Time <- seq(ymd_hms("2024-09-01 00:00:00"), ymd_hms("2024-09-07 23:00:00"), by = "1 hour")
 
 CB01500_sunrise <- sunriset(crds = CB01_location, dateTime = CB01500_date_Time, direction = "sunrise", POSIXct.out = TRUE)
 CB01500_sunrise_dechour <- CB01500_sunrise %>%
@@ -4558,6 +4572,44 @@ ggplot(inshorecusk_MedQuants, aes(x= hour, y= med_2000, group= site, color= site
         plot.title = element_text(size= 19),
         legend.title= element_text(size= 18),
         legend.text= element_text(size= 16))
+
+
+
+
+
+```
+#individual choruses diel plots full effort
+```{r}
+DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
+DB01500_fullEffort_date_time <- seq(ymd_hms("2022-07-07 00:00:00"), ymd_hms("2024-11-04 23:00:00"), by = "1 hour")
+
+DB01500_fullEffort_nautdusk <- crepuscule(crds = DB01_location, dateTime = DB01500_fullEffort_date_time, solarDep = 12, direction = "dusk", POSIXct.out = TRUE)
+
+DB01500_fullEffort_nautduskDate<- DB01500_fullEffort_nautdusk %>%
+  mutate(UTC_date = date(time))%>%
+  mutate(nautdusk_UTC_hour = hour(time))
+
+DB01500_fullEffort_nautduskDate <- DB01500_fullEffort_nautduskDate %>%
+  group_by(UTC_date, nautdusk_UTC_hour)%>%
+  summarize(n = n())
+DB01500_fullEffort_nautduskDate$nautdusk_UTC_hour <- as.character(DB01500_fullEffort_nautduskDate$nautdusk_UTC_hour)
+
+DB01500_fullEffort_nautduskDate$nautdusk_minhour <- with(DB01500_fullEffort_nautduskDate, ifelse()) #start here trying to get two columns +/- 1hr
+
+
+DB01500_fullEffort_nautduskDate$UTC_date <- as.character(DB01500_fullEffort_nautduskDate$UTC_date)
+DB01500_fullEffort_nautduskDate <- DB01500_fullEffort_nautduskDate[-c(3)]
+DB01500_fullEffort_nautduskDate$UTC_fixed <- paste(DB01500_fullEffort_nautduskDate$UTC_date, DB01500_fullEffort_nautduskDate$nautdusk_UTC_hour, sep = " ")
+DB01500_fullEffort_nautduskDate$UTC_fixed = as.POSIXct(DB01500_fullEffort_nautduskDate$UTC_fixed, format = "%Y-%m-%d %H")
+DB01500_fullEffort_nautduskDate$UTC_date <- as.Date(DB01500_fullEffort_nautduskDate$UTC_date)
+DB01_chorusPresence <- DB01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+
+DB01_nautduskPresence <- DB01_chorusPresence %>%
+  right_join(DB01500_fullEffort_nautduskDate, join_by(UTC_date))
+DB01_nautdusk <- DB01_OL %>%
+  right_join(DB01_nautduskPresence, join_by(UTC_fixed))
+
 
 
 
