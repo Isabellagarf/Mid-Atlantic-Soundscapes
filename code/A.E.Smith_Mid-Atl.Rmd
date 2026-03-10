@@ -4592,15 +4592,27 @@ DB01500_fullEffort_nautduskDate<- DB01500_fullEffort_nautdusk %>%
 DB01500_fullEffort_nautduskDate <- DB01500_fullEffort_nautduskDate %>%
   group_by(UTC_date, nautdusk_UTC_hour)%>%
   summarize(n = n())
+DB01500_fullEffort_nautduskDate <- DB01500_fullEffort_nautduskDate[-c(3)]
+
+#put back as characters so can make date column easier
+DB01500_fullEffort_nautduskDate$UTC_date <- as.character(DB01500_fullEffort_nautduskDate$UTC_date)
+
 DB01500_fullEffort_nautduskDate$nautdusk_UTC_hour <- as.character(DB01500_fullEffort_nautduskDate$nautdusk_UTC_hour)
 
-DB01500_fullEffort_nautduskDate$nautdusk_minhour <- with(DB01500_fullEffort_nautduskDate, ifelse()) #start here trying to get two columns +/- 1hr
+#make new columns combining date and 3 hours- should have 3 data points per day (with overlap on days if around midnight)- 
 
-
-DB01500_fullEffort_nautduskDate$UTC_date <- as.character(DB01500_fullEffort_nautduskDate$UTC_date)
-DB01500_fullEffort_nautduskDate <- DB01500_fullEffort_nautduskDate[-c(3)]
 DB01500_fullEffort_nautduskDate$UTC_fixed <- paste(DB01500_fullEffort_nautduskDate$UTC_date, DB01500_fullEffort_nautduskDate$nautdusk_UTC_hour, sep = " ")
 DB01500_fullEffort_nautduskDate$UTC_fixed = as.POSIXct(DB01500_fullEffort_nautduskDate$UTC_fixed, format = "%Y-%m-%d %H")
+
+DB01500_fullEffort_nautduskDate$UTC_minus <- DB01500_fullEffort_nautduskDate$UTC_fixed - hours(1)
+DB01500_fullEffort_nautduskDate$UTC_plus <- DB01500_fullEffort_nautduskDate$UTC_fixed + hours(1)
+
+#this works but hard to then join with OL data, so separate out and then join again after they are all matched
+
+#START HERE- MAKE NEW DATA FRAME WITH UTC_MINUS COLUMN AND THEN JOIN WITH OL DATA... DO THE SAME FOR UTC_PLUS THENNNNN RE-COMBINE DATAFRAME
+DB01500_fullEffort_nautduskMinus$UTC_minus
+
+
 DB01500_fullEffort_nautduskDate$UTC_date <- as.Date(DB01500_fullEffort_nautduskDate$UTC_date)
 DB01_chorusPresence <- DB01_chorusPresence %>%
   mutate(UTC_date = date(UTC))
