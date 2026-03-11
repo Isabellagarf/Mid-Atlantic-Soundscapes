@@ -4600,7 +4600,6 @@ DB01500_fullEffort_nautduskDate$UTC_date <- as.character(DB01500_fullEffort_naut
 DB01500_fullEffort_nautduskDate$nautdusk_UTC_hour <- as.character(DB01500_fullEffort_nautduskDate$nautdusk_UTC_hour)
 
 #make new columns combining date and 3 hours- should have 3 data points per day (with overlap on days if around midnight)- 
-
 DB01500_fullEffort_nautduskDate$UTC_fixed <- paste(DB01500_fullEffort_nautduskDate$UTC_date, DB01500_fullEffort_nautduskDate$nautdusk_UTC_hour, sep = " ")
 DB01500_fullEffort_nautduskDate$UTC_fixed = as.POSIXct(DB01500_fullEffort_nautduskDate$UTC_fixed, format = "%Y-%m-%d %H")
 
@@ -4608,11 +4607,17 @@ DB01500_fullEffort_nautduskDate$UTC_minus <- DB01500_fullEffort_nautduskDate$UTC
 DB01500_fullEffort_nautduskDate$UTC_plus <- DB01500_fullEffort_nautduskDate$UTC_fixed + hours(1)
 
 #this works but hard to then join with OL data, so separate out and then join again after they are all matched
+DB01500_fullEffort_nautduskMinus <- DB01500_fullEffort_nautduskDate[, c("UTC_date", "nautdusk_UTC_hour", "UTC_minus")]
+DB01500_fullEffort_nautduskPlus <- DB01500_fullEffort_nautduskDate[, c("UTC_date", "nautdusk_UTC_hour", "UTC_plus")]
 
-#START HERE- MAKE NEW DATA FRAME WITH UTC_MINUS COLUMN AND THEN JOIN WITH OL DATA... DO THE SAME FOR UTC_PLUS THENNNNN RE-COMBINE DATAFRAME
-DB01500_fullEffort_nautduskMinus$UTC_minus
+#remove from original for now
+DB01500_fullEffort_nautduskDate <- DB01500_fullEffort_nautduskDate[-c(4:5)]
 
+#have to rename minus/plus columns to 'UTC_fixed' so it can join with the chorus presence and OL files
+colnames(DB01500_fullEffort_nautduskMinus)[3] <- "UTC_fixed"
+colnames(DB01500_fullEffort_nautduskPlus)[3] <- "UTC_fixed"
 
+#now join each date dataframe individually
 DB01500_fullEffort_nautduskDate$UTC_date <- as.Date(DB01500_fullEffort_nautduskDate$UTC_date)
 DB01_chorusPresence <- DB01_chorusPresence %>%
   mutate(UTC_date = date(UTC))
@@ -4622,9 +4627,35 @@ DB01_nautduskPresence <- DB01_chorusPresence %>%
 DB01_nautdusk <- DB01_OL %>%
   right_join(DB01_nautduskPresence, join_by(UTC_fixed))
 
+DB01500_fullEffort_nautduskMinus$UTC_date <- as.Date(DB01500_fullEffort_nautduskMinus$UTC_date)
+DB01_nautduskMinus <- DB01_OL %>%
+  right_join(DB01500_fullEffort_nautduskMinus, join_by(UTC_fixed))
 
+DB01500_fullEffort_nautduskPlus$UTC_date <- as.Date(DB01500_fullEffort_nautduskPlus$UTC_date)
+DB01_nautduskPlus <- DB01_OL %>%
+  right_join(DB01500_fullEffort_nautduskPlus, join_by(UTC_fixed))
 
+#remove columns not needed for full join
+DB01_nautdusk <- DB01_nautdusk[-c(1, 5:8, 10:15, 18, 21, 23:25, 27)]
+DB01_nautdusk$diel <- "naut_dusk"
+DB01_nautduskPlus <- DB01_nautduskPlus[-c(1:8, 10:14, 16, 18:22)]
+colnames(DB01_nautduskPlus)[3] <- "UTC_plus"
+colnames(DB01_nautduskPlus)[1] <- "500_plus"
+DB01_nautduskPlus$diel <- "plus"
+DB01_nautduskMinus <- DB01_nautduskMinus[-c(1:8, 10:14, 16, 18:22)]
+colnames(DB01_nautduskMinus)[3] <- "UTC_minus"
+colnames(DB01_nautduskMinus)[1] <- "500_minus"
+DB01_nautduskMinus$diel <- "minus"
 
+DB01_nautduskMinusPlus <- DB01_nautduskMinus %>%
+  full_join(DB01_nautduskPlus)
 
-
+DB01_nautduskMinusPlus <- DB01_nautduskMinusPlus %>%
+  pivot_wider(
+    cols= !UTC_date.x,
+    names_to= c("datetime", "OL_500"),
+    names_sep= "_",
+    values_drop_na = TRUE
+  ) 
+ 
 ```
