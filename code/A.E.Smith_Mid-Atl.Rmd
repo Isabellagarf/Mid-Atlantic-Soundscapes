@@ -4580,6 +4580,7 @@ ggplot(inshorecusk_MedQuants, aes(x= hour, y= med_2000, group= site, color= site
 ```
 #individual choruses diel plots full effort
 ```{r}
+#DB01
 DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
 DB01500_fullEffort_date_time <- seq(ymd_hms("2022-07-07 00:00:00"), ymd_hms("2024-11-04 23:00:00"), by = "1 hour")
 
@@ -4639,23 +4640,50 @@ DB01_nautduskPlus <- DB01_OL %>%
 DB01_nautdusk <- DB01_nautdusk[-c(1, 5:8, 10:15, 18, 21, 23:25, 27)]
 DB01_nautdusk$diel <- "naut_dusk"
 DB01_nautduskPlus <- DB01_nautduskPlus[-c(1:8, 10:14, 16, 18:22)]
-colnames(DB01_nautduskPlus)[3] <- "UTC_plus"
-colnames(DB01_nautduskPlus)[1] <- "500_plus"
+#colnames(DB01_nautduskPlus)[3] <- "UTC_fixed"
+#colnames(DB01_nautduskPlus)[1] <- "500_plus"
 DB01_nautduskPlus$diel <- "plus"
 DB01_nautduskMinus <- DB01_nautduskMinus[-c(1:8, 10:14, 16, 18:22)]
-colnames(DB01_nautduskMinus)[3] <- "UTC_minus"
-colnames(DB01_nautduskMinus)[1] <- "500_minus"
+#colnames(DB01_nautduskMinus)[3] <- "UTC_fixed"
+#colnames(DB01_nautduskMinus)[1] <- "500_minus"
 DB01_nautduskMinus$diel <- "minus"
 
 DB01_nautduskMinusPlus <- DB01_nautduskMinus %>%
   full_join(DB01_nautduskPlus)
 
-DB01_nautduskMinusPlus <- DB01_nautduskMinusPlus %>%
-  pivot_wider(
-    cols= !UTC_date.x,
-    names_to= c("datetime", "OL_500"),
-    names_sep= "_",
-    values_drop_na = TRUE
-  ) 
+DB01_nautdusk_diels <- DB01_nautdusk %>%
+  full_join(DB01_nautduskMinusPlus)
  
+DB01_nautdusk_diels <- DB01_nautdusk_diels %>%
+dplyr::mutate(X500_chorus = factor(X500_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
+DB01_nautdusk_diels <- DB01_nautdusk_diels %>%
+  drop_na(X500_chorus)
+
+
+
+
+
+
+
+
+ggplot(DB01_nautdusk_diels, aes(x= UTC_fixed, group= year(UTC_fixed), y= OL_500, group= X500_chorus, color= X500_chorus))+
+  geom_path(linewidth= 0.75, na.rm= TRUE)+
+  theme_bw()+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  xlab("Date")+
+  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#00797F95"))+
+  scale_fill_manual(values= c("grey", "#00797F95"))+
+  guides(color= guide_legend(title= "Unknown pulses: chorus presence"))+
+  ggtitle("DB01: +/- 1 hour nautical dusk")+
+  theme(axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        axis.text.x= element_text(size= 16),
+        legend.title= element_text(size= 18),
+        legend.text = element_text(size= 16),
+        plot.title= element_text(size= 20))
+
+
 ```
