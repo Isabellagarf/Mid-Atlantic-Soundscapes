@@ -5163,3 +5163,284 @@ ggplot(allCusk_inshoreDiels, aes(x= UTC_fixed, group= year(UTC_fixed), y= OL_200
 
 
 ```
+#1000 chorus civil dusk diel plot full effort
+```{r}
+#DB01
+DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
+DB01_fullEffort_date_time <- seq(ymd_hms("2022-07-07 00:00:00"), ymd_hms("2024-11-04 23:00:00"), by = "1 hour")
+
+DB01_fullEffort_civdusk <- crepuscule(crds = DB01_location, dateTime = DB01_fullEffort_date_time, solarDep = 6, direction = "dusk", POSIXct.out = TRUE)
+
+DB01_fullEffort_civduskDate<- DB01_fullEffort_civdusk %>%
+  mutate(UTC_date = date(time))%>%
+  mutate(civdusk_UTC_hour = hour(time))
+
+DB01_fullEffort_civduskDate <- DB01_fullEffort_civduskDate %>%
+  group_by(UTC_date, civdusk_UTC_hour)%>%
+  summarize(n = n())
+DB01_fullEffort_civduskDate <- DB01_fullEffort_civduskDate[-c(3)]
+
+#put back as characters so can make date column easier
+DB01_fullEffort_civduskDate$UTC_date <- as.character(DB01_fullEffort_civduskDate$UTC_date)
+
+DB01_fullEffort_civduskDate$civdusk_UTC_hour <- as.character(DB01_fullEffort_civduskDate$civdusk_UTC_hour)
+
+#make new columns combining date and 3 hours- should have 3 data points per day (with overlap on days if around midnight)- 
+DB01_fullEffort_civduskDate$UTC_fixed <- paste(DB01_fullEffort_civduskDate$UTC_date, DB01_fullEffort_civduskDate$civdusk_UTC_hour, sep = " ")
+DB01_fullEffort_civduskDate$UTC_fixed = as.POSIXct(DB01_fullEffort_civduskDate$UTC_fixed, format = "%Y-%m-%d %H")
+
+DB01_fullEffort_civduskDate$UTC_minus <- DB01_fullEffort_civduskDate$UTC_fixed - hours(1)
+DB01_fullEffort_civduskDate$UTC_plus <- DB01_fullEffort_civduskDate$UTC_fixed + hours(1)
+
+#this works but hard to then join with OL data, so separate out and then join again after they are all matched
+DB01_fullEffort_civduskMinus <- DB01_fullEffort_civduskDate[, c("UTC_date", "civdusk_UTC_hour", "UTC_minus")]
+DB01_fullEffort_civduskPlus <- DB01_fullEffort_civduskDate[, c("UTC_date", "civdusk_UTC_hour", "UTC_plus")]
+
+#remove from original for now
+DB01_fullEffort_civduskDate <- DB01_fullEffort_civduskDate[-c(4:5)]
+
+#have to rename minus/plus columns to 'UTC_fixed' so it can join with the chorus presence and OL files
+colnames(DB01_fullEffort_civduskMinus)[3] <- "UTC_fixed"
+colnames(DB01_fullEffort_civduskPlus)[3] <- "UTC_fixed"
+
+#now join each date dataframe individually
+DB01_fullEffort_civduskDate$UTC_date <- as.Date(DB01_fullEffort_civduskDate$UTC_date)
+
+DB01_fullEffort_civduskMinus$UTC_date <- as.Date(DB01_fullEffort_civduskMinus$UTC_date)
+DB01_civduskMinus <- DB01_OL %>%
+  right_join(DB01_fullEffort_civduskMinus, join_by(UTC_fixed))
+
+DB01_fullEffort_civduskPlus$UTC_date <- as.Date(DB01_fullEffort_civduskPlus$UTC_date)
+DB01_civduskPlus <- DB01_OL %>%
+  right_join(DB01_fullEffort_civduskPlus, join_by(UTC_fixed))
+
+DB01_civdusk <- DB01_OL %>%
+  right_join(DB01_fullEffort_civduskDate, join_by(UTC_fixed))
+
+#remove columns not needed for full join
+DB01_civdusk <- DB01_civdusk[-c(1, 5:9, 11:15, 18)]
+colnames(DB01_civdusk)[9] <- "UTC_date"
+DB01_civdusk$diel <- "civdusk"
+DB01_civduskPlus <- DB01_civduskPlus[-c(1:9, 11:14, 16, 18:20, 22)]
+colnames(DB01_civduskPlus)[4] <- "UTC_date"
+DB01_civduskPlus$diel <- "plus"
+DB01_civduskMinus <- DB01_civduskMinus[-c(1:9, 11:14, 16, 18:20, 22)]
+colnames(DB01_civduskMinus)[4] <- "UTC_date"
+DB01_civduskMinus$diel <- "minus"
+
+DB01_civduskMinusPlus <- DB01_civduskMinus %>%
+  full_join(DB01_civduskPlus)
+DB01_civdusk_diels <- DB01_civdusk %>%
+  full_join(DB01_civduskMinusPlus)
+
+DB01_chorusPresence <- DB01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+DB01_civdusk_diels <- DB01_chorusPresence %>%
+  right_join(DB01_civdusk_diels, join_by(UTC_date))
+
+DB01_civdusk_diels <- DB01_civdusk_diels[-c(2,4:5, 18)]
+ 
+DB01_civdusk_diels <- DB01_civdusk_diels %>%
+dplyr::mutate(X1000_chorus = factor(X1000_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
+DB01_civdusk_diels <- DB01_civdusk_diels %>%
+  drop_na(X1000_chorus)
+DB01_civdusk_diels$site <- "DB01"
+
+#ES01
+ES01_location <- matrix(c(-75.29, 37.69), nrow = 1)
+ES01_fullEffort_date_time <- seq(ymd_hms("2022-07-07 00:00:00"), ymd_hms("2024-11-04 23:00:00"), by = "1 hour")
+
+ES01_fullEffort_civdusk <- crepuscule(crds = ES01_location, dateTime = ES01_fullEffort_date_time, solarDep = 6, direction = "dusk", POSIXct.out = TRUE)
+
+ES01_fullEffort_civduskDate<- ES01_fullEffort_civdusk %>%
+  mutate(UTC_date = date(time))%>%
+  mutate(civdusk_UTC_hour = hour(time))
+
+ES01_fullEffort_civduskDate <-ES01_fullEffort_civduskDate %>%
+  group_by(UTC_date, civdusk_UTC_hour)%>%
+  summarize(n = n())
+ES01_fullEffort_civduskDate <- ES01_fullEffort_civduskDate[-c(3)]
+
+#put back as characters so can make date column easier
+ES01_fullEffort_civduskDate$UTC_date <- as.character(ES01_fullEffort_civduskDate$UTC_date)
+
+ES01_fullEffort_civduskDate$civdusk_UTC_hour <- as.character(ES01_fullEffort_civduskDate$civdusk_UTC_hour)
+
+#make new columns combining date and 3 hours- should have 3 data points per day (with overlap on days if around midnight)- 
+ES01_fullEffort_civduskDate$UTC_fixed <- paste(ES01_fullEffort_civduskDate$UTC_date, ES01_fullEffort_civduskDate$civdusk_UTC_hour, sep = " ")
+ES01_fullEffort_civduskDate$UTC_fixed = as.POSIXct(ES01_fullEffort_civduskDate$UTC_fixed, format = "%Y-%m-%d %H")
+
+ES01_fullEffort_civduskDate$UTC_minus <- ES01_fullEffort_civduskDate$UTC_fixed - hours(1)
+ES01_fullEffort_civduskDate$UTC_plus <- ES01_fullEffort_civduskDate$UTC_fixed + hours(1)
+
+#this works but hard to then join with OL data, so separate out and then join again after they are all matched
+ES01_fullEffort_civduskMinus <- ES01_fullEffort_civduskDate[, c("UTC_date", "civdusk_UTC_hour", "UTC_minus")]
+ES01_fullEffort_civduskPlus <- ES01_fullEffort_civduskDate[, c("UTC_date", "civdusk_UTC_hour", "UTC_plus")]
+
+#remove from original for now
+ES01_fullEffort_civduskDate <- ES01_fullEffort_civduskDate[-c(4:5)]
+
+#have to rename minus/plus columns to 'UTC_fixed' so it can join with the chorus presence and OL files
+colnames(ES01_fullEffort_civduskMinus)[3] <- "UTC_fixed"
+colnames(ES01_fullEffort_civduskPlus)[3] <- "UTC_fixed"
+
+#now join each date dataframe individually
+ES01_fullEffort_civduskDate$UTC_date <- as.Date(ES01_fullEffort_civduskDate$UTC_date)
+
+ES01_fullEffort_civduskMinus$UTC_date <- as.Date(ES01_fullEffort_civduskMinus$UTC_date)
+ES01_civduskMinus <- ES01_OL %>%
+  right_join(ES01_fullEffort_civduskMinus, join_by(UTC_fixed))
+
+ES01_fullEffort_civduskPlus$UTC_date <- as.Date(ES01_fullEffort_civduskPlus$UTC_date)
+ES01_civduskPlus <- ES01_OL %>%
+  right_join(ES01_fullEffort_civduskPlus, join_by(UTC_fixed))
+
+ES01_civdusk <- ES01_OL %>%
+  right_join(ES01_fullEffort_civduskDate, join_by(UTC_fixed))
+
+#remove columns not needed for full join
+ES01_civdusk <- ES01_civdusk[-c(1, 5:9, 11:15, 18)]
+colnames(ES01_civdusk)[9] <- "UTC_date"
+ES01_civdusk$diel <- "civdusk"
+ES01_civduskPlus <- ES01_civduskPlus[-c(1:9, 11:14, 16, 18:20, 22)]
+colnames(ES01_civduskPlus)[4] <- "UTC_date"
+ES01_civduskPlus$diel <- "plus"
+ES01_civduskMinus <- ES01_civduskMinus[-c(1:9, 11:14, 16, 18:20, 22)]
+colnames(ES01_civduskMinus)[4] <- "UTC_date"
+ES01_civduskMinus$diel <- "minus"
+
+ES01_civduskMinusPlus <- ES01_civduskMinus %>%
+  full_join(ES01_civduskPlus)
+ES01_civdusk_diels <- ES01_civdusk %>%
+  full_join(ES01_civduskMinusPlus)
+
+ES01_chorusPresence <- ES01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+ES01_civdusk_diels <- ES01_chorusPresence %>%
+  right_join(ES01_civdusk_diels, join_by(UTC_date))
+
+ES01_civdusk_diels <- ES01_civdusk_diels[-c(2,4:5, 18)]
+ 
+ES01_civdusk_diels <- ES01_civdusk_diels %>%
+dplyr::mutate(X1000_chorus = factor(X1000_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
+ES01_civdusk_diels <- ES01_civdusk_diels %>%
+  drop_na(X1000_chorus)
+ES01_civdusk_diels$site <- "ES01"
+
+#CB01
+CB01_location <- matrix(c(-75.67, 36.98), nrow = 1)
+CB01_fullEffort_date_time <- seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2024-11-08 16:00:00"), by = "1 hour")
+
+CB01_fullEffort_civdusk <- crepuscule(crds = CB01_location, dateTime = CB01_fullEffort_date_time, solarDep = 6, direction = "dusk", POSIXct.out = TRUE)
+
+CB01_fullEffort_civduskDate<- CB01_fullEffort_civdusk %>%
+  mutate(UTC_date = date(time))%>%
+  mutate(civdusk_UTC_hour = hour(time))
+
+CB01_fullEffort_civduskDate <- CB01_fullEffort_civduskDate %>%
+  group_by(UTC_date, civdusk_UTC_hour)%>%
+  summarize(n = n())
+CB01_fullEffort_civduskDate <- CB01_fullEffort_civduskDate[-c(3)]
+
+#put back as characters so can make date column easier
+CB01_fullEffort_civduskDate$UTC_date <- as.character(CB01_fullEffort_civduskDate$UTC_date)
+
+CB01_fullEffort_civduskDate$civdusk_UTC_hour <- as.character(CB01_fullEffort_civduskDate$civdusk_UTC_hour)
+
+#make new columns combining date and 3 hours- should have 3 data points per day (with overlap on days if around midnight)- 
+CB01_fullEffort_civduskDate$UTC_fixed <- paste(CB01_fullEffort_civduskDate$UTC_date, CB01_fullEffort_civduskDate$civdusk_UTC_hour, sep = " ")
+CB01_fullEffort_civduskDate$UTC_fixed = as.POSIXct(CB01_fullEffort_civduskDate$UTC_fixed, format = "%Y-%m-%d %H")
+
+CB01_fullEffort_civduskDate$UTC_minus <- CB01_fullEffort_civduskDate$UTC_fixed - hours(1)
+CB01_fullEffort_civduskDate$UTC_plus <- CB01_fullEffort_civduskDate$UTC_fixed + hours(1)
+
+#this works but hard to then join with OL data, so separate out and then join again after they are all matched
+CB01_fullEffort_civduskMinus <- CB01_fullEffort_civduskDate[, c("UTC_date", "civdusk_UTC_hour", "UTC_minus")]
+CB01_fullEffort_civduskPlus <- CB01_fullEffort_civduskDate[, c("UTC_date", "civdusk_UTC_hour", "UTC_plus")]
+
+#remove from original for now
+CB01_fullEffort_civduskDate <- CB01_fullEffort_civduskDate[-c(4:5)]
+
+#have to rename minus/plus columns to 'UTC_fixed' so it can join with the chorus presence and OL files
+colnames(CB01_fullEffort_civduskMinus)[3] <- "UTC_fixed"
+colnames(CB01_fullEffort_civduskPlus)[3] <- "UTC_fixed"
+
+#now join each date dataframe individually
+CB01_fullEffort_civduskDate$UTC_date <- as.Date(CB01_fullEffort_civduskDate$UTC_date)
+
+CB01_fullEffort_civduskMinus$UTC_date <- as.Date(CB01_fullEffort_civduskMinus$UTC_date)
+CB01_civduskMinus <- CB01_OL %>%
+  right_join(CB01_fullEffort_civduskMinus, join_by(UTC_fixed))
+
+CB01_fullEffort_civduskPlus$UTC_date <- as.Date(CB01_fullEffort_civduskPlus$UTC_date)
+CB01_civduskPlus <- CB01_OL %>%
+  right_join(CB01_fullEffort_civduskPlus, join_by(UTC_fixed))
+
+CB01_civdusk <- CB01_OL %>%
+  right_join(CB01_fullEffort_civduskDate, join_by(UTC_fixed))
+
+#remove columns not needed for full join
+CB01_civdusk <- CB01_civdusk[-c(1, 5:9, 11:15, 18)]
+colnames(CB01_civdusk)[9] <- "UTC_date"
+CB01_civdusk$diel <- "civdusk"
+CB01_civduskPlus <- CB01_civduskPlus[-c(1:9, 11:14, 16, 18:20, 22)]
+colnames(CB01_civduskPlus)[4] <- "UTC_date"
+CB01_civduskPlus$diel <- "plus"
+CB01_civduskMinus <- CB01_civduskMinus[-c(1:9, 11:14, 16, 18:20, 22)]
+colnames(CB01_civduskMinus)[4] <- "UTC_date"
+CB01_civduskMinus$diel <- "minus"
+
+CB01_civduskMinusPlus <- CB01_civduskMinus %>%
+  full_join(CB01_civduskPlus)
+CB01_civdusk_diels <- CB01_civdusk %>%
+  full_join(CB01_civduskMinusPlus)
+
+CB01_chorusPresence <- CB01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+CB01_civdusk_diels <- CB01_chorusPresence %>%
+  right_join(CB01_civdusk_diels, join_by(UTC_date))
+
+CB01_civdusk_diels <- CB01_civdusk_diels[-c(2,4:5, 18)]
+ 
+CB01_civdusk_diels <- CB01_civdusk_diels %>%
+dplyr::mutate(X1000_chorus = factor(X1000_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
+CB01_civdusk_diels <- CB01_civdusk_diels %>%
+  drop_na(X1000_chorus)
+CB01_civdusk_diels$site <- "CB01"
+
+all1000_inshoreDiels <- DB01_civdusk_diels %>%
+  full_join(ES01_civdusk_diels)%>%
+  full_join(CB01_civdusk_diels)
+
+all1000_inshoreDiels$site = factor(all1000_inshoreDiels$site,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                        labels= c('DB01', 'ES01', 'CB01'))
+
+
+ggplot(all1000_inshoreDiels, aes(x= UTC_fixed, group= year(UTC_fixed), y= OL_1000, group= X1000_chorus, color= X1000_chorus))+
+  geom_line(linewidth= 0.75, na.rm= TRUE)+
+#  geom_ma(ma_fun= SMA, n= 9, color= "black", linetype= 1, show.legend= TRUE)+
+  theme_bw()+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  xlab("Date")+
+  ylab(expression(paste('Median 1000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  facet_grid(factor(site, levels = c('DB01', 'ES01', 'CB01'))~.,)+
+  scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#B7130095"))+
+  scale_fill_manual(values= c("grey", "#B7130095"))+
+  guides(color= guide_legend(title= "Unknown knocks chorus presence"))+
+  ggtitle("+/- 1 hour civil dusk")+
+  theme(axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        axis.text.x= element_text(size= 16),
+        legend.title= element_text(size= 18),
+        legend.text = element_text(size= 16),
+        plot.title = element_text(size= 20, hjust= 0.5),
+        strip.text= element_text(size= 16))
+
+```
