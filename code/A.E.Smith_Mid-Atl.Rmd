@@ -49,7 +49,7 @@ library(showtext)
 library(photobiology)
 library(ggdaynight)
 library(khroma)
-
+library(tidyquant)
 ```
 
 # loading full HMD files per site
@@ -4578,7 +4578,7 @@ ggplot(inshorecusk_MedQuants, aes(x= hour, y= med_2000, group= site, color= site
 
 
 ```
-#individual choruses diel plots full effort
+#500 chorus nautical dusk diel plot full effort
 ```{r}
 #DB01
 DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
@@ -4620,13 +4620,6 @@ colnames(DB01500_fullEffort_nautduskPlus)[3] <- "UTC_fixed"
 
 #now join each date dataframe individually
 DB01500_fullEffort_nautduskDate$UTC_date <- as.Date(DB01500_fullEffort_nautduskDate$UTC_date)
-DB01_chorusPresence <- DB01_chorusPresence %>%
-  mutate(UTC_date = date(UTC))
-
-DB01_nautduskPresence <- DB01_chorusPresence %>%
-  right_join(DB01500_fullEffort_nautduskDate, join_by(UTC_date))
-DB01_nautdusk <- DB01_OL %>%
-  right_join(DB01_nautduskPresence, join_by(UTC_fixed))
 
 DB01500_fullEffort_nautduskMinus$UTC_date <- as.Date(DB01500_fullEffort_nautduskMinus$UTC_date)
 DB01_nautduskMinus <- DB01_OL %>%
@@ -4636,23 +4629,31 @@ DB01500_fullEffort_nautduskPlus$UTC_date <- as.Date(DB01500_fullEffort_nautduskP
 DB01_nautduskPlus <- DB01_OL %>%
   right_join(DB01500_fullEffort_nautduskPlus, join_by(UTC_fixed))
 
+DB01_nautdusk <- DB01_OL %>%
+  right_join(DB01500_fullEffort_nautduskDate, join_by(UTC_fixed))
+
 #remove columns not needed for full join
-DB01_nautdusk <- DB01_nautdusk[-c(1, 5:8, 10:15, 18, 21, 23:25, 27)]
+DB01_nautdusk <- DB01_nautdusk[-c(1, 5:8, 10:15, 18)]
+colnames(DB01_nautdusk)[9] <- "UTC_date"
 DB01_nautdusk$diel <- "naut_dusk"
-DB01_nautduskPlus <- DB01_nautduskPlus[-c(1:8, 10:14, 16, 18:22)]
-#colnames(DB01_nautduskPlus)[3] <- "UTC_fixed"
-#colnames(DB01_nautduskPlus)[1] <- "500_plus"
+DB01_nautduskPlus <- DB01_nautduskPlus[-c(1:8, 10:14, 16, 18:20, 22)]
+colnames(DB01_nautduskPlus)[4] <- "UTC_date"
 DB01_nautduskPlus$diel <- "plus"
-DB01_nautduskMinus <- DB01_nautduskMinus[-c(1:8, 10:14, 16, 18:22)]
-#colnames(DB01_nautduskMinus)[3] <- "UTC_fixed"
-#colnames(DB01_nautduskMinus)[1] <- "500_minus"
+DB01_nautduskMinus <- DB01_nautduskMinus[-c(1:8, 10:14, 16, 18:20, 22)]
+colnames(DB01_nautduskMinus)[4] <- "UTC_date"
 DB01_nautduskMinus$diel <- "minus"
 
 DB01_nautduskMinusPlus <- DB01_nautduskMinus %>%
   full_join(DB01_nautduskPlus)
-
 DB01_nautdusk_diels <- DB01_nautdusk %>%
   full_join(DB01_nautduskMinusPlus)
+
+DB01_chorusPresence <- DB01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+DB01_nautdusk_diels <- DB01_chorusPresence %>%
+  right_join(DB01_nautdusk_diels, join_by(UTC_date))
+
+DB01_nautdusk_diels <- DB01_nautdusk_diels[-c(3:5, 18)]
  
 DB01_nautdusk_diels <- DB01_nautdusk_diels %>%
 dplyr::mutate(X500_chorus = factor(X500_chorus,
@@ -4660,23 +4661,477 @@ dplyr::mutate(X500_chorus = factor(X500_chorus,
                                     labels = c("Absent", "Present")))
 DB01_nautdusk_diels <- DB01_nautdusk_diels %>%
   drop_na(X500_chorus)
+DB01_nautdusk_diels$site <- "DB01"
+
+#ES01
+ES01_location <- matrix(c(-75.29, 37.69), nrow = 1)
+ES01500_fullEffort_date_time  <- seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2024-11-08 16:00:00"), by = "1 hour")
+
+ES01500_fullEffort_nautdusk <- crepuscule(crds = ES01_location, dateTime = ES01500_fullEffort_date_time, solarDep = 12, direction = "dusk", POSIXct.out = TRUE)
+
+ES01500_fullEffort_nautduskDate<- ES01500_fullEffort_nautdusk %>%
+  mutate(UTC_date = date(time))%>%
+  mutate(nautdusk_UTC_hour = hour(time))
+
+ES01500_fullEffort_nautduskDate <- ES01500_fullEffort_nautduskDate %>%
+  group_by(UTC_date, nautdusk_UTC_hour)%>%
+  summarize(n = n())
+ES01500_fullEffort_nautduskDate <-ES01500_fullEffort_nautduskDate[-c(3)]
+
+#put back as characters so can make date column easier
+ES01500_fullEffort_nautduskDate$UTC_date <- as.character(ES01500_fullEffort_nautduskDate$UTC_date)
+
+ES01500_fullEffort_nautduskDate$nautdusk_UTC_hour <- as.character(ES01500_fullEffort_nautduskDate$nautdusk_UTC_hour)
+
+#make new columns combining date and 3 hours- should have 3 data points per day (with overlap on days if around midnight)- 
+ES01500_fullEffort_nautduskDate$UTC_fixed <- paste(ES01500_fullEffort_nautduskDate$UTC_date, ES01500_fullEffort_nautduskDate$nautdusk_UTC_hour, sep = " ")
+ES01500_fullEffort_nautduskDate$UTC_fixed = as.POSIXct(ES01500_fullEffort_nautduskDate$UTC_fixed, format = "%Y-%m-%d %H")
+
+ES01500_fullEffort_nautduskDate$UTC_minus <- ES01500_fullEffort_nautduskDate$UTC_fixed - hours(1)
+ES01500_fullEffort_nautduskDate$UTC_plus <- ES01500_fullEffort_nautduskDate$UTC_fixed + hours(1)
+
+#this works but hard to then join with OL data, so separate out and then join again after they are all matched
+ES01500_fullEffort_nautduskMinus <- ES01500_fullEffort_nautduskDate[, c("UTC_date", "nautdusk_UTC_hour", "UTC_minus")]
+ES01500_fullEffort_nautduskPlus <- ES01500_fullEffort_nautduskDate[, c("UTC_date", "nautdusk_UTC_hour", "UTC_plus")]
+
+#remove from original for now
+ES01500_fullEffort_nautduskDate <- ES01500_fullEffort_nautduskDate[-c(4:5)]
+
+#have to rename minus/plus columns to 'UTC_fixed' so it can join with the chorus presence and OL files
+colnames(ES01500_fullEffort_nautduskMinus)[3] <- "UTC_fixed"
+colnames(ES01500_fullEffort_nautduskPlus)[3] <- "UTC_fixed"
+
+#now join each date dataframe individually
+ES01500_fullEffort_nautduskDate$UTC_date <- as.Date(ES01500_fullEffort_nautduskDate$UTC_date)
+
+ES01500_fullEffort_nautduskMinus$UTC_date <- as.Date(ES01500_fullEffort_nautduskMinus$UTC_date)
+ES01_nautduskMinus <- ES01_OL %>%
+  right_join(ES01500_fullEffort_nautduskMinus, join_by(UTC_fixed))
+
+ES01500_fullEffort_nautduskPlus$UTC_date <- as.Date(ES01500_fullEffort_nautduskPlus$UTC_date)
+ES01_nautduskPlus <- ES01_OL %>%
+  right_join(ES01500_fullEffort_nautduskPlus, join_by(UTC_fixed))
+
+ES01_nautdusk <- ES01_OL %>%
+  right_join(ES01500_fullEffort_nautduskDate, join_by(UTC_fixed))
+
+#remove columns not needed for full join
+ES01_nautdusk <- ES01_nautdusk[-c(1, 5:8, 10:15, 18)]
+colnames(ES01_nautdusk)[9] <- "UTC_date"
+ES01_nautdusk$diel <- "naut_dusk"
+ES01_nautduskPlus <-ES01_nautduskPlus[-c(1:8, 10:14, 16, 18:20, 22)]
+colnames(ES01_nautduskPlus)[4] <- "UTC_date"
+ES01_nautduskPlus$diel <- "plus"
+ES01_nautduskMinus <- ES01_nautduskMinus[-c(1:8, 10:14, 16, 18:20, 22)]
+colnames(ES01_nautduskMinus)[4] <- "UTC_date"
+ES01_nautduskMinus$diel <- "minus"
+
+ES01_nautduskMinusPlus <- ES01_nautduskMinus %>%
+  full_join(ES01_nautduskPlus)
+ES01_nautdusk_diels <- ES01_nautdusk %>%
+  full_join(ES01_nautduskMinusPlus)
+
+ES01_chorusPresence <- ES01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+ES01_nautdusk_diels <- ES01_chorusPresence %>%
+  right_join(ES01_nautdusk_diels, join_by(UTC_date))
+
+ES01_nautdusk_diels <- ES01_nautdusk_diels[-c(3:5, 18)]
+ 
+ES01_nautdusk_diels <- ES01_nautdusk_diels %>%
+dplyr::mutate(X500_chorus = factor(X500_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
+ES01_nautdusk_diels <- ES01_nautdusk_diels %>%
+  drop_na(X500_chorus)
+ES01_nautdusk_diels$site <- "ES01"
 
 
+#CB01
+CB01_location <- matrix(c(-75.67, 36.98), nrow = 1)
+CB01500_fullEffort_date_time<- seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2024-11-08 16:00:00"), by = "1 hour")
+
+CB01500_fullEffort_nautdusk <- crepuscule(crds = CB01_location, dateTime = CB01500_fullEffort_date_time, solarDep = 12, direction = "dusk", POSIXct.out = TRUE)
+
+CB01500_fullEffort_nautduskDate<- CB01500_fullEffort_nautdusk %>%
+  mutate(UTC_date = date(time))%>%
+  mutate(nautdusk_UTC_hour = hour(time))
+
+CB01500_fullEffort_nautduskDate <- CB01500_fullEffort_nautduskDate %>%
+  group_by(UTC_date, nautdusk_UTC_hour)%>%
+  summarize(n = n())
+CB01500_fullEffort_nautduskDate <-CB01500_fullEffort_nautduskDate[-c(3)]
+
+#put back as characters so can make date column easier
+CB01500_fullEffort_nautduskDate$UTC_date <- as.character(CB01500_fullEffort_nautduskDate$UTC_date)
+
+CB01500_fullEffort_nautduskDate$nautdusk_UTC_hour <- as.character(CB01500_fullEffort_nautduskDate$nautdusk_UTC_hour)
+
+#make new columns combining date and 3 hours- should have 3 data points per day (with overlap on days if around midnight)- 
+CB01500_fullEffort_nautduskDate$UTC_fixed <- paste(CB01500_fullEffort_nautduskDate$UTC_date, CB01500_fullEffort_nautduskDate$nautdusk_UTC_hour, sep = " ")
+CB01500_fullEffort_nautduskDate$UTC_fixed = as.POSIXct(CB01500_fullEffort_nautduskDate$UTC_fixed, format = "%Y-%m-%d %H")
+
+CB01500_fullEffort_nautduskDate$UTC_minus <- CB01500_fullEffort_nautduskDate$UTC_fixed - hours(1)
+CB01500_fullEffort_nautduskDate$UTC_plus <- CB01500_fullEffort_nautduskDate$UTC_fixed + hours(1)
+
+#this works but hard to then join with OL data, so separate out and then join again after they are all matched
+CB01500_fullEffort_nautduskMinus <- CB01500_fullEffort_nautduskDate[, c("UTC_date", "nautdusk_UTC_hour", "UTC_minus")]
+CB01500_fullEffort_nautduskPlus <- CB01500_fullEffort_nautduskDate[, c("UTC_date", "nautdusk_UTC_hour", "UTC_plus")]
+
+#remove from original for now
+CB01500_fullEffort_nautduskDate <- CB01500_fullEffort_nautduskDate[-c(4:5)]
+
+#have to rename minus/plus columns to 'UTC_fixed' so it can join with the chorus presence and OL files
+colnames(CB01500_fullEffort_nautduskMinus)[3] <- "UTC_fixed"
+colnames(CB01500_fullEffort_nautduskPlus)[3] <- "UTC_fixed"
+
+#now join each date dataframe individually
+CB01500_fullEffort_nautduskDate$UTC_date <- as.Date(CB01500_fullEffort_nautduskDate$UTC_date)
+
+CB01500_fullEffort_nautduskMinus$UTC_date <- as.Date(CB01500_fullEffort_nautduskMinus$UTC_date)
+CB01_nautduskMinus <- CB01_OL %>%
+  right_join(CB01500_fullEffort_nautduskMinus, join_by(UTC_fixed))
+
+CB01500_fullEffort_nautduskPlus$UTC_date <- as.Date(CB01500_fullEffort_nautduskPlus$UTC_date)
+CB01_nautduskPlus <- CB01_OL %>%
+  right_join(CB01500_fullEffort_nautduskPlus, join_by(UTC_fixed))
+
+CB01_nautdusk <-CB01_OL %>%
+  right_join(CB01500_fullEffort_nautduskDate, join_by(UTC_fixed))
+
+#remove columns not needed for full join
+CB01_nautdusk <- CB01_nautdusk[-c(1, 5:8, 10:15, 18)]
+colnames(CB01_nautdusk)[9] <- "UTC_date"
+CB01_nautdusk$diel <- "naut_dusk"
+CB01_nautduskPlus <-CB01_nautduskPlus[-c(1:8, 10:14, 16, 18:20, 22)]
+colnames(CB01_nautduskPlus)[4] <- "UTC_date"
+CB01_nautduskPlus$diel <- "plus"
+CB01_nautduskMinus <- CB01_nautduskMinus[-c(1:8, 10:14, 16, 18:20, 22)]
+colnames(CB01_nautduskMinus)[4] <- "UTC_date"
+CB01_nautduskMinus$diel <- "minus"
+
+CB01_nautduskMinusPlus <- CB01_nautduskMinus %>%
+  full_join(CB01_nautduskPlus)
+CB01_nautdusk_diels <- CB01_nautdusk %>%
+  full_join(CB01_nautduskMinusPlus)
+
+CB01_chorusPresence <- CB01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+CB01_nautdusk_diels <- CB01_chorusPresence %>%
+  right_join(CB01_nautdusk_diels, join_by(UTC_date))
+
+CB01_nautdusk_diels <- CB01_nautdusk_diels[-c(3:5, 18)]
+ 
+CB01_nautdusk_diels <- CB01_nautdusk_diels %>%
+dplyr::mutate(X500_chorus = factor(X500_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
+CB01_nautdusk_diels <- CB01_nautdusk_diels %>%
+  drop_na(X500_chorus)
+CB01_nautdusk_diels$site <- "CB01"
+
+all500_inshoreDiels <- DB01_nautdusk_diels %>%
+  full_join(ES01_nautdusk_diels)%>%
+  full_join(CB01_nautdusk_diels)
+
+all500_inshoreDiels$site = factor(all500_inshoreDiels$site,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                        labels= c('DB01', 'ES01', 'CB01'))
 
 
-
-
-
-
-ggplot(DB01_nautdusk_diels, aes(x= UTC_fixed, group= year(UTC_fixed), y= OL_500, group= X500_chorus, color= X500_chorus))+
-  geom_path(linewidth= 0.75, na.rm= TRUE)+
+ggplot(all500_inshoreDiels, aes(x= UTC_fixed, group= year(UTC_fixed), y= OL_500, group= X500_chorus, color= X500_chorus))+
+  geom_line(linewidth= 0.75, na.rm= TRUE)+
   theme_bw()+
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   xlab("Date")+
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  facet_grid(factor(site, levels = c('DB01', 'ES01', 'CB01'))~.,)+
   scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#00797F95"))+
   scale_fill_manual(values= c("grey", "#00797F95"))+
   guides(color= guide_legend(title= "Unknown pulses: chorus presence"))+
+  ggtitle("+/- 1 hour nautical dusk")+
+  theme(axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        axis.text.x= element_text(size= 16),
+        legend.title= element_text(size= 18),
+        legend.text = element_text(size= 16),
+        plot.title = element_text(size= 20, hjust= 0.5),
+        strip.text= element_text(size= 16))
+
+
+```
+#cusk eel sunset diel plot full effort
+```{r}
+#DB01
+DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
+DB01_fullEffort_date_time <- seq(ymd_hms("2022-07-07 00:00:00"), ymd_hms("2024-11-04 23:00:00"), by = "1 hour")
+
+DB01_fullEffort_sunset <- sunriset(crds = DB01_location, dateTime = DB01_fullEffort_date_time, direction = "sunset", POSIXct.out = TRUE)
+
+DB01_fullEffort_sunsetDate<- DB01_fullEffort_sunset %>%
+  mutate(UTC_date = date(time))%>%
+  mutate(sunset_UTC_hour = hour(time))
+
+DB01_fullEffort_sunsetDate <- DB01_fullEffort_sunsetDate %>%
+  group_by(UTC_date, sunset_UTC_hour)%>%
+  summarize(n = n())
+DB01_fullEffort_sunsetDate <- DB01_fullEffort_sunsetDate[-c(3)]
+
+#put back as characters so can make date column easier
+DB01_fullEffort_sunsetDate$UTC_date <- as.character(DB01_fullEffort_sunsetDate$UTC_date)
+
+DB01_fullEffort_sunsetDate$sunset_UTC_hour <- as.character(DB01_fullEffort_sunsetDate$sunset_UTC_hour)
+
+#make new columns combining date and 3 hours- should have 3 data points per day (with overlap on days if around midnight)- 
+DB01_fullEffort_sunsetDate$UTC_fixed <- paste(DB01_fullEffort_sunsetDate$UTC_date, DB01_fullEffort_sunsetDate$sunset_UTC_hour, sep = " ")
+DB01_fullEffort_sunsetDate$UTC_fixed = as.POSIXct(DB01_fullEffort_sunsetDate$UTC_fixed, format = "%Y-%m-%d %H")
+
+DB01_fullEffort_sunsetDate$UTC_minus <- DB01_fullEffort_sunsetDate$UTC_fixed - hours(1)
+DB01_fullEffort_sunsetDate$UTC_plus <- DB01_fullEffort_sunsetDate$UTC_fixed + hours(1)
+
+#this works but hard to then join with OL data, so separate out and then join again after they are all matched
+DB01_fullEffort_sunsetMinus <- DB01_fullEffort_sunsetDate[, c("UTC_date", "sunset_UTC_hour", "UTC_minus")]
+DB01_fullEffort_sunsetPlus <- DB01_fullEffort_sunsetDate[, c("UTC_date", "sunset_UTC_hour", "UTC_plus")]
+
+#remove from original for now
+DB01_fullEffort_sunsetDate <- DB01_fullEffort_sunsetDate[-c(4:5)]
+
+#have to rename minus/plus columns to 'UTC_fixed' so it can join with the chorus presence and OL files
+colnames(DB01_fullEffort_sunsetMinus)[3] <- "UTC_fixed"
+colnames(DB01_fullEffort_sunsetPlus)[3] <- "UTC_fixed"
+
+#now join each date dataframe individually
+DB01_fullEffort_sunsetDate$UTC_date <- as.Date(DB01_fullEffort_sunsetDate$UTC_date)
+
+DB01_fullEffort_sunsetMinus$UTC_date <- as.Date(DB01_fullEffort_sunsetMinus$UTC_date)
+DB01_sunsetMinus <- DB01_OL %>%
+  right_join(DB01_fullEffort_sunsetMinus, join_by(UTC_fixed))
+
+DB01_fullEffort_sunsetPlus$UTC_date <- as.Date(DB01_fullEffort_sunsetPlus$UTC_date)
+DB01_sunsetPlus <- DB01_OL %>%
+  right_join(DB01_fullEffort_sunsetPlus, join_by(UTC_fixed))
+
+DB01_sunset <- DB01_OL %>%
+  right_join(DB01_fullEffort_sunsetDate, join_by(UTC_fixed))
+
+#remove columns not needed for full join
+DB01_sunset <- DB01_sunset[-c(1, 5:10, 12:15, 18)]
+colnames(DB01_sunset)[9] <- "UTC_date"
+DB01_sunset$diel <- "sunset"
+DB01_sunsetPlus <- DB01_sunsetPlus[-c(1:10, 12:14, 16, 18:20, 22)]
+colnames(DB01_sunsetPlus)[4] <- "UTC_date"
+DB01_sunsetPlus$diel <- "plus"
+DB01_sunsetMinus <- DB01_sunsetMinus[-c(1:10, 12:14, 16, 18:20, 22)]
+colnames(DB01_sunsetMinus)[4] <- "UTC_date"
+DB01_sunsetMinus$diel <- "minus"
+
+DB01_sunsetMinusPlus <- DB01_sunsetMinus %>%
+  full_join(DB01_sunsetPlus)
+DB01_sunset_diels <- DB01_sunset %>%
+  full_join(DB01_sunsetMinusPlus)
+
+DB01_chorusPresence <- DB01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+DB01_sunset_diels <- DB01_chorusPresence %>%
+  right_join(DB01_sunset_diels, join_by(UTC_date))
+
+DB01_sunset_diels <- DB01_sunset_diels[-c(2:3, 5, 18)]
+ 
+DB01_sunset_diels <- DB01_sunset_diels %>%
+dplyr::mutate(cusk_chorus = factor(cusk_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
+DB01_sunset_diels <- DB01_sunset_diels %>%
+  drop_na(cusk_chorus)
+DB01_sunset_diels$site <- "DB01"
+
+
+#ES01
+ES01_location <- matrix(c(-75.29, 37.69), nrow = 1)
+ES01_fullEffort_date_time  <- seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2024-11-08 16:00:00"), by = "1 hour")
+
+ES01_fullEffort_sunset <- sunriset(crds = ES01_location, dateTime = ES01_fullEffort_date_time, direction = "sunset", POSIXct.out = TRUE)
+
+ES01_fullEffort_sunsetDate<- ES01_fullEffort_sunset %>%
+  mutate(UTC_date = date(time))%>%
+  mutate(sunset_UTC_hour = hour(time))
+
+ES01_fullEffort_sunsetDate <- ES01_fullEffort_sunsetDate %>%
+  group_by(UTC_date, sunset_UTC_hour)%>%
+  summarize(n = n())
+ES01_fullEffort_sunsetDate <- ES01_fullEffort_sunsetDate[-c(3)]
+
+#put back as characters so can make date column easier
+ES01_fullEffort_sunsetDate$UTC_date <- as.character(ES01_fullEffort_sunsetDate$UTC_date)
+
+ES01_fullEffort_sunsetDate$sunset_UTC_hour <- as.character(ES01_fullEffort_sunsetDate$sunset_UTC_hour)
+
+#make new columns combining date and 3 hours- should have 3 data points per day (with overlap on days if around midnight)- 
+ES01_fullEffort_sunsetDate$UTC_fixed <- paste(ES01_fullEffort_sunsetDate$UTC_date, ES01_fullEffort_sunsetDate$sunset_UTC_hour, sep = " ")
+ES01_fullEffort_sunsetDate$UTC_fixed = as.POSIXct(ES01_fullEffort_sunsetDate$UTC_fixed, format = "%Y-%m-%d %H")
+
+ES01_fullEffort_sunsetDate$UTC_minus <- ES01_fullEffort_sunsetDate$UTC_fixed - hours(1)
+ES01_fullEffort_sunsetDate$UTC_plus <- ES01_fullEffort_sunsetDate$UTC_fixed + hours(1)
+
+#this works but hard to then join with OL data, so separate out and then join again after they are all matched
+ES01_fullEffort_sunsetMinus <- ES01_fullEffort_sunsetDate[, c("UTC_date", "sunset_UTC_hour", "UTC_minus")]
+ES01_fullEffort_sunsetPlus <- ES01_fullEffort_sunsetDate[, c("UTC_date", "sunset_UTC_hour", "UTC_plus")]
+
+#remove from original for now
+ES01_fullEffort_sunsetDate <- ES01_fullEffort_sunsetDate[-c(4:5)]
+
+#have to rename minus/plus columns to 'UTC_fixed' so it can join with the chorus presence and OL files
+colnames(ES01_fullEffort_sunsetMinus)[3] <- "UTC_fixed"
+colnames(ES01_fullEffort_sunsetPlus)[3] <- "UTC_fixed"
+
+#now join each date dataframe individually
+ES01_fullEffort_sunsetDate$UTC_date <- as.Date(ES01_fullEffort_sunsetDate$UTC_date)
+
+ES01_fullEffort_sunsetMinus$UTC_date <- as.Date(ES01_fullEffort_sunsetMinus$UTC_date)
+ES01_sunsetMinus <- ES01_OL %>%
+  right_join(ES01_fullEffort_sunsetMinus, join_by(UTC_fixed))
+
+ES01_fullEffort_sunsetPlus$UTC_date <- as.Date(ES01_fullEffort_sunsetPlus$UTC_date)
+ES01_sunsetPlus <- ES01_OL %>%
+  right_join(ES01_fullEffort_sunsetPlus, join_by(UTC_fixed))
+
+ES01_sunset <- ES01_OL %>%
+  right_join(ES01_fullEffort_sunsetDate, join_by(UTC_fixed))
+
+#remove columns not needed for full join
+ES01_sunset <- ES01_sunset[-c(1, 5:10, 12:15, 18)]
+colnames(ES01_sunset)[9] <- "UTC_date"
+ES01_sunset$diel <- "sunset"
+ES01_sunsetPlus <- ES01_sunsetPlus[-c(1:10, 12:14, 16, 18:20, 22)]
+colnames(ES01_sunsetPlus)[4] <- "UTC_date"
+ES01_sunsetPlus$diel <- "plus"
+ES01_sunsetMinus <- ES01_sunsetMinus[-c(1:10, 12:14, 16, 18:20, 22)]
+colnames(ES01_sunsetMinus)[4] <- "UTC_date"
+ES01_sunsetMinus$diel <- "minus"
+
+ES01_sunsetMinusPlus <- ES01_sunsetMinus %>%
+  full_join(ES01_sunsetPlus)
+ES01_sunset_diels <- ES01_sunset %>%
+  full_join(ES01_sunsetMinusPlus)
+
+ES01_chorusPresence <- ES01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+ES01_sunset_diels <- ES01_chorusPresence %>%
+  right_join(ES01_sunset_diels, join_by(UTC_date))
+
+ES01_sunset_diels <- ES01_sunset_diels[-c(2:3, 5, 18)]
+ 
+ES01_sunset_diels <- ES01_sunset_diels %>%
+dplyr::mutate(cusk_chorus = factor(cusk_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
+ES01_sunset_diels <- ES01_sunset_diels %>%
+  drop_na(cusk_chorus)
+ES01_sunset_diels$site <- "ES01"
+
+
+#CB01
+CB01_location <- matrix(c(-75.67, 36.98), nrow = 1)
+CB01_fullEffort_date_time  <- seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2024-11-08 16:00:00"), by = "1 hour")
+
+CB01_fullEffort_sunset <- sunriset(crds = CB01_location, dateTime = CB01_fullEffort_date_time, direction = "sunset", POSIXct.out = TRUE)
+
+CB01_fullEffort_sunsetDate<- CB01_fullEffort_sunset %>%
+  mutate(UTC_date = date(time))%>%
+  mutate(sunset_UTC_hour = hour(time))
+
+CB01_fullEffort_sunsetDate <- CB01_fullEffort_sunsetDate %>%
+  group_by(UTC_date, sunset_UTC_hour)%>%
+  summarize(n = n())
+CB01_fullEffort_sunsetDate <- CB01_fullEffort_sunsetDate[-c(3)]
+
+#put back as characters so can make date column easier
+CB01_fullEffort_sunsetDate$UTC_date <- as.character(CB01_fullEffort_sunsetDate$UTC_date)
+
+CB01_fullEffort_sunsetDate$sunset_UTC_hour <- as.character(CB01_fullEffort_sunsetDate$sunset_UTC_hour)
+
+#make new columns combining date and 3 hours- should have 3 data points per day (with overlap on days if around midnight)- 
+CB01_fullEffort_sunsetDate$UTC_fixed <- paste(CB01_fullEffort_sunsetDate$UTC_date, CB01_fullEffort_sunsetDate$sunset_UTC_hour, sep = " ")
+CB01_fullEffort_sunsetDate$UTC_fixed = as.POSIXct(CB01_fullEffort_sunsetDate$UTC_fixed, format = "%Y-%m-%d %H")
+
+CB01_fullEffort_sunsetDate$UTC_minus <- CB01_fullEffort_sunsetDate$UTC_fixed - hours(1)
+CB01_fullEffort_sunsetDate$UTC_plus <- CB01_fullEffort_sunsetDate$UTC_fixed + hours(1)
+
+#this works but hard to then join with OL data, so separate out and then join again after they are all matched
+CB01_fullEffort_sunsetMinus <- CB01_fullEffort_sunsetDate[, c("UTC_date", "sunset_UTC_hour", "UTC_minus")]
+CB01_fullEffort_sunsetPlus <- CB01_fullEffort_sunsetDate[, c("UTC_date", "sunset_UTC_hour", "UTC_plus")]
+
+#remove from original for now
+CB01_fullEffort_sunsetDate <- CB01_fullEffort_sunsetDate[-c(4:5)]
+
+#have to rename minus/plus columns to 'UTC_fixed' so it can join with the chorus presence and OL files
+colnames(CB01_fullEffort_sunsetMinus)[3] <- "UTC_fixed"
+colnames(CB01_fullEffort_sunsetPlus)[3] <- "UTC_fixed"
+
+#now join each date dataframe individually
+CB01_fullEffort_sunsetDate$UTC_date <- as.Date(CB01_fullEffort_sunsetDate$UTC_date)
+
+CB01_fullEffort_sunsetMinus$UTC_date <- as.Date(CB01_fullEffort_sunsetMinus$UTC_date)
+CB01_sunsetMinus <- CB01_OL %>%
+  right_join(CB01_fullEffort_sunsetMinus, join_by(UTC_fixed))
+
+CB01_fullEffort_sunsetPlus$UTC_date <- as.Date(CB01_fullEffort_sunsetPlus$UTC_date)
+CB01_sunsetPlus <- CB01_OL %>%
+  right_join(CB01_fullEffort_sunsetPlus, join_by(UTC_fixed))
+
+CB01_sunset <- CB01_OL %>%
+  right_join(CB01_fullEffort_sunsetDate, join_by(UTC_fixed))
+
+#remove columns not needed for full join
+CB01_sunset <- CB01_sunset[-c(1, 5:10, 12:15, 18)]
+colnames(CB01_sunset)[9] <- "UTC_date"
+CB01_sunset$diel <- "sunset"
+CB01_sunsetPlus <- CB01_sunsetPlus[-c(1:10, 12:14, 16, 18:20, 22)]
+colnames(CB01_sunsetPlus)[4] <- "UTC_date"
+CB01_sunsetPlus$diel <- "plus"
+CB01_sunsetMinus <- CB01_sunsetMinus[-c(1:10, 12:14, 16, 18:20, 22)]
+colnames(CB01_sunsetMinus)[4] <- "UTC_date"
+CB01_sunsetMinus$diel <- "minus"
+
+CB01_sunsetMinusPlus <- CB01_sunsetMinus %>%
+  full_join(CB01_sunsetPlus)
+CB01_sunset_diels <- CB01_sunset %>%
+  full_join(CB01_sunsetMinusPlus)
+
+CB01_chorusPresence <- CB01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+CB01_sunset_diels <- CB01_chorusPresence %>%
+  right_join(CB01_sunset_diels, join_by(UTC_date))
+
+CB01_sunset_diels <- CB01_sunset_diels[-c(2:3, 5, 18)]
+ 
+CB01_sunset_diels <- CB01_sunset_diels %>%
+dplyr::mutate(cusk_chorus = factor(cusk_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
+CB01_sunset_diels <- CB01_sunset_diels %>%
+  drop_na(cusk_chorus)
+CB01_sunset_diels$site <- "CB01"
+
+allCusk_inshoreDiels <- DB01_sunset_diels %>%
+  full_join(ES01_sunset_diels)%>%
+  full_join(CB01_sunset_diels)
+
+allCusk_inshoreDiels$site = factor(allCusk_inshoreDiels$site,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                        labels= c('DB01', 'ES01', 'CB01'))
+
+
+ggplot(DB01_sunset_diels, aes(x= UTC_fixed, group= year(UTC_fixed), y= OL_2000, group= cusk_chorus, color= cusk_chorus))+
+  geom_path(linewidth= 0.75, na.rm= TRUE)+
+  geom_ma(ma_fun= SMA, n= 9, color= "black", linetype= 1)+
+  theme_bw()+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  xlab("Date")+
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#00797F95"))+
+  scale_fill_manual(values= c("grey", "#00797F95"))+
+  guides(color= guide_legend(title= "Cusk eel chorus presence"))+
   ggtitle("DB01: +/- 1 hour nautical dusk")+
   theme(axis.title= element_text(size= 18),
         axis.text.y= element_text(size= 16),
@@ -4684,6 +5139,27 @@ ggplot(DB01_nautdusk_diels, aes(x= UTC_fixed, group= year(UTC_fixed), y= OL_500,
         legend.title= element_text(size= 18),
         legend.text = element_text(size= 16),
         plot.title= element_text(size= 20))
+
+
+ggplot(allCusk_inshoreDiels, aes(x= UTC_fixed, group= year(UTC_fixed), y= OL_2000, group= cusk_chorus, color= cusk_chorus))+
+  geom_line(linewidth= 0.75, na.rm= TRUE)+
+  geom_ma(ma_fun= SMA, n= 9, color= "black", linetype= 1, show.legend= TRUE)+
+  theme_bw()+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  xlab("Date")+
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  facet_grid(factor(site, levels = c('DB01', 'ES01', 'CB01'))~.,)+
+  scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#00308795"))+
+  scale_fill_manual(values= c("grey", "#00308795"))+
+  guides(color= guide_legend(title= "Cusk eel chorus presence"))+
+  ggtitle("+/- 1 hour sunset")+
+  theme(axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        axis.text.x= element_text(size= 16),
+        legend.title= element_text(size= 18),
+        legend.text = element_text(size= 16),
+        plot.title = element_text(size= 20, hjust= 0.5),
+        strip.text= element_text(size= 16))
 
 
 ```
