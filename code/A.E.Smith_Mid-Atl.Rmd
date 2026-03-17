@@ -3312,7 +3312,7 @@ DB011000_astrdusk_dechour <- DB011000_astrdusk %>%
   mutate(sec = second(time)) %>%
   mutate(decimal_hour = hour + (min/60) + (sec/3600))
 
-##########DB01 oyster#######
+##########DB01 toadfish- labeled as "oyster"#######
 DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
 DB01oyster_date_Time <- seq(ymd_hms("2023-09-09 00:00:00"), ymd_hms("2023-09-15 23:00:00"), by = "1 hour")
 
@@ -4228,33 +4228,38 @@ ggplot(inshore1000_MedQuants, aes(x= hour, y= med_1000, group= site, color= site
 DB01subset_0909_0915 <-  seq(ymd_hms("2023-09-09 04:00:00"), ymd_hms("2023-09-16 03:00:00"), by = "1 hour")
 DB01oyster <- data.frame(UTC= DB01subset_0909_0915)
 DB01oyster$UTC <- as.POSIXct(DB01oyster$UTC)
-colnames(DB01oyster)[1] <- "UTC_fixed"
+colnames(DB01oyster)[1] <- "UTC"
 DB01oyster <- DB01oyster %>%
-  left_join(DB01_OL, by= "UTC_fixed")
+  left_join(DB01_TOL, by= "UTC")
+
+DB01oyster <- DB01oyster %>%
+  mutate(UTC_date = date(UTC)) %>%
+  mutate(UTC_hour = hour(UTC))
+
 
 DB01oysterMed <- DB01oyster%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
-    med_250= median(OL_250, na.rm= TRUE))
+    med_800= median(TOL_800, na.rm= TRUE))
 quants= c(0.05, 0.95)
 DB01oysterQuants <- DB01oyster %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_250 = quantile(OL_250, probs= quants[1], na.rm= TRUE),
-            quant95_250 = quantile(OL_250, probs= quants[2], na.rm= TRUE))
+  summarize(quant05_800 = quantile(TOL_800, probs= quants[1], na.rm= TRUE),
+            quant95_800 = quantile(TOL_800, probs= quants[2], na.rm= TRUE))
 DB01oysterMedQuants <- DB01oysterMed %>%
   full_join(DB01oysterQuants)
 DB01oysterMedQuants$site <- "DB01"
-DB01oysterMedQuants$UTC_hour <- hms(DB01oysterMedQuants$UTC_hour)
-DB01oysterMedQuants$hour <- hour(DB01oysterMedQuants$UTC_hour)
+#DB01oysterMedQuants$UTC_hour <- hms(DB01oysterMedQuants$UTC_hour)
+#DB01oysterMedQuants$hour <- hour(DB01oysterMedQuants$UTC_hour)
 
-ggplot(DB01oysterMedQuants, aes(x= hour, y= med_250, group= 1))+
-  geom_ribbon(aes(ymin= quant05_250,
-                  ymax= quant95_250), 
+ggplot(DB01oysterMedQuants, aes(x= UTC_hour, y= med_800, group= 1))+
+  geom_ribbon(aes(ymin= quant05_800,
+                  ymax= quant95_800), 
               linetype= 1, linewidth= 0.2, alpha= 0.1)+
   geom_point(size= 1.5) + geom_line()+
   theme_bw()+
   xlab("Hour (UTC)")+
-  ylab(expression(paste('Median 250Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 800Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
   ggtitle("DB01 oyster toadfish- peak week median (9/9-9/15/2023)")+
    scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
