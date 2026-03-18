@@ -4116,39 +4116,39 @@ ggplot(inshore500_MedQuants, aes(x= hour, y= med_500, group= site, color= site))
 DB01subset_0731_0806 <-  seq(ymd_hms("2023-07-31 04:00:00"), ymd_hms("2023-08-07 03:00:00"), by = "1 hour")
 DB011000 <- data.frame(UTC= DB01subset_0731_0806)
 DB011000$UTC <- as.POSIXct(DB011000$UTC)
-colnames(DB011000)[1] <- "UTC_fixed"
+colnames(DB011000)[1] <- "UTC"
 DB011000 <- DB011000 %>%
-  left_join(DB01_OL, by= "UTC_fixed")
+  left_join(DB01_TOL, by= "UTC")
 
 DB011000Med <- DB011000%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
-    med_1000= median(OL_1000, na.rm= TRUE))
+    med_500= median(TOL_500, na.rm= TRUE))
 quants= c(0.05, 0.95)
 DB011000Quants <- DB011000 %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_1000 = quantile(OL_1000, probs= quants[1], na.rm= TRUE),
-            quant95_1000 = quantile(OL_1000, probs= quants[2], na.rm= TRUE))
+  summarize(quant05_500 = quantile(TOL_500, probs= quants[1], na.rm= TRUE),
+            quant95_500 = quantile(TOL_500, probs= quants[2], na.rm= TRUE))
 DB011000MedQuants <- DB011000Med %>%
   full_join(DB011000Quants)
 DB011000MedQuants$site = "DB01"
 DB011000MedQuants$UTC_hour <- hms(DB011000MedQuants$UTC_hour)
 DB011000MedQuants$hour <- hour(DB011000MedQuants$UTC_hour)
 
-ggplot(DB011000MedQuants, aes(x= hour, y= med_1000, group= 1))+
-  geom_ribbon(aes(ymin= quant05_1000,
-                  ymax= quant95_1000), 
+ggplot(DB011000MedQuants, aes(x= hour, y= med_500, group= 1))+
+  geom_ribbon(aes(ymin= quant05_500,
+                  ymax= quant95_500), 
               linetype= 1, linewidth= 0.2, alpha= 0.1)+
   geom_point(size= 1.5) + geom_line()+
   theme_bw()+
   xlab("Hour (UTC)")+
-  ylab(expression(paste('Median 1000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 500Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
   ggtitle("DB01 unknown knocks- peak week median (7/31-8/6/2023)")+
    scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
         axis.title= element_text(size= 18),
         axis.text.y= element_text(size= 16),
-        plot.title = element_text(size= 19))#+
+        plot.title = element_text(size= 19))+
   geom_vline(xintercept = DB011000_civdusk_dechour$decimal_hour, color = "#F76218", linetype = "solid",size =  1, alpha = .5) +
   geom_vline(xintercept = DB011000_nautdusk_dechour$decimal_hour, color = "#B10065", linetype = "solid",size =  .7, alpha = .5) +
   geom_vline(xintercept = DB011000_astrdusk_dechour$decimal_hour, color = "#740580", linetype = "solid",size =  .4, alpha = .5) +
@@ -4163,39 +4163,39 @@ ggplot(DB011000MedQuants, aes(x= hour, y= med_1000, group= 1))+
 ES01subset_0526_0601 <-  seq(ymd_hms("2024-05-26 04:00:00"), ymd_hms("2024-06-02 03:00:00"), by = "1 hour")
 ES011000 <- data.frame(UTC= ES01subset_0526_0601)
 ES011000$UTC <- as.POSIXct(ES011000$UTC)
-colnames(ES011000)[1] <- "UTC_fixed"
+colnames(ES011000)[1] <- "UTC"
 ES011000 <- ES011000 %>%
-  left_join(ES01_OL, by= "UTC_fixed")
+  left_join(ES01_TOL, by= "UTC")
 
 ES011000Med <- ES011000%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
-    med_1000= median(OL_1000, na.rm= TRUE))
+    med_500= median(TOL_500, na.rm= TRUE))
 quants= c(0.05, 0.95)
 ES011000Quants <- ES011000 %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_1000 = quantile(OL_1000, probs= quants[1], na.rm= TRUE),
-            quant95_1000 = quantile(OL_1000, probs= quants[2], na.rm= TRUE))
+  summarize(quant05_500 = quantile(TOL_500, probs= quants[1], na.rm= TRUE),
+            quant95_500 = quantile(TOL_500, probs= quants[2], na.rm= TRUE))
 ES011000MedQuants <- ES011000Med %>%
   full_join(ES011000Quants)
 ES011000MedQuants$site = "ES01"
 ES011000MedQuants$UTC_hour <- hms(ES011000MedQuants$UTC_hour)
 ES011000MedQuants$hour <- hour(ES011000MedQuants$UTC_hour)
 
-ggplot(ES011000MedQuants, aes(x= hour, y= med_1000, group= 1))+
-  geom_ribbon(aes(ymin= quant05_1000,
-                  ymax= quant95_1000), 
+ggplot(ES011000MedQuants, aes(x= hour, y= med_500, group= 1))+
+  geom_ribbon(aes(ymin= quant05_500,
+                  ymax= quant95_500), 
               linetype= 1, linewidth= 0.2, alpha= 0.1)+
   geom_point(size= 1.5) + geom_line()+
   theme_bw()+
   xlab("Hour (UTC)")+
-  ylab(expression(paste('Median 1000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 500Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
   ggtitle("ES01 unknown knocks- peak week median (5/26-6/1/2024)")+
   scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
         axis.title= element_text(size= 18),
         axis.text.y= element_text(size= 16),
-        plot.title = element_text(size= 19))#+
+        plot.title = element_text(size= 19))+
   geom_vline(xintercept = ES011000_civdusk_dechour$decimal_hour, color = "#F76218", linetype = "solid",size =  1, alpha = .5) +
   geom_vline(xintercept = ES011000_nautdusk_dechour$decimal_hour, color = "#B10065", linetype = "solid",size =  .7, alpha = .5) +
   geom_vline(xintercept = ES011000_astrdusk_dechour$decimal_hour, color = "#740580", linetype = "solid",size =  .4, alpha = .5) +
@@ -4211,33 +4211,33 @@ ggplot(ES011000MedQuants, aes(x= hour, y= med_1000, group= 1))+
 CB01subset_0704_0710 <-  seq(ymd_hms("2024-07-04 04:00:00"), ymd_hms("2024-07-11 03:00:00"), by = "1 hour")
 CB011000 <- data.frame(UTC= CB01subset_0704_0710)
 CB011000$UTC <- as.POSIXct(CB011000$UTC)
-colnames(CB011000)[1] <- "UTC_fixed"
+colnames(CB011000)[1] <- "UTC"
 CB011000 <- CB011000 %>%
-  left_join(CB01_OL, by= "UTC_fixed")
+  left_join(CB01_TOL, by= "UTC")
 
 CB011000Med <- CB011000%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
-    med_1000= median(OL_1000, na.rm= TRUE))
+    med_500= median(TOL_500, na.rm= TRUE))
 quants= c(0.05, 0.95)
 CB011000Quants <- CB011000 %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_1000 = quantile(OL_1000, probs= quants[1], na.rm= TRUE),
-            quant95_1000 = quantile(OL_1000, probs= quants[2], na.rm= TRUE))
+  summarize(quant05_500 = quantile(TOL_500, probs= quants[1], na.rm= TRUE),
+            quant95_500 = quantile(TOL_500, probs= quants[2], na.rm= TRUE))
 CB011000MedQuants <- CB011000Med %>%
   full_join(CB011000Quants)
 CB011000MedQuants$site = "CB01"
 CB011000MedQuants$UTC_hour <- hms(CB011000MedQuants$UTC_hour)
 CB011000MedQuants$hour <- hour(CB011000MedQuants$UTC_hour)
 
-ggplot(CB011000MedQuants, aes(x= hour, y= med_1000, group= 1))+
-  geom_ribbon(aes(ymin= quant05_1000,
-                  ymax= quant95_1000), 
+ggplot(CB011000MedQuants, aes(x= hour, y= med_500, group= 1))+
+  geom_ribbon(aes(ymin= quant05_500,
+                  ymax= quant95_500), 
               linetype= 1, linewidth= 0.2, alpha= 0.1)+
   geom_point(size= 1.5) + geom_line()+
   theme_bw()+
   xlab("Hour (UTC)")+
-  ylab(expression(paste('Median 1000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 500Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
   ggtitle("CB01 unknown knocks- peak week median (7/04-7/10/2024)")+
   scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
@@ -4261,18 +4261,18 @@ inshore1000_MedQuants$site = factor(inshore1000_MedQuants$site,
                                         levels= c("DB01", "ES01", "CB01"),
                                         labels= c("DB01", "ES01", "CB01"))
 
-ggplot(inshore1000_MedQuants, aes(x= hour, y= med_1000, group= site, color= site))+
-  geom_ribbon(aes(ymin= quant05_1000,
-                  ymax= quant95_1000,
+ggplot(inshore1000_MedQuants, aes(x= hour, y= med_500, group= site, color= site))+
+  geom_ribbon(aes(ymin= quant05_500,
+                  ymax= quant95_500,
                   fill= site, color= site), linetype= 0, linewidth= 0.2, alpha= 0.1)+
   scale_fill_manual(values= c("#00797F",  "#003087",  "#B71300"))+
   guides(fill= guide_legend(title= "Site"))+
   scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
   geom_point(size= 1.5) + geom_line()+
-  ylim(72, 135)+
+#  ylim(72, 135)+
   theme_bw()+
   xlab("Hour (UTC)")+
-  ylab(expression(paste('Median 1000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 500Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
   ggtitle("Unknown knocks: peak one-week period")+
   scale_color_manual(values= c("#00797F",  "#003087",  "#B71300"))+
   guides(color= guide_legend(title= "Site"))+
@@ -5270,24 +5270,24 @@ colnames(DB01_fullEffort_civduskPlus)[3] <- "UTC_fixed"
 DB01_fullEffort_civduskDate$UTC_date <- as.Date(DB01_fullEffort_civduskDate$UTC_date)
 
 DB01_fullEffort_civduskMinus$UTC_date <- as.Date(DB01_fullEffort_civduskMinus$UTC_date)
-DB01_civduskMinus <- DB01_OL %>%
+DB01_civduskMinus <- DB01_TOL %>%
   right_join(DB01_fullEffort_civduskMinus, join_by(UTC_fixed))
 
 DB01_fullEffort_civduskPlus$UTC_date <- as.Date(DB01_fullEffort_civduskPlus$UTC_date)
-DB01_civduskPlus <- DB01_OL %>%
+DB01_civduskPlus <- DB01_TOL %>%
   right_join(DB01_fullEffort_civduskPlus, join_by(UTC_fixed))
 
-DB01_civdusk <- DB01_OL %>%
+DB01_civdusk <- DB01_TOL %>%
   right_join(DB01_fullEffort_civduskDate, join_by(UTC_fixed))
 
 #remove columns not needed for full join
-DB01_civdusk <- DB01_civdusk[-c(1, 5:9, 11:15, 18)]
-colnames(DB01_civdusk)[9] <- "UTC_date"
+DB01_civdusk <- DB01_civdusk[-c(1, 5:20, 22:37, 41)]
+colnames(DB01_civdusk)[7] <- "UTC_date"
 DB01_civdusk$diel <- "civdusk"
-DB01_civduskPlus <- DB01_civduskPlus[-c(1:9, 11:14, 16, 18:20, 22)]
+DB01_civduskPlus <- DB01_civduskPlus[-c(1:20, 22:37, 41)]
 colnames(DB01_civduskPlus)[4] <- "UTC_date"
 DB01_civduskPlus$diel <- "plus"
-DB01_civduskMinus <- DB01_civduskMinus[-c(1:9, 11:14, 16, 18:20, 22)]
+DB01_civduskMinus <- DB01_civduskMinus[-c(1:20, 22:37, 41)]
 colnames(DB01_civduskMinus)[4] <- "UTC_date"
 DB01_civduskMinus$diel <- "minus"
 
@@ -5301,7 +5301,7 @@ DB01_chorusPresence <- DB01_chorusPresence %>%
 DB01_civdusk_diels <- DB01_chorusPresence %>%
   right_join(DB01_civdusk_diels, join_by(UTC_date))
 
-DB01_civdusk_diels <- DB01_civdusk_diels[-c(2,4:5, 18)]
+DB01_civdusk_diels <- DB01_civdusk_diels[-c(2,4:5)]
  
 DB01_civdusk_diels <- DB01_civdusk_diels %>%
 dplyr::mutate(X1000_chorus = factor(X1000_chorus,
@@ -5353,24 +5353,24 @@ colnames(ES01_fullEffort_civduskPlus)[3] <- "UTC_fixed"
 ES01_fullEffort_civduskDate$UTC_date <- as.Date(ES01_fullEffort_civduskDate$UTC_date)
 
 ES01_fullEffort_civduskMinus$UTC_date <- as.Date(ES01_fullEffort_civduskMinus$UTC_date)
-ES01_civduskMinus <- ES01_OL %>%
+ES01_civduskMinus <- ES01_TOL %>%
   right_join(ES01_fullEffort_civduskMinus, join_by(UTC_fixed))
 
 ES01_fullEffort_civduskPlus$UTC_date <- as.Date(ES01_fullEffort_civduskPlus$UTC_date)
-ES01_civduskPlus <- ES01_OL %>%
+ES01_civduskPlus <- ES01_TOL %>%
   right_join(ES01_fullEffort_civduskPlus, join_by(UTC_fixed))
 
-ES01_civdusk <- ES01_OL %>%
+ES01_civdusk <- ES01_TOL %>%
   right_join(ES01_fullEffort_civduskDate, join_by(UTC_fixed))
 
 #remove columns not needed for full join
-ES01_civdusk <- ES01_civdusk[-c(1, 5:9, 11:15, 18)]
-colnames(ES01_civdusk)[9] <- "UTC_date"
+ES01_civdusk <- ES01_civdusk[-c(1, 5:19, 21:37, 41)]
+colnames(ES01_civdusk)[7] <- "UTC_date"
 ES01_civdusk$diel <- "civdusk"
-ES01_civduskPlus <- ES01_civduskPlus[-c(1:9, 11:14, 16, 18:20, 22)]
+ES01_civduskPlus <- ES01_civduskPlus[-c(1:19, 21:37, 41)]
 colnames(ES01_civduskPlus)[4] <- "UTC_date"
 ES01_civduskPlus$diel <- "plus"
-ES01_civduskMinus <- ES01_civduskMinus[-c(1:9, 11:14, 16, 18:20, 22)]
+ES01_civduskMinus <- ES01_civduskMinus[-c(1:19, 21:37, 41)]
 colnames(ES01_civduskMinus)[4] <- "UTC_date"
 ES01_civduskMinus$diel <- "minus"
 
@@ -5384,7 +5384,7 @@ ES01_chorusPresence <- ES01_chorusPresence %>%
 ES01_civdusk_diels <- ES01_chorusPresence %>%
   right_join(ES01_civdusk_diels, join_by(UTC_date))
 
-ES01_civdusk_diels <- ES01_civdusk_diels[-c(2,4:5, 18)]
+ES01_civdusk_diels <- ES01_civdusk_diels[-c(2,4:5)]
  
 ES01_civdusk_diels <- ES01_civdusk_diels %>%
 dplyr::mutate(X1000_chorus = factor(X1000_chorus,
@@ -5436,24 +5436,24 @@ colnames(CB01_fullEffort_civduskPlus)[3] <- "UTC_fixed"
 CB01_fullEffort_civduskDate$UTC_date <- as.Date(CB01_fullEffort_civduskDate$UTC_date)
 
 CB01_fullEffort_civduskMinus$UTC_date <- as.Date(CB01_fullEffort_civduskMinus$UTC_date)
-CB01_civduskMinus <- CB01_OL %>%
+CB01_civduskMinus <- CB01_TOL %>%
   right_join(CB01_fullEffort_civduskMinus, join_by(UTC_fixed))
 
 CB01_fullEffort_civduskPlus$UTC_date <- as.Date(CB01_fullEffort_civduskPlus$UTC_date)
-CB01_civduskPlus <- CB01_OL %>%
+CB01_civduskPlus <- CB01_TOL %>%
   right_join(CB01_fullEffort_civduskPlus, join_by(UTC_fixed))
 
-CB01_civdusk <- CB01_OL %>%
+CB01_civdusk <- CB01_TOL %>%
   right_join(CB01_fullEffort_civduskDate, join_by(UTC_fixed))
 
 #remove columns not needed for full join
-CB01_civdusk <- CB01_civdusk[-c(1, 5:9, 11:15, 18)]
-colnames(CB01_civdusk)[9] <- "UTC_date"
+CB01_civdusk <- CB01_civdusk[-c(1, 5:19, 21:37, 41)]
+colnames(CB01_civdusk)[7] <- "UTC_date"
 CB01_civdusk$diel <- "civdusk"
-CB01_civduskPlus <- CB01_civduskPlus[-c(1:9, 11:14, 16, 18:20, 22)]
+CB01_civduskPlus <- CB01_civduskPlus[-c(1:19, 21:37, 41)]
 colnames(CB01_civduskPlus)[4] <- "UTC_date"
 CB01_civduskPlus$diel <- "plus"
-CB01_civduskMinus <- CB01_civduskMinus[-c(1:9, 11:14, 16, 18:20, 22)]
+CB01_civduskMinus <- CB01_civduskMinus[-c(1:19, 21:37, 41)]
 colnames(CB01_civduskMinus)[4] <- "UTC_date"
 CB01_civduskMinus$diel <- "minus"
 
@@ -5467,7 +5467,7 @@ CB01_chorusPresence <- CB01_chorusPresence %>%
 CB01_civdusk_diels <- CB01_chorusPresence %>%
   right_join(CB01_civdusk_diels, join_by(UTC_date))
 
-CB01_civdusk_diels <- CB01_civdusk_diels[-c(2,4:5, 18)]
+CB01_civdusk_diels <- CB01_civdusk_diels[-c(2,4:5)]
  
 CB01_civdusk_diels <- CB01_civdusk_diels %>%
 dplyr::mutate(X1000_chorus = factor(X1000_chorus,
@@ -5486,13 +5486,13 @@ all1000_inshoreDiels$site = factor(all1000_inshoreDiels$site,
                                         labels= c('DB01', 'ES01', 'CB01'))
 
 
-ggplot(all1000_inshoreDiels, aes(x= UTC_fixed, group= year(UTC_fixed), y= OL_1000, group= X1000_chorus, color= X1000_chorus))+
+ggplot(all1000_inshoreDiels, aes(x= UTC_fixed, group= year(UTC_fixed), y= TOL_500, group= X1000_chorus, color= X1000_chorus))+
   geom_line(linewidth= 0.75, na.rm= TRUE)+
 #  geom_ma(ma_fun= SMA, n= 9, color= "black", linetype= 1, show.legend= TRUE)+
   theme_bw()+
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   xlab("Date")+
-  ylab(expression(paste('Median 1000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 500Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
   facet_grid(factor(site, levels = c('DB01', 'ES01', 'CB01'))~.,)+
   scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#B7130095"))+
   scale_fill_manual(values= c("grey", "#B7130095"))+
@@ -5791,8 +5791,28 @@ ggplot(alltoadfish_inshoreDiels, aes(x= UTC_fixed, group= year(UTC_fixed), y= TO
 
 
 ```
-#
+#PSD day/night in fall- come back to this later if needed
 ```{r}
+DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
+ES01_location <- matrix(c(-75.29, 37.69), nrow = 1)
+CB01_location <- matrix(c(-75.67, 36.98), nrow = 1)
+
+DB01_HMD <- DB01_HMD %>%
+  mutate(UTC_date = date(UTC))
+DB01sunrise_datehour$UTC_date <- as.character(DB01sunrise_datehour$UTC_date)
+DB01_HMD$UTC_date <- as.character(DB01_HMD$UTC_date)
+
+DB01_HMD_daynight <- DB01sunrise_datehour %>%
+  left_join(DB01_HMD, join_by("UTC_date"))
+colnames(DB01_HMD_daynight)[3] <- "sunrise_UTC"
+
+DB01_daynight %>% 
+  mutate(sampling_date_time = ymd_hms(paste(sampling_date, sampling_time)),
+         sunrise_date_time = ymd_hms(paste(sunrise_date, sunrise_time)),
+         sunset_date_time = ymd_hms(paste(sunset_date, sunset_time))) %>% 
+  select(station, sampling_date_time, sunrise_date_time, sunset_date_time) %>% 
+  mutate(period = if_else(sampling_date_time %within% interval(sunrise_date_time, sunset_date_time), "day", "night"))
+
 
 
 
