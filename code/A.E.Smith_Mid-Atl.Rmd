@@ -161,14 +161,77 @@ plotPSD(x=all_sites, style='quantile', by='month', facet='PLATFORM')+
 #converting to TOLs- shaded plot
 ```{r}
 DB01_TOL <- createOctaveLevel(DB01_HMD, type= 'tol')
+
+str_split(DB01_TOL$UTC[2]," ", simplify = T)[,1]
+str_split(DB01_TOL$UTC[2]," ", simplify = T)[,2]
+
+DB01_TOL <- DB01_TOL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2]) %>%
+  mutate(UTC_fixed = NA)
+DB01_TOL %>% filter(UTC_hour == "")
+DB01_TOL %>% filter(UTC_hour == "") %>% nrow # 843 rows having missing hour
+
+# Find empty rows in new columns and fill in 
+for (c in 1:nrow(DB01_TOL)) { # for each row
+  if (DB01_TOL$UTC_hour[c] == "") { # if the hour column was left empty
+    DB01_TOL$UTC_hour[c] <- "00:00:00" # manually add midnight
+  }
+}
+DB01_TOL$UTC_fixed <- paste(DB01_TOL$UTC_date, DB01_TOL$UTC_hour, sep = " ")
+DB01_TOL$UTC_fixed <- as.POSIXct(DB01_TOL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+
 DB02_TOL <- createOctaveLevel(DB02_HMD, type= 'tol')
 DB03_TOL <- createOctaveLevel(DB03_HMD, type= 'tol')
 
 ES01_TOL <- createOctaveLevel(ES01_HMD, type= 'tol')
+
+str_split(ES01_TOL$UTC[2]," ", simplify = T)[,1]
+str_split(ES01_TOL$UTC[2]," ", simplify = T)[,2]
+
+ES01_TOL <- ES01_TOL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2]) %>%
+  mutate(UTC_fixed = NA)
+ES01_TOL %>% filter(UTC_hour == "")
+ES01_TOL %>% filter(UTC_hour == "") %>% nrow # 843 rows having missing hour
+
+# Find empty rows in new columns and fill in 
+for (c in 1:nrow(ES01_TOL)) { # for each row
+  if (ES01_TOL$UTC_hour[c] == "") { # if the hour column was left empty
+    ES01_TOL$UTC_hour[c] <- "00:00:00" # manually add midnight
+  }
+}
+ES01_TOL$UTC_fixed <- paste(ES01_TOL$UTC_date, ES01_TOL$UTC_hour, sep = " ")
+ES01_TOL$UTC_fixed <- as.POSIXct(ES01_TOL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+
+
 ES02_TOL <- createOctaveLevel(ES02_HMD, type= 'tol')
 ES03_TOL <- createOctaveLevel(ES03_HMD, type= 'tol')
 
+
+
 CB01_TOL <- createOctaveLevel(CB01_HMD, type= 'tol')
+
+str_split(CB01_TOL$UTC[2]," ", simplify = T)[,1]
+str_split(CB01_TOL$UTC[2]," ", simplify = T)[,2]
+
+CB01_TOL <- CB01_TOL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2]) %>%
+  mutate(UTC_fixed = NA)
+CB01_TOL %>% filter(UTC_hour == "")
+CB01_TOL %>% filter(UTC_hour == "") %>% nrow # 843 rows having missing hour
+
+# Find empty rows in new columns and fill in 
+for (c in 1:nrow(CB01_TOL)) { # for each row
+  if (CB01_TOL$UTC_hour[c] == "") { # if the hour column was left empty
+    CB01_TOL$UTC_hour[c] <- "00:00:00" # manually add midnight
+  }
+}
+CB01_TOL$UTC_fixed <- paste(CB01_TOL$UTC_date, CB01_TOL$UTC_hour, sep = " ")
+CB01_TOL$UTC_fixed <- as.POSIXct(CB01_TOL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+
 CB02_TOL <- createOctaveLevel(CB02_HMD, type= 'tol')
 CB03_TOL <- createOctaveLevel(CB03_HMD, type= 'tol')
 
@@ -4221,46 +4284,42 @@ ggplot(inshore1000_MedQuants, aes(x= hour, y= med_1000, group= site, color= site
         legend.text= element_text(size= 16))
   
 ```
-#initial diel patterns for oyster toadfish chorus between sites- weekly medians- USING
+#initial diel patterns for toadfish chorus between sites- weekly medians- USING
 ```{r}
-#DB01 oyster chorus: 9/9-9/15/2023
+#DB01 toadfish chorus: 9/9-9/15/2023
 
-DB01subset_0909_0915 <-  seq(ymd_hms("2023-09-09 04:00:00"), ymd_hms("2023-09-16 03:00:00"), by = "1 hour")
+DB01subset_0909_0915 <-  seq(ymd_hms("2023-09-09 00:00:00"), ymd_hms("2023-09-15 23:00:00"), by = "1 hour")
 DB01oyster <- data.frame(UTC= DB01subset_0909_0915)
 DB01oyster$UTC <- as.POSIXct(DB01oyster$UTC)
 colnames(DB01oyster)[1] <- "UTC"
+
 DB01oyster <- DB01oyster %>%
   left_join(DB01_TOL, by= "UTC")
-
-DB01oyster <- DB01oyster %>%
-  mutate(UTC_date = date(UTC)) %>%
-  mutate(UTC_hour = hour(UTC))
-
 
 DB01oysterMed <- DB01oyster%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
-    med_800= median(TOL_800, na.rm= TRUE))
+    med_1000= median(TOL_1000, na.rm= TRUE))
 quants= c(0.05, 0.95)
 DB01oysterQuants <- DB01oyster %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_800 = quantile(TOL_800, probs= quants[1], na.rm= TRUE),
-            quant95_800 = quantile(TOL_800, probs= quants[2], na.rm= TRUE))
+  summarize(quant05_1000 = quantile(TOL_1000, probs= quants[1], na.rm= TRUE),
+            quant95_1000 = quantile(TOL_1000, probs= quants[2], na.rm= TRUE))
 DB01oysterMedQuants <- DB01oysterMed %>%
   full_join(DB01oysterQuants)
 DB01oysterMedQuants$site <- "DB01"
-#DB01oysterMedQuants$UTC_hour <- hms(DB01oysterMedQuants$UTC_hour)
-#DB01oysterMedQuants$hour <- hour(DB01oysterMedQuants$UTC_hour)
+DB01oysterMedQuants$UTC_hour <- hms(DB01oysterMedQuants$UTC_hour)
+DB01oysterMedQuants$hour <- hour(DB01oysterMedQuants$UTC_hour)
 
-ggplot(DB01oysterMedQuants, aes(x= UTC_hour, y= med_800, group= 1))+
-  geom_ribbon(aes(ymin= quant05_800,
-                  ymax= quant95_800), 
+ggplot(DB01oysterMedQuants, aes(x= hour, y= med_1000, group= 1))+
+  geom_ribbon(aes(ymin= quant05_1000,
+                  ymax= quant95_1000), 
               linetype= 1, linewidth= 0.2, alpha= 0.1)+
   geom_point(size= 1.5) + geom_line()+
   theme_bw()+
   xlab("Hour (UTC)")+
-  ylab(expression(paste('Median 800Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
-  ggtitle("DB01 oyster toadfish- peak week median (9/9-9/15/2023)")+
+  ylab(expression(paste('Median 1000Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("DB01 toadfish- peak week median (9/9-9/15/2023)")+
    scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
         axis.title= element_text(size= 18),
@@ -4278,37 +4337,37 @@ ggplot(DB01oysterMedQuants, aes(x= UTC_hour, y= med_800, group= 1))+
 
 #ES01 oyster chorus: 9/15-9/21/2024
 
-ES01subset_0915_0921 <-  seq(ymd_hms("2024-09-15 04:00:00"), ymd_hms("2024-09-22 03:00:00"), by = "1 hour")
+ES01subset_0915_0921 <-  seq(ymd_hms("2024-09-15 00:00:00"), ymd_hms("2024-09-21 23:00:00"), by = "1 hour")
 ES01oyster <- data.frame(UTC= ES01subset_0915_0921)
 ES01oyster$UTC <- as.POSIXct(ES01oyster$UTC)
-colnames(ES01oyster)[1] <- "UTC_fixed"
+colnames(ES01oyster)[1] <- "UTC"
 ES01oyster <- ES01oyster %>%
-  left_join(ES01_OL, by= "UTC_fixed")
+  left_join(ES01_TOL, by= "UTC")
 
 ES01oysterMed <- ES01oyster%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
-    med_250= median(OL_250, na.rm= TRUE))
+    med_1000= median(TOL_1000, na.rm= TRUE))
 quants= c(0.05, 0.95)
 ES01oysterQuants <- ES01oyster %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_250 = quantile(OL_250, probs= quants[1], na.rm= TRUE),
-            quant95_250 = quantile(OL_250, probs= quants[2], na.rm= TRUE))
+  summarize(quant05_1000 = quantile(TOL_1000, probs= quants[1], na.rm= TRUE),
+            quant95_1000 = quantile(TOL_1000, probs= quants[2], na.rm= TRUE))
 ES01oysterMedQuants <- ES01oysterMed %>%
   full_join(ES01oysterQuants)
 ES01oysterMedQuants$site <- "ES01"
 ES01oysterMedQuants$UTC_hour <- hms(ES01oysterMedQuants$UTC_hour)
 ES01oysterMedQuants$hour <- hour(ES01oysterMedQuants$UTC_hour)
 
-ggplot(ES01oysterMedQuants, aes(x= hour, y= med_250, group= 1))+
-  geom_ribbon(aes(ymin= quant05_250,
-                  ymax= quant95_250), 
+ggplot(ES01oysterMedQuants, aes(x= hour, y= med_1000, group= 1))+
+  geom_ribbon(aes(ymin= quant05_1000,
+                  ymax= quant95_1000), 
               linetype= 1, linewidth= 0.2, alpha= 0.1)+
   geom_point(size= 1.5) + geom_line()+
   theme_bw()+
   xlab("Hour (UTC)")+
-  ylab(expression(paste('Median 250Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
-  ggtitle("ES01 oyster toadfish- peak week median (9/15-9/21/2024)")+
+  ylab(expression(paste('Median 1000Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("ES01 toadfish- peak week median (9/15-9/21/2024)")+
    scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
         axis.title= element_text(size= 18),
@@ -4325,37 +4384,36 @@ ggplot(ES01oysterMedQuants, aes(x= hour, y= med_250, group= 1))+
 
 #CB01 oyster chorus: 9/02-9/08/2023
 
-CB01subset_0902_0908 <-  seq(ymd_hms("2023-09-02 04:00:00"), ymd_hms("2023-09-09 03:00:00"), by = "1 hour")
+CB01subset_0902_0908 <-  seq(ymd_hms("2023-09-02 00:00:00"), ymd_hms("2023-09-08 23:00:00"), by = "1 hour")
 CB01oyster <- data.frame(UTC= CB01subset_0902_0908)
 CB01oyster$UTC <- as.POSIXct(CB01oyster$UTC)
-colnames(CB01oyster)[1] <- "UTC_fixed"
 CB01oyster <- CB01oyster %>%
-  left_join(CB01_OL, by= "UTC_fixed")
+  left_join(CB01_TOL, by= "UTC")
 
 CB01oysterMed <- CB01oyster%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
-    med_250= median(OL_250, na.rm= TRUE))
+    med_1000= median(TOL_1000, na.rm= TRUE))
 quants= c(0.05, 0.95)
 CB01oysterQuants <- CB01oyster %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_250 = quantile(OL_250, probs= quants[1], na.rm= TRUE),
-            quant95_250 = quantile(OL_250, probs= quants[2], na.rm= TRUE))
+  summarize(quant05_1000 = quantile(TOL_1000, probs= quants[1], na.rm= TRUE),
+            quant95_1000 = quantile(TOL_1000, probs= quants[2], na.rm= TRUE))
 CB01oysterMedQuants <- CB01oysterMed %>%
   full_join(CB01oysterQuants)
 CB01oysterMedQuants$site <- "CB01"
 CB01oysterMedQuants$UTC_hour <- hms(CB01oysterMedQuants$UTC_hour)
 CB01oysterMedQuants$hour <- hour(CB01oysterMedQuants$UTC_hour)
 
-ggplot(CB01oysterMedQuants, aes(x= hour, y= med_250, group= 1))+
-  geom_ribbon(aes(ymin= quant05_250,
-                  ymax= quant95_250), 
+ggplot(CB01oysterMedQuants, aes(x= hour, y= med_1000, group= 1))+
+  geom_ribbon(aes(ymin= quant05_1000,
+                  ymax= quant95_1000), 
               linetype= 1, linewidth= 0.2, alpha= 0.1)+
   geom_point(size= 1.5) + geom_line()+
   theme_bw()+
   xlab("Hour (UTC)")+
-  ylab(expression(paste('Median 250Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
-  ggtitle("CB01 oyster toadfish- peak week median (9/02-9/08/2023)")+
+  ylab(expression(paste('Median 1000Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("CB01 toadfish- peak week median (9/02-9/08/2023)")+
    scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
         axis.title= element_text(size= 18),
@@ -4379,9 +4437,9 @@ inshoreOyster_MedQuants$site = factor(inshoreOyster_MedQuants$site,
                                         levels= c("DB01", "ES01", "CB01"),
                                         labels= c("DB01", "ES01", "CB01"))
 
-ggplot(inshoreOyster_MedQuants, aes(x= hour, y= med_250, group= site, color= site))+
-  geom_ribbon(aes(ymin= quant05_250,
-                  ymax= quant95_250,
+ggplot(inshoreOyster_MedQuants, aes(x= hour, y= med_1000, group= site, color= site))+
+  geom_ribbon(aes(ymin= quant05_1000,
+                  ymax= quant95_1000,
                   fill= site, color= site), linetype= 0, linewidth= 0.2, alpha= 0.1)+
   scale_fill_manual(values= c("#00797F",  "#003087",  "#B71300"))+
   guides(fill= guide_legend(title= "Site"))+
@@ -4390,8 +4448,8 @@ ggplot(inshoreOyster_MedQuants, aes(x= hour, y= med_250, group= site, color= sit
   ylim(72, 135)+
   theme_bw()+
   xlab("Hour (UTC)")+
-  ylab(expression(paste('Median 250Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
-  ggtitle("Oyster Toadfish: peak one-week period")+
+  ylab(expression(paste('Median 1000Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("Toadfish: peak one-week period")+
   scale_color_manual(values= c("#00797F",  "#003087",  "#B71300"))+
   guides(color= guide_legend(title= "Site"))+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
@@ -5447,5 +5505,300 @@ ggplot(all1000_inshoreDiels, aes(x= UTC_fixed, group= year(UTC_fixed), y= OL_100
         legend.text = element_text(size= 16),
         plot.title = element_text(size= 20, hjust= 0.5),
         strip.text= element_text(size= 16))
+
+```
+#toadfish chorus astro dusk diel plot full effort
+```{r}
+#DB01
+DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
+DB01_fullEffort_date_time <- seq(ymd_hms("2022-07-07 00:00:00"), ymd_hms("2024-11-04 23:00:00"), by = "1 hour")
+
+DB01_fullEffort_astrodusk <- crepuscule(crds = DB01_location, dateTime = DB01_fullEffort_date_time, solarDep = 18, direction = "dusk", POSIXct.out = TRUE)
+
+DB01_fullEffort_astroduskDate<- DB01_fullEffort_astrodusk %>%
+  mutate(UTC_date = date(time))%>%
+  mutate(astrodusk_UTC_hour = hour(time))
+
+DB01_fullEffort_astroduskDate <- DB01_fullEffort_astroduskDate %>%
+  group_by(UTC_date, astrodusk_UTC_hour)%>%
+  summarize(n = n())
+DB01_fullEffort_astroduskDate <- DB01_fullEffort_astroduskDate[-c(3)]
+
+#put back as characters so can make date column easier
+DB01_fullEffort_astroduskDate$UTC_date <- as.character(DB01_fullEffort_astroduskDate$UTC_date)
+
+DB01_fullEffort_astroduskDate$astrodusk_UTC_hour <- as.character(DB01_fullEffort_astroduskDate$astrodusk_UTC_hour)
+
+#make new columns combining date and 3 hours- should have 3 data points per day (with overlap on days if around midnight)- 
+DB01_fullEffort_astroduskDate$UTC_fixed <- paste(DB01_fullEffort_astroduskDate$UTC_date, DB01_fullEffort_astroduskDate$astrodusk_UTC_hour, sep = " ")
+DB01_fullEffort_astroduskDate$UTC_fixed = as.POSIXct(DB01_fullEffort_astroduskDate$UTC_fixed, format = "%Y-%m-%d %H")
+
+DB01_fullEffort_astroduskDate$UTC_minus <- DB01_fullEffort_astroduskDate$UTC_fixed - hours(1)
+DB01_fullEffort_astroduskDate$UTC_plus <- DB01_fullEffort_astroduskDate$UTC_fixed + hours(1)
+
+#this works but hard to then join with OL data, so separate out and then join again after they are all matched
+DB01_fullEffort_astroduskMinus <- DB01_fullEffort_astroduskDate[, c("UTC_date", "astrodusk_UTC_hour", "UTC_minus")]
+DB01_fullEffort_astroduskPlus <- DB01_fullEffort_astroduskDate[, c("UTC_date", "astrodusk_UTC_hour", "UTC_plus")]
+
+#remove from original for now
+DB01_fullEffort_astroduskDate <- DB01_fullEffort_astroduskDate[-c(4:5)]
+
+#have to rename minus/plus columns to 'UTC_fixed' so it can join with the chorus presence and OL files
+colnames(DB01_fullEffort_astroduskMinus)[3] <- "UTC_fixed"
+colnames(DB01_fullEffort_astroduskPlus)[3] <- "UTC_fixed"
+
+#now join each date dataframe individually
+DB01_fullEffort_astroduskDate$UTC_date <- as.Date(DB01_fullEffort_astroduskDate$UTC_date)
+
+DB01_fullEffort_astroduskMinus$UTC_date <- as.Date(DB01_fullEffort_astroduskMinus$UTC_date)
+DB01_astroduskMinus <- DB01_TOL %>%
+  right_join(DB01_fullEffort_astroduskMinus, join_by(UTC_fixed))
+
+DB01_fullEffort_astroduskPlus$UTC_date <- as.Date(DB01_fullEffort_astroduskPlus$UTC_date)
+DB01_astroduskPlus <- DB01_TOL %>%
+  right_join(DB01_fullEffort_astroduskPlus, join_by(UTC_fixed))
+
+DB01_astrodusk <- DB01_TOL %>%
+  right_join(DB01_fullEffort_astroduskDate, join_by(UTC_fixed))
+
+#remove columns not needed for full join
+DB01_astrodusk <- DB01_astrodusk[-c(1, 5:22, 24:37, 41)]
+colnames(DB01_astrodusk)[7] <- "UTC_date"
+DB01_astrodusk$diel <- "astrodusk"
+DB01_astroduskPlus <- DB01_astroduskPlus[-c(1:22, 24:37, 41)]
+colnames(DB01_astroduskPlus)[4] <- "UTC_date"
+DB01_astroduskPlus$diel <- "plus"
+DB01_astroduskMinus <- DB01_astroduskMinus[-c(1:22, 24:37, 41)]
+colnames(DB01_astroduskMinus)[4] <- "UTC_date"
+DB01_astroduskMinus$diel <- "minus"
+
+DB01_astroduskMinusPlus <- DB01_astroduskMinus %>%
+  full_join(DB01_astroduskPlus)
+DB01_astrodusk_diels <- DB01_astrodusk %>%
+  full_join(DB01_astroduskMinusPlus)
+
+DB01_chorusPresence <- DB01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+DB01_astrodusk_diels <- DB01_chorusPresence %>%
+  right_join(DB01_astrodusk_diels, join_by(UTC_date))
+
+DB01_astrodusk_diels <- DB01_astrodusk_diels[-c(2:4)]
+ 
+DB01_astrodusk_diels <- DB01_astrodusk_diels %>%
+dplyr::mutate(oyster_chorus = factor(oyster_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
+DB01_astrodusk_diels <- DB01_astrodusk_diels %>%
+  drop_na(oyster_chorus)
+DB01_astrodusk_diels$site <- "DB01"
+
+
+#ES01
+ES01_location <- matrix(c(-75.29, 37.69), nrow = 1)
+ES01_fullEffort_date_time <- seq(ymd_hms("2022-07-07 00:00:00"), ymd_hms("2024-11-04 23:00:00"), by = "1 hour")
+
+ES01_fullEffort_astrodusk <- crepuscule(crds = ES01_location, dateTime = ES01_fullEffort_date_time, solarDep = 18, direction = "dusk", POSIXct.out = TRUE)
+
+ES01_fullEffort_astroduskDate<-ES01_fullEffort_astrodusk %>%
+  mutate(UTC_date = date(time))%>%
+  mutate(astrodusk_UTC_hour = hour(time))
+
+ES01_fullEffort_astroduskDate <- ES01_fullEffort_astroduskDate %>%
+  group_by(UTC_date, astrodusk_UTC_hour)%>%
+  summarize(n = n())
+ES01_fullEffort_astroduskDate <- ES01_fullEffort_astroduskDate[-c(3)]
+
+#put back as characters so can make date column easier
+ES01_fullEffort_astroduskDate$UTC_date <- as.character(ES01_fullEffort_astroduskDate$UTC_date)
+
+ES01_fullEffort_astroduskDate$astrodusk_UTC_hour <- as.character(ES01_fullEffort_astroduskDate$astrodusk_UTC_hour)
+
+#make new columns combining date and 3 hours- should have 3 data points per day (with overlap on days if around midnight)- 
+ES01_fullEffort_astroduskDate$UTC_fixed <- paste(ES01_fullEffort_astroduskDate$UTC_date, ES01_fullEffort_astroduskDate$astrodusk_UTC_hour, sep = " ")
+ES01_fullEffort_astroduskDate$UTC_fixed = as.POSIXct(ES01_fullEffort_astroduskDate$UTC_fixed, format = "%Y-%m-%d %H")
+
+ES01_fullEffort_astroduskDate$UTC_minus <- ES01_fullEffort_astroduskDate$UTC_fixed - hours(1)
+ES01_fullEffort_astroduskDate$UTC_plus <- ES01_fullEffort_astroduskDate$UTC_fixed + hours(1)
+
+#this works but hard to then join with OL data, so separate out and then join again after they are all matched
+ES01_fullEffort_astroduskMinus <- ES01_fullEffort_astroduskDate[, c("UTC_date", "astrodusk_UTC_hour", "UTC_minus")]
+ES01_fullEffort_astroduskPlus <- ES01_fullEffort_astroduskDate[, c("UTC_date", "astrodusk_UTC_hour", "UTC_plus")]
+
+#remove from original for now
+ES01_fullEffort_astroduskDate <- ES01_fullEffort_astroduskDate[-c(4:5)]
+
+#have to rename minus/plus columns to 'UTC_fixed' so it can join with the chorus presence and OL files
+colnames(ES01_fullEffort_astroduskMinus)[3] <- "UTC_fixed"
+colnames(ES01_fullEffort_astroduskPlus)[3] <- "UTC_fixed"
+
+#now join each date dataframe individually
+ES01_fullEffort_astroduskDate$UTC_date <- as.Date(ES01_fullEffort_astroduskDate$UTC_date)
+
+ES01_fullEffort_astroduskMinus$UTC_date <- as.Date(ES01_fullEffort_astroduskMinus$UTC_date)
+ES01_astroduskMinus <- ES01_TOL %>%
+  right_join(ES01_fullEffort_astroduskMinus, join_by(UTC_fixed))
+
+ES01_fullEffort_astroduskPlus$UTC_date <- as.Date(ES01_fullEffort_astroduskPlus$UTC_date)
+ES01_astroduskPlus <- ES01_TOL %>%
+  right_join(ES01_fullEffort_astroduskPlus, join_by(UTC_fixed))
+
+ES01_astrodusk <- ES01_TOL %>%
+  right_join(ES01_fullEffort_astroduskDate, join_by(UTC_fixed))
+
+#remove columns not needed for full join
+ES01_astrodusk <-ES01_astrodusk[-c(1, 5:22, 24:37, 41)]
+colnames(ES01_astrodusk)[7] <- "UTC_date"
+ES01_astrodusk$diel <- "astrodusk"
+ES01_astroduskPlus <- ES01_astroduskPlus[-c(1:22, 24:37, 41)]
+colnames(ES01_astroduskPlus)[4] <- "UTC_date"
+ES01_astroduskPlus$diel <- "plus"
+ES01_astroduskMinus <- ES01_astroduskMinus[-c(1:22, 24:37, 41)]
+colnames(ES01_astroduskMinus)[4] <- "UTC_date"
+ES01_astroduskMinus$diel <- "minus"
+
+ES01_astroduskMinusPlus <- ES01_astroduskMinus %>%
+  full_join(ES01_astroduskPlus)
+ES01_astrodusk_diels <- ES01_astrodusk %>%
+  full_join(ES01_astroduskMinusPlus)
+
+ES01_chorusPresence <- ES01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+ES01_astrodusk_diels <- ES01_chorusPresence %>%
+  right_join(ES01_astrodusk_diels, join_by(UTC_date))
+
+ES01_astrodusk_diels <- ES01_astrodusk_diels[-c(2:4)]
+ 
+ES01_astrodusk_diels <- ES01_astrodusk_diels %>%
+dplyr::mutate(oyster_chorus = factor(oyster_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
+ES01_astrodusk_diels <- ES01_astrodusk_diels %>%
+  drop_na(oyster_chorus)
+ES01_astrodusk_diels$site <- "ES01"
+
+
+#CB01
+CB01_location <- matrix(c(-75.67, 36.98), nrow = 1)
+CB01_fullEffort_date_time <- seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2024-11-08 16:00:00"), by = "1 hour")
+
+CB01_fullEffort_astrodusk <- crepuscule(crds = CB01_location, dateTime = CB01_fullEffort_date_time, solarDep = 18, direction = "dusk", POSIXct.out = TRUE)
+
+CB01_fullEffort_astroduskDate <- CB01_fullEffort_astrodusk %>%
+  mutate(UTC_date = date(time))%>%
+  mutate(astrodusk_UTC_hour = hour(time))
+
+CB01_fullEffort_astroduskDate <- CB01_fullEffort_astroduskDate %>%
+  group_by(UTC_date, astrodusk_UTC_hour)%>%
+  summarize(n = n())
+CB01_fullEffort_astroduskDate <- CB01_fullEffort_astroduskDate[-c(3)]
+
+#put back as characters so can make date column easier
+CB01_fullEffort_astroduskDate$UTC_date <- as.character(CB01_fullEffort_astroduskDate$UTC_date)
+
+CB01_fullEffort_astroduskDate$astrodusk_UTC_hour <- as.character(CB01_fullEffort_astroduskDate$astrodusk_UTC_hour)
+
+#make new columns combining date and 3 hours- should have 3 data points per day (with overlap on days if around midnight)- 
+CB01_fullEffort_astroduskDate$UTC_fixed <- paste(CB01_fullEffort_astroduskDate$UTC_date, CB01_fullEffort_astroduskDate$astrodusk_UTC_hour, sep = " ")
+CB01_fullEffort_astroduskDate$UTC_fixed = as.POSIXct(CB01_fullEffort_astroduskDate$UTC_fixed, format = "%Y-%m-%d %H")
+
+CB01_fullEffort_astroduskDate$UTC_minus <- CB01_fullEffort_astroduskDate$UTC_fixed - hours(1)
+CB01_fullEffort_astroduskDate$UTC_plus <- CB01_fullEffort_astroduskDate$UTC_fixed + hours(1)
+
+#this works but hard to then join with OL data, so separate out and then join again after they are all matched
+CB01_fullEffort_astroduskMinus <- CB01_fullEffort_astroduskDate[, c("UTC_date", "astrodusk_UTC_hour", "UTC_minus")]
+CB01_fullEffort_astroduskPlus <- CB01_fullEffort_astroduskDate[, c("UTC_date", "astrodusk_UTC_hour", "UTC_plus")]
+
+#remove from original for now
+CB01_fullEffort_astroduskDate <- CB01_fullEffort_astroduskDate[-c(4:5)]
+
+#have to rename minus/plus columns to 'UTC_fixed' so it can join with the chorus presence and OL files
+colnames(CB01_fullEffort_astroduskMinus)[3] <- "UTC_fixed"
+colnames(CB01_fullEffort_astroduskPlus)[3] <- "UTC_fixed"
+
+#now join each date dataframe individually
+CB01_fullEffort_astroduskDate$UTC_date <- as.Date(CB01_fullEffort_astroduskDate$UTC_date)
+
+CB01_fullEffort_astroduskMinus$UTC_date <- as.Date(CB01_fullEffort_astroduskMinus$UTC_date)
+CB01_astroduskMinus <- CB01_TOL %>%
+  right_join(CB01_fullEffort_astroduskMinus, join_by(UTC_fixed))
+
+CB01_fullEffort_astroduskPlus$UTC_date <- as.Date(CB01_fullEffort_astroduskPlus$UTC_date)
+CB01_astroduskPlus <- CB01_TOL %>%
+  right_join(CB01_fullEffort_astroduskPlus, join_by(UTC_fixed))
+
+CB01_astrodusk <- CB01_TOL %>%
+  right_join(CB01_fullEffort_astroduskDate, join_by(UTC_fixed))
+
+#remove columns not needed for full join
+CB01_astrodusk <-CB01_astrodusk[-c(1, 5:22, 24:37, 41)]
+colnames(CB01_astrodusk)[7] <- "UTC_date"
+CB01_astrodusk$diel <- "astrodusk"
+CB01_astroduskPlus <- CB01_astroduskPlus[-c(1:22, 24:37, 41)]
+colnames(CB01_astroduskPlus)[4] <- "UTC_date"
+CB01_astroduskPlus$diel <- "plus"
+CB01_astroduskMinus <- CB01_astroduskMinus[-c(1:22, 24:37, 41)]
+colnames(CB01_astroduskMinus)[4] <- "UTC_date"
+CB01_astroduskMinus$diel <- "minus"
+
+CB01_astroduskMinusPlus <- CB01_astroduskMinus %>%
+  full_join(CB01_astroduskPlus)
+CB01_astrodusk_diels <- CB01_astrodusk %>%
+  full_join(CB01_astroduskMinusPlus)
+
+CB01_chorusPresence <- CB01_chorusPresence %>%
+  mutate(UTC_date = date(UTC))
+CB01_astrodusk_diels <- CB01_chorusPresence %>%
+  right_join(CB01_astrodusk_diels, join_by(UTC_date))
+
+CB01_astrodusk_diels <- CB01_astrodusk_diels[-c(2:4)]
+ 
+CB01_astrodusk_diels <- CB01_astrodusk_diels %>%
+dplyr::mutate(oyster_chorus = factor(oyster_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
+CB01_astrodusk_diels <- CB01_astrodusk_diels %>%
+  drop_na(oyster_chorus)
+CB01_astrodusk_diels$site <- "CB01"
+
+alltoadfish_inshoreDiels <- DB01_astrodusk_diels %>%
+  full_join(ES01_astrodusk_diels)%>%
+  full_join(CB01_astrodusk_diels)
+
+alltoadfish_inshoreDiels$site = factor(alltoadfish_inshoreDiels$site,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                        labels= c('DB01', 'ES01', 'CB01'))
+
+
+ggplot(alltoadfish_inshoreDiels, aes(x= UTC_fixed, group= year(UTC_fixed), y= TOL_1000, group= oyster_chorus, color= oyster_chorus))+
+  geom_line(linewidth= 0.75, na.rm= TRUE)+
+#  geom_ma(ma_fun= SMA, n= 9, color= "black", linetype= 1, show.legend= TRUE)+
+  theme_bw()+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  xlab("Date")+
+  ylab(expression(paste('Median 1000Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
+  facet_grid(factor(site, levels = c('DB01', 'ES01', 'CB01'))~.,)+
+  scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#74058095"))+
+  scale_fill_manual(values= c("grey", "#74058095"))+
+  guides(color= guide_legend(title= "Toadfish chorus presence"))+
+  ggtitle("+/- 1 hour astronomical dusk")+
+  theme(axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        axis.text.x= element_text(size= 16),
+        legend.title= element_text(size= 18),
+        legend.text = element_text(size= 16),
+        plot.title = element_text(size= 20, hjust= 0.5),
+        strip.text= element_text(size= 16))
+
+
+```
+#
+```{r}
+
+
+
+
+
+
+
 
 ```
