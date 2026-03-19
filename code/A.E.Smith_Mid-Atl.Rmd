@@ -4726,6 +4726,16 @@ DB01_nautdusk_diels <- DB01_nautdusk_diels %>%
   drop_na(X500_chorus)
 DB01_nautdusk_diels$site <- "DB01"
 
+DB01pulse_medDiels <- DB01_nautdusk_diels %>%
+  group_by(UTC_date, site) %>%
+  dplyr::summarize(med_500 = median(OL_500, na.rm=TRUE))
+DB01pulse_medDiels <- DB01_chorusPresence %>%
+  right_join(DB01pulse_medDiels, join_by(UTC_date))
+DB01pulse_medDiels <- DB01pulse_medDiels[-c(3:7)]
+colnames(DB01pulse_medDiels)[3] <- "site"
+
+
+
 #ES01
 ES01_location <- matrix(c(-75.29, 37.69), nrow = 1)
 ES01500_fullEffort_date_time  <- seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2024-11-08 16:00:00"), by = "1 hour")
@@ -4808,6 +4818,14 @@ dplyr::mutate(X500_chorus = factor(X500_chorus,
 ES01_nautdusk_diels <- ES01_nautdusk_diels %>%
   drop_na(X500_chorus)
 ES01_nautdusk_diels$site <- "ES01"
+
+ES01pulse_medDiels <- ES01_nautdusk_diels %>%
+  group_by(UTC_date, site) %>%
+  dplyr::summarize(med_500 = median(OL_500, na.rm=TRUE))
+ES01pulse_medDiels <- ES01_chorusPresence %>%
+  right_join(ES01pulse_medDiels, join_by(UTC_date))
+ES01pulse_medDiels <- ES01pulse_medDiels[-c(3:7)]
+colnames(ES01pulse_medDiels)[3] <- "site"
 
 
 #CB01
@@ -4893,6 +4911,28 @@ CB01_nautdusk_diels <- CB01_nautdusk_diels %>%
   drop_na(X500_chorus)
 CB01_nautdusk_diels$site <- "CB01"
 
+CB01pulse_medDiels <- CB01_nautdusk_diels %>%
+  group_by(UTC_date, site) %>%
+  dplyr::summarize(med_500 = median(OL_500, na.rm=TRUE))
+CB01pulse_medDiels <- CB01_chorusPresence %>%
+  right_join(CB01pulse_medDiels, join_by(UTC_date))
+CB01pulse_medDiels <- CB01pulse_medDiels[-c(3:7)]
+colnames(CB01pulse_medDiels)[3] <- "site"
+
+
+
+#COMBINING AND PLOTTING
+ALLpulse_medDiels <- DB01pulse_medDiels %>%
+  full_join(ES01pulse_medDiels)%>%
+  full_join(CB01pulse_medDiels)
+ALLpulse_medDiels$site = factor(ALLpulse_medDiels$site,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                        labels= c('DB01', 'ES01', 'CB01'))
+ALLpulse_medDiels <- ALLpulse_medDiels %>%
+dplyr::mutate(X500_chorus = factor(X500_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
+
 all500_inshoreDiels <- DB01_nautdusk_diels %>%
   full_join(ES01_nautdusk_diels)%>%
   full_join(CB01_nautdusk_diels)
@@ -4902,10 +4942,10 @@ all500_inshoreDiels$site = factor(all500_inshoreDiels$site,
                                         labels= c('DB01', 'ES01', 'CB01'))
 
 
-ggplot(all500_inshoreDiels, aes(x= UTC_fixed, group= year(UTC_fixed), y= OL_500, group= X500_chorus, color= X500_chorus))+
+ggplot(ALLpulse_medDiels, aes(x= UTC, group= year(UTC), y= med_500, group= X500_chorus, color= X500_chorus))+
   geom_line(linewidth= 0.75, na.rm= TRUE)+
   theme_bw()+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+#  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   xlab("Date")+
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   facet_grid(factor(site, levels = c('DB01', 'ES01', 'CB01'))~.,)+
@@ -5008,6 +5048,13 @@ DB01_sunset_diels <- DB01_sunset_diels %>%
   drop_na(cusk_chorus)
 DB01_sunset_diels$site <- "DB01"
 
+DB01cusk_medDiels <- DB01_sunset_diels %>%
+  group_by(UTC_date, site) %>%
+  dplyr::summarize(med_2000 = median(OL_2000, na.rm=TRUE))
+DB01cusk_medDiels <- DB01_chorusPresence %>%
+  right_join(DB01cusk_medDiels, join_by(UTC_date))
+DB01cusk_medDiels <- DB01cusk_medDiels[-c(2,3,5:7)]
+colnames(DB01cusk_medDiels)[3] <- "site"
 
 #ES01
 ES01_location <- matrix(c(-75.29, 37.69), nrow = 1)
@@ -5092,6 +5139,13 @@ ES01_sunset_diels <- ES01_sunset_diels %>%
   drop_na(cusk_chorus)
 ES01_sunset_diels$site <- "ES01"
 
+ES01cusk_medDiels <- ES01_sunset_diels %>%
+  group_by(UTC_date, site) %>%
+  dplyr::summarize(med_2000 = median(OL_2000, na.rm=TRUE))
+ES01cusk_medDiels <- ES01_chorusPresence %>%
+  right_join(ES01cusk_medDiels, join_by(UTC_date))
+ES01cusk_medDiels <- ES01cusk_medDiels[-c(2,3,5:7)]
+colnames(ES01cusk_medDiels)[3] <- "site"
 
 #CB01
 CB01_location <- matrix(c(-75.67, 36.98), nrow = 1)
@@ -5176,6 +5230,28 @@ CB01_sunset_diels <- CB01_sunset_diels %>%
   drop_na(cusk_chorus)
 CB01_sunset_diels$site <- "CB01"
 
+
+CB01cusk_medDiels <- CB01_sunset_diels %>%
+  group_by(UTC_date, site) %>%
+  dplyr::summarize(med_2000 = median(OL_2000, na.rm=TRUE))
+CB01cusk_medDiels <- CB01_chorusPresence %>%
+  right_join(CB01cusk_medDiels, join_by(UTC_date))
+CB01cusk_medDiels <- CB01cusk_medDiels[-c(2,3,5:7)]
+colnames(CB01cusk_medDiels)[3] <- "site"
+
+
+#COMBINING AND PLOTTING
+ALLcusk_medDiels <- DB01cusk_medDiels %>%
+  full_join(ES01cusk_medDiels)%>%
+  full_join(CB01cusk_medDiels)
+ALLcusk_medDiels$site = factor(ALLcusk_medDiels$site,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                        labels= c('DB01', 'ES01', 'CB01'))
+ALLcusk_medDiels <- ALLcusk_medDiels %>%
+dplyr::mutate(cusk_chorus = factor(cusk_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
+
 allCusk_inshoreDiels <- DB01_sunset_diels %>%
   full_join(ES01_sunset_diels)%>%
   full_join(CB01_sunset_diels)
@@ -5185,30 +5261,11 @@ allCusk_inshoreDiels$site = factor(allCusk_inshoreDiels$site,
                                         labels= c('DB01', 'ES01', 'CB01'))
 
 
-ggplot(DB01_sunset_diels, aes(x= UTC_fixed, group= year(UTC_fixed), y= OL_2000, group= cusk_chorus, color= cusk_chorus))+
-  geom_path(linewidth= 0.75, na.rm= TRUE)+
-  geom_ma(ma_fun= SMA, n= 9, color= "black", linetype= 1)+
-  theme_bw()+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
-  xlab("Date")+
-  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
-  scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#00797F95"))+
-  scale_fill_manual(values= c("grey", "#00797F95"))+
-  guides(color= guide_legend(title= "Cusk eel chorus presence"))+
-  ggtitle("DB01: +/- 1 hour nautical dusk")+
-  theme(axis.title= element_text(size= 18),
-        axis.text.y= element_text(size= 16),
-        axis.text.x= element_text(size= 16),
-        legend.title= element_text(size= 18),
-        legend.text = element_text(size= 16),
-        plot.title= element_text(size= 20))
-
-
-ggplot(allCusk_inshoreDiels, aes(x= UTC_fixed, group= year(UTC_fixed), y= OL_2000, group= cusk_chorus, color= cusk_chorus))+
+ggplot(ALLcusk_medDiels, aes(x= UTC, group= year(UTC), y= med_2000, group= cusk_chorus, color= cusk_chorus))+
   geom_line(linewidth= 0.75, na.rm= TRUE)+
-  geom_ma(ma_fun= SMA, n= 9, color= "black", linetype= 1, show.legend= TRUE)+
+#  geom_ma(ma_fun= SMA, n= 9, color= "black", linetype= 1, show.legend= TRUE)+
   theme_bw()+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+#  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   xlab("Date")+
   ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   facet_grid(factor(site, levels = c('DB01', 'ES01', 'CB01'))~.,)+
@@ -5281,13 +5338,13 @@ DB01_civdusk <- DB01_TOL %>%
   right_join(DB01_fullEffort_civduskDate, join_by(UTC_fixed))
 
 #remove columns not needed for full join
-DB01_civdusk <- DB01_civdusk[-c(1, 5:20, 22:37, 41)]
+DB01_civdusk <- DB01_civdusk[-c(1, 5:19, 21:37, 41)]
 colnames(DB01_civdusk)[7] <- "UTC_date"
 DB01_civdusk$diel <- "civdusk"
-DB01_civduskPlus <- DB01_civduskPlus[-c(1:20, 22:37, 41)]
+DB01_civduskPlus <- DB01_civduskPlus[-c(1:19, 21:37, 41)]
 colnames(DB01_civduskPlus)[4] <- "UTC_date"
 DB01_civduskPlus$diel <- "plus"
-DB01_civduskMinus <- DB01_civduskMinus[-c(1:20, 22:37, 41)]
+DB01_civduskMinus <- DB01_civduskMinus[-c(1:19, 21:37, 41)]
 colnames(DB01_civduskMinus)[4] <- "UTC_date"
 DB01_civduskMinus$diel <- "minus"
 
@@ -5310,6 +5367,14 @@ dplyr::mutate(X1000_chorus = factor(X1000_chorus,
 DB01_civdusk_diels <- DB01_civdusk_diels %>%
   drop_na(X1000_chorus)
 DB01_civdusk_diels$site <- "DB01"
+
+DB01_medDiels <- DB01_civdusk_diels %>%
+  group_by(UTC_date, site) %>%
+  dplyr::summarize(med_500 = median(TOL_500, na.rm=TRUE))
+DB01_medDiels <- DB01_chorusPresence %>%
+  right_join(DB01_medDiels, join_by(UTC_date))
+DB01_medDiels <- DB01_medDiels[-c(2, 4:7)]
+colnames(DB01_medDiels)[3] <- "site"
 
 #ES01
 ES01_location <- matrix(c(-75.29, 37.69), nrow = 1)
@@ -5394,9 +5459,20 @@ ES01_civdusk_diels <- ES01_civdusk_diels %>%
   drop_na(X1000_chorus)
 ES01_civdusk_diels$site <- "ES01"
 
+
+ES01_medDiels <- ES01_civdusk_diels %>%
+  group_by(UTC_date, site) %>%
+  dplyr::summarize(med_500 = median(TOL_500, na.rm=TRUE))
+ES01_medDiels <- ES01_chorusPresence %>%
+  right_join(ES01_medDiels, join_by(UTC_date))
+ES01_medDiels <- ES01_medDiels[-c(2, 4:7)]
+colnames(ES01_medDiels)[3] <- "site"
+
+
+
 #CB01
 CB01_location <- matrix(c(-75.67, 36.98), nrow = 1)
-CB01_fullEffort_date_time <- seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2024-11-08 16:00:00"), by = "1 hour")
+CB01_fullEffort_date_time <- seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2024-11-08 23:00:00"), by = "1 hour")
 
 CB01_fullEffort_civdusk <- crepuscule(crds = CB01_location, dateTime = CB01_fullEffort_date_time, solarDep = 6, direction = "dusk", POSIXct.out = TRUE)
 
@@ -5477,6 +5553,17 @@ CB01_civdusk_diels <- CB01_civdusk_diels %>%
   drop_na(X1000_chorus)
 CB01_civdusk_diels$site <- "CB01"
 
+CB01_medDiels <- CB01_civdusk_diels %>%
+  group_by(UTC_date, site) %>%
+  dplyr::summarize(med_500 = median(TOL_500, na.rm=TRUE))
+CB01_medDiels <- CB01_chorusPresence %>%
+  right_join(CB01_medDiels, join_by(UTC_date))
+CB01_medDiels <- CB01_medDiels[-c(2, 4:7)]
+colnames(CB01_medDiels)[3] <- "site"
+
+
+#combining and plotting
+
 all1000_inshoreDiels <- DB01_civdusk_diels %>%
   full_join(ES01_civdusk_diels)%>%
   full_join(CB01_civdusk_diels)
@@ -5485,12 +5572,22 @@ all1000_inshoreDiels$site = factor(all1000_inshoreDiels$site,
                                         levels= c('DB01', 'ES01', 'CB01'),
                                         labels= c('DB01', 'ES01', 'CB01'))
 
+all_medDiels <- DB01_medDiels%>%
+  full_join(ES01_medDiels)%>%
+  full_join(CB01_medDiels)
+all_medDiels$site = factor(all_medDiels$site,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                        labels= c('DB01', 'ES01', 'CB01'))
+all_medDiels <- all_medDiels %>%
+dplyr::mutate(X1000_chorus = factor(X1000_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
 
-ggplot(all1000_inshoreDiels, aes(x= UTC_fixed, group= year(UTC_fixed), y= TOL_500, group= X1000_chorus, color= X1000_chorus))+
+ggplot(all_medDiels, aes(x= UTC, group= year(UTC), y= med_500, group= X1000_chorus, color= X1000_chorus))+
   geom_line(linewidth= 0.75, na.rm= TRUE)+
-#  geom_ma(ma_fun= SMA, n= 9, color= "black", linetype= 1, show.legend= TRUE)+
+  geom_ma(ma_fun= SMA, n= 3, color= "black", linetype= 1, show.legend= TRUE)+
   theme_bw()+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+#  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   xlab("Date")+
   ylab(expression(paste('Median 500Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
   facet_grid(factor(site, levels = c('DB01', 'ES01', 'CB01'))~.,)+
@@ -5592,6 +5689,14 @@ DB01_astrodusk_diels <- DB01_astrodusk_diels %>%
   drop_na(oyster_chorus)
 DB01_astrodusk_diels$site <- "DB01"
 
+DB01toadfish_medDiels <- DB01_astrodusk_diels %>%
+  group_by(UTC_date, site) %>%
+  dplyr::summarize(med_1000 = median(TOL_1000, na.rm=TRUE))
+DB01toadfish_medDiels <- DB01_chorusPresence %>%
+  right_join(DB01toadfish_medDiels, join_by(UTC_date))
+DB01toadfish_medDiels <- DB01toadfish_medDiels[-c(2:4, 6, 7)]
+colnames(DB01toadfish_medDiels)[3] <- "site"
+
 
 #ES01
 ES01_location <- matrix(c(-75.29, 37.69), nrow = 1)
@@ -5675,6 +5780,14 @@ dplyr::mutate(oyster_chorus = factor(oyster_chorus,
 ES01_astrodusk_diels <- ES01_astrodusk_diels %>%
   drop_na(oyster_chorus)
 ES01_astrodusk_diels$site <- "ES01"
+
+ES01toadfish_medDiels <- ES01_astrodusk_diels %>%
+  group_by(UTC_date, site) %>%
+  dplyr::summarize(med_1000 = median(TOL_1000, na.rm=TRUE))
+ES01toadfish_medDiels <- ES01_chorusPresence %>%
+  right_join(ES01toadfish_medDiels, join_by(UTC_date))
+ES01toadfish_medDiels <- ES01toadfish_medDiels[-c(2:4, 6, 7)]
+colnames(ES01toadfish_medDiels)[3] <- "site"
 
 
 #CB01
@@ -5760,6 +5873,27 @@ CB01_astrodusk_diels <- CB01_astrodusk_diels %>%
   drop_na(oyster_chorus)
 CB01_astrodusk_diels$site <- "CB01"
 
+CB01toadfish_medDiels <- CB01_astrodusk_diels %>%
+  group_by(UTC_date, site) %>%
+  dplyr::summarize(med_1000 = median(TOL_1000, na.rm=TRUE))
+CB01toadfish_medDiels <- CB01_chorusPresence %>%
+  right_join(CB01toadfish_medDiels, join_by(UTC_date))
+CB01toadfish_medDiels <- CB01toadfish_medDiels[-c(2:4, 6, 7)]
+colnames(CB01toadfish_medDiels)[3] <- "site"
+
+
+#COMBINING AND PLOTTING
+ALLtoadfish_medDiels <- DB01toadfish_medDiels %>%
+  full_join(ES01toadfish_medDiels)%>%
+  full_join(CB01toadfish_medDiels)
+ALLtoadfish_medDiels$site = factor(ALLtoadfish_medDiels$site,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                        labels= c('DB01', 'ES01', 'CB01'))
+ALLtoadfish_medDiels <- ALLtoadfish_medDiels %>%
+dplyr::mutate(oyster_chorus = factor(oyster_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
+
 alltoadfish_inshoreDiels <- DB01_astrodusk_diels %>%
   full_join(ES01_astrodusk_diels)%>%
   full_join(CB01_astrodusk_diels)
@@ -5769,11 +5903,11 @@ alltoadfish_inshoreDiels$site = factor(alltoadfish_inshoreDiels$site,
                                         labels= c('DB01', 'ES01', 'CB01'))
 
 
-ggplot(alltoadfish_inshoreDiels, aes(x= UTC_fixed, group= year(UTC_fixed), y= TOL_1000, group= oyster_chorus, color= oyster_chorus))+
+ggplot(ALLtoadfish_medDiels, aes(x= UTC, group= year(UTC), y= med_1000, group= oyster_chorus, color= oyster_chorus))+
   geom_line(linewidth= 0.75, na.rm= TRUE)+
 #  geom_ma(ma_fun= SMA, n= 9, color= "black", linetype= 1, show.legend= TRUE)+
   theme_bw()+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+#  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   xlab("Date")+
   ylab(expression(paste('Median 1000Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
   facet_grid(factor(site, levels = c('DB01', 'ES01', 'CB01'))~.,)+
@@ -5789,6 +5923,60 @@ ggplot(alltoadfish_inshoreDiels, aes(x= UTC_fixed, group= year(UTC_fixed), y= TO
         plot.title = element_text(size= 20, hjust= 0.5),
         strip.text= element_text(size= 16))
 
+
+```
+#extracting days with chorus presence above threshold per chorus
+```{r}
+#######UNKNOWN PULSES- threshold med_500 >= 100 dB on days with chorus present
+  #DB01
+DB01_unknownPulse <- DB01pulse_medDiels %>%
+ filter(X500_chorus== "1")
+DB01_unknownPulse <- DB01_unknownPulse %>%
+ filter(med_500 >= 100)
+  #ES01
+ES01_unknownPulse <- ES01pulse_medDiels %>%
+ filter(X500_chorus== "1")
+ES01_unknownPulse <- ES01_unknownPulse %>%
+ filter(med_500 >= 100)
+  #CB01
+CB01_unknownPulse <- CB01pulse_medDiels %>%
+ filter(X500_chorus== "1")
+CB01_unknownPulse <- CB01_unknownPulse %>%
+ filter(med_500 >= 100)
+
+#######CUSK EEL- threshold med_2000 >= 92 dB on days with chorus present
+  #DB01
+DB01_cuskEel <- DB01cusk_medDiels %>%
+ filter(cusk_chorus== "1")
+DB01_cuskEel <- DB01_cuskEel %>%
+ filter(med_2000 >= 92)
+  #ES01
+ES01_cuskEel <- ES01cusk_medDiels %>%
+ filter(cusk_chorus== "1")
+ES01_cuskEel <- ES01_cuskEel %>%
+ filter(med_2000 >= 92)
+  #CB01
+CB01_cuskEel <- CB01cusk_medDiels %>%
+ filter(cusk_chorus== "1")
+CB01_cuskEel <- CB01_cuskEel %>%
+ filter(med_2000 >= 92)
+
+#######TOADFISH- threshold med_1000 >= 100 dB on days with chorus present
+  #DB01
+DB01_toadfish <- DB01toadfish_medDiels %>%
+ filter(oyster_chorus== "1")
+DB01_toadfish <- DB01_toadfish %>%
+ filter(med_1000 >= 100) #no values below 100 but filter anyway for consistency
+  #ES01
+ES01_toadfish <- ES01toadfish_medDiels %>%
+ filter(oyster_chorus== "1")
+ES01_toadfish <- ES01_toadfish %>%
+ filter(med_1000 >= 100)
+  #CB01
+CB01_toadfish <- CB01toadfish_medDiels %>%
+ filter(oyster_chorus== "1")
+CB01_toadfish <- CB01_toadfish %>%
+ filter(med_1000 >= 100)
 
 ```
 #PSD day/night in fall- come back to this later if needed
