@@ -3687,7 +3687,7 @@ ES01oysterCusk_astrdusk_dechour <- ES01oysterCusk_astrdusk %>%
 
 ##########CB01 500###########
 CB01_location <- matrix(c(-75.67, 36.98), nrow = 1)
-CB01500_date_Time <- seq(ymd_hms("2024-09-01 00:00:00"), ymd_hms("2024-09-07 23:00:00"), by = "1 hour")
+CB01500_date_Time <- seq(ymd_hms("2022-08-19 00:00:00"), ymd_hms("2022-08-25 23:00:00"), by = "1 hour")
 
 CB01500_sunrise <- sunriset(crds = CB01_location, dateTime = CB01500_date_Time, direction = "sunrise", POSIXct.out = TRUE)
 CB01500_sunrise_dechour <- CB01500_sunrise %>%
@@ -4029,10 +4029,10 @@ ggplot(ES01500MedQuants, aes(x= hour, y= med_500, group= 1))+
   geom_vline(xintercept = ES01500_sunrise_dechour$decimal_hour, color = "#F2C447", linetype = "solid", size =  2, alpha = .5) +
   geom_vline(xintercept = ES01500_sunset_dechour$decimal_hour, color = "#F2C447", linetype = "solid", size = 2, alpha = .5)
 
-#CB01 500 chorus: 5/23-5/29/2024
+#CB01 500 chorus: 8/19-8/25/2022
 
-CB01subset_0523_0529 <-  seq(ymd_hms("2024-05-23 04:00:00"), ymd_hms("2024-05-30 03:00:00"), by = "1 hour")
-CB01500 <- data.frame(UTC= CB01subset_0523_0529)
+CB01subset_0819_0825 <-  seq(ymd_hms("2022-08-19 04:00:00"), ymd_hms("2022-08-26 03:00:00"), by = "1 hour")
+CB01500 <- data.frame(UTC= CB01subset_0819_0825)
 CB01500$UTC <- as.POSIXct(CB01500$UTC)
 colnames(CB01500)[1] <- "UTC_fixed"
 CB01500 <- CB01500 %>%
@@ -4061,7 +4061,7 @@ ggplot(CB01500MedQuants, aes(x= hour, y= med_500, group= 1))+
   theme_bw()+
   xlab("Hour (UTC)")+
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
-  ggtitle("CB01 unknown pulse- peak week median (5/23-5/29/2024)")+
+  ggtitle("CB01 unknown pulse- peak week median (8/19-8/26/2022)")+
   scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
         axis.title= element_text(size= 18),
@@ -4093,7 +4093,7 @@ ggplot(inshore500_MedQuants, aes(x= hour, y= med_500, group= site, color= site))
   guides(fill= guide_legend(title= "Site"))+
   scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
   geom_point(size= 1.5) + geom_line()+
-  ylim(72, 135)+
+#  ylim(72, 135)+
   theme_bw()+
   xlab("Hour (UTC)")+
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
@@ -4445,7 +4445,7 @@ ggplot(inshoreOyster_MedQuants, aes(x= hour, y= med_1000, group= site, color= si
   guides(fill= guide_legend(title= "Site"))+
    scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
   geom_point(size= 1.5) + geom_line()+
-  ylim(72, 135)+
+#  ylim(72, 135)+
   theme_bw()+
   xlab("Hour (UTC)")+
   ylab(expression(paste('Median 1000Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
@@ -4952,7 +4952,7 @@ ggplot(ALLpulse_medDiels, aes(x= UTC, group= year(UTC), y= med_500, group= X500_
   scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#00797F95"))+
   scale_fill_manual(values= c("grey", "#00797F95"))+
   guides(color= guide_legend(title= "Unknown pulses: chorus presence"))+
-  ggtitle("+/- 1 hour nautical dusk")+
+#  ggtitle("+/- 1 hour nautical dusk")+
   theme(axis.title= element_text(size= 18),
         axis.text.y= element_text(size= 16),
         axis.text.x= element_text(size= 16),
@@ -5272,7 +5272,7 @@ ggplot(ALLcusk_medDiels, aes(x= UTC, group= year(UTC), y= med_2000, group= cusk_
   scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#00308795"))+
   scale_fill_manual(values= c("grey", "#00308795"))+
   guides(color= guide_legend(title= "Cusk eel chorus presence"))+
-  ggtitle("+/- 1 hour sunset")+
+#  ggtitle("+/- 1 hour sunset")+
   theme(axis.title= element_text(size= 18),
         axis.text.y= element_text(size= 16),
         axis.text.x= element_text(size= 16),
@@ -5585,7 +5585,7 @@ dplyr::mutate(X1000_chorus = factor(X1000_chorus,
 
 ggplot(all_medDiels, aes(x= UTC, group= year(UTC), y= med_500, group= X1000_chorus, color= X1000_chorus))+
   geom_line(linewidth= 0.75, na.rm= TRUE)+
-  geom_ma(ma_fun= SMA, n= 3, color= "black", linetype= 1, show.legend= TRUE)+
+#  geom_ma(ma_fun= SMA, n= 3, color= "black", linetype= 1, show.legend= TRUE)+
   theme_bw()+
 #  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   xlab("Date")+
@@ -5594,7 +5594,7 @@ ggplot(all_medDiels, aes(x= UTC, group= year(UTC), y= med_500, group= X1000_chor
   scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#B7130095"))+
   scale_fill_manual(values= c("grey", "#B7130095"))+
   guides(color= guide_legend(title= "Unknown knocks chorus presence"))+
-  ggtitle("+/- 1 hour civil dusk")+
+#  ggtitle("+/- 1 hour civil dusk")+
   theme(axis.title= element_text(size= 18),
         axis.text.y= element_text(size= 16),
         axis.text.x= element_text(size= 16),
@@ -5914,7 +5914,7 @@ ggplot(ALLtoadfish_medDiels, aes(x= UTC, group= year(UTC), y= med_1000, group= o
   scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#74058095"))+
   scale_fill_manual(values= c("grey", "#74058095"))+
   guides(color= guide_legend(title= "Toadfish chorus presence"))+
-  ggtitle("+/- 1 hour astronomical dusk")+
+#  ggtitle("+/- 1 hour astronomical dusk")+
   theme(axis.title= element_text(size= 18),
         axis.text.y= element_text(size= 16),
         axis.text.x= element_text(size= 16),
@@ -5927,22 +5927,28 @@ ggplot(ALLtoadfish_medDiels, aes(x= UTC, group= year(UTC), y= med_1000, group= o
 ```
 #extracting days with chorus presence above threshold per chorus
 ```{r}
+
+#NOW CAN JUST LOAD IN CSV FILES IF NEEDED- BUT THESE ARE USED TO LOAD IN MINUTE-LEVEL DATA THAT MEETS THRESHOLD FOR EACH CHORUS AT EACH SITE
+
 #######UNKNOWN PULSES- threshold med_500 >= 100 dB on days with chorus present
   #DB01
 DB01_unknownPulse <- DB01pulse_medDiels %>%
  filter(X500_chorus== "1")
 DB01_unknownPulse <- DB01_unknownPulse %>%
  filter(med_500 >= 100)
+#write.csv(DB01_unknownPulse, here("data", "DB01_unknownPulse_threshold.csv"))
   #ES01
 ES01_unknownPulse <- ES01pulse_medDiels %>%
  filter(X500_chorus== "1")
 ES01_unknownPulse <- ES01_unknownPulse %>%
  filter(med_500 >= 100)
+#write.csv(ES01_unknownPulse, here("data", "ES01_unknownPulse_threshold.csv"))
   #CB01
 CB01_unknownPulse <- CB01pulse_medDiels %>%
  filter(X500_chorus== "1")
 CB01_unknownPulse <- CB01_unknownPulse %>%
  filter(med_500 >= 100)
+#write.csv(CB01_unknownPulse, here("data", "CB01_unknownPulse_threshold.csv"))
 
 #######CUSK EEL- threshold med_2000 >= 92 dB on days with chorus present
   #DB01
@@ -5950,16 +5956,19 @@ DB01_cuskEel <- DB01cusk_medDiels %>%
  filter(cusk_chorus== "1")
 DB01_cuskEel <- DB01_cuskEel %>%
  filter(med_2000 >= 92)
+#write.csv(DB01_cuskEel, here("data", "DB01_cuskEel_threshold.csv"))
   #ES01
 ES01_cuskEel <- ES01cusk_medDiels %>%
  filter(cusk_chorus== "1")
 ES01_cuskEel <- ES01_cuskEel %>%
  filter(med_2000 >= 92)
+#write.csv(ES01_cuskEel, here("data", "ES01_cuskEel_threshold.csv"))
   #CB01
 CB01_cuskEel <- CB01cusk_medDiels %>%
  filter(cusk_chorus== "1")
 CB01_cuskEel <- CB01_cuskEel %>%
  filter(med_2000 >= 92)
+#write.csv(CB01_cuskEel, here("data", "CB01_cuskEel_threshold.csv"))
 
 #######TOADFISH- threshold med_1000 >= 100 dB on days with chorus present
   #DB01
@@ -5967,16 +5976,22 @@ DB01_toadfish <- DB01toadfish_medDiels %>%
  filter(oyster_chorus== "1")
 DB01_toadfish <- DB01_toadfish %>%
  filter(med_1000 >= 100) #no values below 100 but filter anyway for consistency
+#write.csv(DB01_toadfish, here("data", "DB01_toadfish_threshold.csv"))
   #ES01
 ES01_toadfish <- ES01toadfish_medDiels %>%
  filter(oyster_chorus== "1")
 ES01_toadfish <- ES01_toadfish %>%
  filter(med_1000 >= 100)
+#write.csv(ES01_toadfish, here("data", "ES01_toadfish_threshold.csv"))
   #CB01
 CB01_toadfish <- CB01toadfish_medDiels %>%
  filter(oyster_chorus== "1")
 CB01_toadfish <- CB01_toadfish %>%
  filter(med_1000 >= 100)
+#write.csv(CB01_toadfish, here("data", "CB01_toadfish_threshold.csv"))
+
+ggplot(CB01_toadfish, aes(x= UTC, y= med_1000))+
+  geom_point()
 
 ```
 #PSD day/night in fall- come back to this later if needed
