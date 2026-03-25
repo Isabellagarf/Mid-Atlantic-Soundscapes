@@ -5930,6 +5930,19 @@ ggplot(ALLtoadfish_medDiels, aes(x= UTC, group= year(UTC), y= med_1000, group= o
 
 #NOW CAN JUST LOAD IN CSV FILES IF NEEDED- BUT THESE ARE USED TO LOAD IN MINUTE-LEVEL DATA THAT MEETS THRESHOLD FOR EACH CHORUS AT EACH SITE
 
+DB01_unknownPulse_threshold <- read.csv(here("data/DB01_unknownPulse_threshold.csv"))
+ES01_unknownPulse_threshold <- read.csv(here("data/ES01_unknownPulse_threshold.csv"))
+CB01_unknownPulse_threshold <- read.csv(here("data/CB01_unknownPulse_threshold.csv"))
+
+DB01_cuskEel_threshold <- read.csv(here("data/DB01_cuskEel_threshold.csv"))
+ES01_cuskEel_threshold <- read.csv(here("data/ES01_cuskEel_threshold.csv"))
+CB01_cuskEel_threshold <- read.csv(here("data/CB01_cuskEel_threshold.csv"))
+
+DB01_toadfish_threshold <- read.csv(here("data/DB01_toadfish_threshold.csv"))
+ES01_toadfish_threshold <- read.csv(here("data/ES01_toadfish_threshold.csv"))
+CB01_toadfish_threshold <- read.csv(here("data/CB01_toadfish_threshold.csv"))
+
+
 #######UNKNOWN PULSES- threshold med_500 >= 100 dB on days with chorus present
   #DB01
 DB01_unknownPulse <- DB01pulse_medDiels %>%
@@ -5990,8 +6003,43 @@ CB01_toadfish <- CB01_toadfish %>%
  filter(med_1000 >= 100)
 #write.csv(CB01_toadfish, here("data", "CB01_toadfish_threshold.csv"))
 
-ggplot(CB01_toadfish, aes(x= UTC, y= med_1000))+
-  geom_point()
+
+```
+#minute-level threshold data
+```{r}
+NEFSC_DE_Folders <- (c('Z:/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202207_DB01/NC', 'Z:/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202301_DB01/NC', 'Z:/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202306_DB01/NC', 'Z:/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202311_DB01/NC', 'Z:/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202405_DB01/NC'))
+
+DB01_unknownPulse_threshold$UTC <- as.character(DB01_unknownPulse_threshold$UTC)
+DB01_unknownPulse_threshold <- DB01_unknownPulse_threshold[-c(1, 3:5)]
+DB01_unknownPulse_threshold <- DB01_unknownPulse_threshold %>%
+  mutate(deployment= case_when(
+    UTC < "2023-05-24" ~ "NEFSC_DE_202207_DB01_",
+    UTC < "2023-06-17" & UTC > "2022-10-04" ~ "NEFSC_DE_202301_DB01_",
+    UTC < "2023-11-16" & UTC > "2023-06-16" ~ "NEFSC_DE_202306_DB01_",
+    UTC < "2023-11-15" & UTC > "2024-05-01" ~ "NEFSC_DE_202311_DB01_",
+    UTC > "2024-05-16" ~ "NEFSC_DE_202405_DB01_"
+  ))
+DB01_unknownPulse_threshold <- DB01_unknownPulse_threshold %>%
+  mutate_at("UTC", str_replace, "-", "") #lazy workaround: run twice to get both - sep removed
+DB01_unknownPulse_threshold$meetsThreshold <- paste(DB01_unknownPulse_threshold$deployment, DB01_unknownPulse_threshold$UTC, sep = "")
+DB01_unknownPulse_threshold <- DB01_unknownPulse_threshold[-c(1, 2)]
+colnames(DB01_unknownPulse_threshold)[1] <- "meetsThreshold"
+DB01_unknownPulse_threshold$nc <- ".nc"
+DB01_unknownPulse_threshold$x <- paste(DB01_unknownPulse_threshold$x, DB01_unknownPulse_threshold$nc, sep = "")
+DB01_unknownPulse_threshold <- DB01_unknownPulse_threshold[-c(2)]
+
+
+DB01_unknownPulse_meetsThreshold <- split(DB01_unknownPulse_threshold, seq(nrow(DB01_unknownPulse_threshold)))
+DB01_allFiles <- list.files(NEFSC_DE_Folders, pattern= "nc$", full.names = TRUE)
+
+DB01_unknownPulse_Files <- inner_join(DB01_unknownPulse_threshold, DB01_allFiles, copy= TRUE, by= ) #NEED TO GET THE DATA.FRAME TO MATCH FULL NAME OF PATH SOMEHOW
+
+loadSoundscapeData(DB01_unknownPulse_meetsThreshold,
+                   timeBin='1minute',
+                   )
+
+view(DB01_allFiles)
+view(NEFSC_DE_Folders)
 
 ```
 #PSD day/night in fall- come back to this later if needed
