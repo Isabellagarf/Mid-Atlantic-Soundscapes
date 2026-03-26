@@ -6019,27 +6019,27 @@ DB01_unknownPulse_threshold <- DB01_unknownPulse_threshold %>%
     UTC < "2023-11-15" & UTC > "2024-05-01" ~ "NEFSC_DE_202311_DB01_",
     UTC > "2024-05-16" ~ "NEFSC_DE_202405_DB01_"
   ))
+
 DB01_unknownPulse_threshold <- DB01_unknownPulse_threshold %>%
   mutate_at("UTC", str_replace, "-", "") #lazy workaround: run twice to get both - sep removed
+
 DB01_unknownPulse_threshold$meetsThreshold <- paste(DB01_unknownPulse_threshold$deployment, DB01_unknownPulse_threshold$UTC, sep = "")
+
 DB01_unknownPulse_threshold <- DB01_unknownPulse_threshold[-c(1, 2)]
 colnames(DB01_unknownPulse_threshold)[1] <- "meetsThreshold"
 DB01_unknownPulse_threshold$nc <- ".nc"
-DB01_unknownPulse_threshold$x <- paste(DB01_unknownPulse_threshold$x, DB01_unknownPulse_threshold$nc, sep = "")
+DB01_unknownPulse_threshold$meetsThreshold <- paste(DB01_unknownPulse_threshold$meetsThreshold, DB01_unknownPulse_threshold$nc, sep = "")
 DB01_unknownPulse_threshold <- DB01_unknownPulse_threshold[-c(2)]
 
 
-DB01_unknownPulse_meetsThreshold <- split(DB01_unknownPulse_threshold, seq(nrow(DB01_unknownPulse_threshold)))
-DB01_allFiles <- list.files(NEFSC_DE_Folders, pattern= "nc$", full.names = TRUE)
+#TAIKI'S CODE SUGGESTIONS
 
-DB01_unknownPulse_Files <- inner_join(DB01_unknownPulse_threshold, DB01_allFiles, copy= TRUE, by= ) #NEED TO GET THE DATA.FRAME TO MATCH FULL NAME OF PATH SOMEHOW
+all_DB01Files <- list.files(NEFSC_DE_Folders, pattern="nc$", recursive=TRUE, full.names=TRUE)
 
-loadSoundscapeData(DB01_unknownPulse_meetsThreshold,
-                   timeBin='1minute',
-                   )
+threshold_nc <- all_DB01Files[basename(all_DB01Files) %in% DB01_unknownPulse_threshold$meetsThreshold]
 
-view(DB01_allFiles)
-view(NEFSC_DE_Folders)
+DB01_unknownPulseData<- loadSoundscapeData(threshold_nc, timeBin= "1minute")
+
 
 ```
 #PSD day/night in fall- come back to this later if needed
