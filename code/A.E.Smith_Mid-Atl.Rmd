@@ -4645,7 +4645,7 @@ ggplot(inshorecusk_MedQuants, aes(x= hour, y= med_2000, group= site, color= site
 ```{r}
 #DB01
 DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
-DB01500_fullEffort_date_time <- seq(ymd_hms("2022-07-07 00:00:00"), ymd_hms("2024-11-04 23:00:00"), by = "1 hour")
+DB01500_fullEffort_date_time <- seq(ymd_hms("2022-07-07 00:00:00"), ymd_hms("2024-11-03 23:00:00"), by = "1 hour")
 
 DB01500_fullEffort_nautdusk <- crepuscule(crds = DB01_location, dateTime = DB01500_fullEffort_date_time, solarDep = 12, direction = "dusk", POSIXct.out = TRUE)
 
@@ -4734,7 +4734,13 @@ DB01pulse_medDiels <- DB01_chorusPresence %>%
 DB01pulse_medDiels <- DB01pulse_medDiels[-c(3:7)]
 colnames(DB01pulse_medDiels)[3] <- "site"
 
+DB01pulse_medDiels <- DB01pulse_medDiels %>%
+dplyr::mutate(X500_chorus = factor(X500_chorus,
+                                    levels = c(0, 1),
+                                    labels = c("Absent", "Present")))
 
+
+DB01pulse_medDiels$dt_ma <- data.table::frollmean(DB01pulse_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
 
 #ES01
 ES01_location <- matrix(c(-75.29, 37.69), nrow = 1)
@@ -4942,16 +4948,17 @@ all500_inshoreDiels$site = factor(all500_inshoreDiels$site,
                                         labels= c('DB01', 'ES01', 'CB01'))
 
 
-ggplot(ALLpulse_medDiels, aes(x= UTC, group= year(UTC), y= med_500, group= X500_chorus, color= X500_chorus))+
+ggplot(DB01pulse_medDiels, aes(x= UTC, group= year(UTC), y= med_500, group= X500_chorus, color= X500_chorus))+
   geom_line(linewidth= 0.75, na.rm= TRUE)+
   theme_bw()+
+  geom_line(data= DB01pulse_medDiels, aes(y= dt_ma), color= "black")+
 #  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   xlab("Date")+
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   facet_grid(factor(site, levels = c('DB01', 'ES01', 'CB01'))~.,)+
-  scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#00797F95"))+
-  scale_fill_manual(values= c("grey", "#00797F95"))+
-  guides(color= guide_legend(title= "Unknown pulses: chorus presence"))+
+  scale_color_manual(labels= c("Absent","Present"), values= c("grey75", "#00797F75"))+
+  scale_fill_manual(values= c("grey75", "#00797F75"))+
+#  guides(color= guide_legend(title= "Unknown pulses: chorus presence"))+
 #  ggtitle("+/- 1 hour nautical dusk")+
   theme(axis.title= element_text(size= 18),
         axis.text.y= element_text(size= 16),
@@ -5945,62 +5952,71 @@ CB01_toadfish_threshold <- read.csv(here("data/CB01_toadfish_threshold.csv"))
 
 #######UNKNOWN PULSES- threshold med_500 >= 100 dB on days with chorus present
   #DB01
+DB01pulse_medDiels$dt_ma <- data.table::frollmean(DB01pulse_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
 DB01_unknownPulse <- DB01pulse_medDiels %>%
- filter(X500_chorus== "1")
+ filter(X500_chorus== "Present")
 DB01_unknownPulse <- DB01_unknownPulse %>%
- filter(med_500 >= 100)
+ filter(dt_ma >= 105)
 #write.csv(DB01_unknownPulse, here("data", "DB01_unknownPulse_threshold.csv"))
   #ES01
+ES01pulse_medDiels$dt_ma <- data.table::frollmean(ES01pulse_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
 ES01_unknownPulse <- ES01pulse_medDiels %>%
  filter(X500_chorus== "1")
 ES01_unknownPulse <- ES01_unknownPulse %>%
- filter(med_500 >= 100)
+ filter(dt_ma >= 105)
 #write.csv(ES01_unknownPulse, here("data", "ES01_unknownPulse_threshold.csv"))
   #CB01
+CB01pulse_medDiels$dt_ma <- data.table::frollmean(CB01pulse_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
 CB01_unknownPulse <- CB01pulse_medDiels %>%
  filter(X500_chorus== "1")
 CB01_unknownPulse <- CB01_unknownPulse %>%
- filter(med_500 >= 100)
+ filter(dt_ma >= 105)
 #write.csv(CB01_unknownPulse, here("data", "CB01_unknownPulse_threshold.csv"))
 
 #######CUSK EEL- threshold med_2000 >= 92 dB on days with chorus present
   #DB01
+DB01cusk_medDiels$dt_ma <- data.table::frollmean(DB01cusk_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
 DB01_cuskEel <- DB01cusk_medDiels %>%
  filter(cusk_chorus== "1")
 DB01_cuskEel <- DB01_cuskEel %>%
- filter(med_2000 >= 92)
+ filter(dt_ma >= 94)
 #write.csv(DB01_cuskEel, here("data", "DB01_cuskEel_threshold.csv"))
   #ES01
+ES01cusk_medDiels$dt_ma <- data.table::frollmean(ES01cusk_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
 ES01_cuskEel <- ES01cusk_medDiels %>%
  filter(cusk_chorus== "1")
 ES01_cuskEel <- ES01_cuskEel %>%
- filter(med_2000 >= 92)
+ filter(dt_ma >= 94)
 #write.csv(ES01_cuskEel, here("data", "ES01_cuskEel_threshold.csv"))
   #CB01
+CB01cusk_medDiels$dt_ma <- data.table::frollmean(CB01cusk_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
 CB01_cuskEel <- CB01cusk_medDiels %>%
  filter(cusk_chorus== "1")
 CB01_cuskEel <- CB01_cuskEel %>%
- filter(med_2000 >= 92)
+ filter(dt_ma >= 94)
 #write.csv(CB01_cuskEel, here("data", "CB01_cuskEel_threshold.csv"))
 
 #######TOADFISH- threshold med_1000 >= 100 dB on days with chorus present
   #DB01
+DB01toadfish_medDiels$dt_ma <- data.table::frollmean(DB01toadfish_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
 DB01_toadfish <- DB01toadfish_medDiels %>%
  filter(oyster_chorus== "1")
 DB01_toadfish <- DB01_toadfish %>%
- filter(med_1000 >= 100) #no values below 100 but filter anyway for consistency
+ filter(dt_ma >= 100) #no values below 100 but filter anyway for consistency
 #write.csv(DB01_toadfish, here("data", "DB01_toadfish_threshold.csv"))
   #ES01
+ES01toadfish_medDiels$dt_ma <- data.table::frollmean(ES01toadfish_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
 ES01_toadfish <- ES01toadfish_medDiels %>%
  filter(oyster_chorus== "1")
 ES01_toadfish <- ES01_toadfish %>%
- filter(med_1000 >= 100)
+ filter(dt_ma >= 100)
 #write.csv(ES01_toadfish, here("data", "ES01_toadfish_threshold.csv"))
   #CB01
+CB01toadfish_medDiels$dt_ma <- data.table::frollmean(CB01toadfish_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
 CB01_toadfish <- CB01toadfish_medDiels %>%
  filter(oyster_chorus== "1")
 CB01_toadfish <- CB01_toadfish %>%
- filter(med_1000 >= 100)
+ filter(dt_ma >= 100)
 #write.csv(CB01_toadfish, here("data", "CB01_toadfish_threshold.csv"))
 
 
