@@ -89,7 +89,7 @@ CB03_HMD$UTC <- as.POSIXct(CB03_HMD$UTC, format= "%m/%d/%Y %H", tz = "GMT")
 CB03_HMD <- CB03_HMD[-c(1)]
 CB03_HMD$PLATFORM = "CB03"
 ```
-
+#USING- plotPSD
 ```{r}
  all_sites <- DB01_HMD%>%
   full_join(DB02_HMD)%>%
@@ -449,6 +449,16 @@ ggplot(melted_all_OLSiteSeason, aes(x= OL_band, y = med_seasonal_SPL, color= sea
 
 
 #do this with HMD files instead
+all_sites <- DB01_HMD%>%
+  full_join(DB02_HMD)%>%
+  full_join(DB03_HMD)%>%
+  full_join(ES01_HMD)%>%
+  full_join(ES02_HMD)%>%
+  full_join(ES03_HMD)%>%
+  full_join(CB01_HMD)%>%
+  full_join(CB02_HMD)%>%
+  full_join(CB03_HMD)
+
 all_sites$month <- month(all_sites$UTC) 
 
 all_sites$season = case_when(all_sites$month == 1 ~ "winter",
@@ -467,7 +477,11 @@ all_sites$season = factor(all_sites$season,
                                         levels= c("winter", "spring", "summer", "fall"),
                                         labels= c("Winter", "Spring", "Summer", "Fall"))
 
-plotPSD(x=all_sites, style='quantile', q=0.01, by='season', facet='PLATFORM')+
+all_sites$PLATFORM = factor(all_sites$PLATFORM,
+                                        levels= c("DB01", "DB02", "DB03", "ES01", "ES02", "ES03", "CB01", "CB02", "CB03"),
+                                        labels= c("DB01", "DB02", "DB03", "ES01", "ES02", "ES03", "CB01", "CB02", "CB03"))
+
+plotPSD(x=all_sites, style='quantile', q=0.01, by='season', facet= 'PLATFORM')+
   labs(y= (expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz"))))+
   theme(axis.text= element_text(size= 10),
         axis.title= element_text(size= 14),
@@ -477,8 +491,8 @@ plotPSD(x=all_sites, style='quantile', q=0.01, by='season', facet='PLATFORM')+
   scale_color_manual(labels= c("Winter", "Spring", "Summer", "Fall"), values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
   scale_fill_manual(values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
   theme_bw()+
-  guides(color= guide_legend(title= "Season"))#+
-  facet_wrap(factor('PLATFORM', levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))~., ncol= 3)
+  guides(color= guide_legend(title= "Season"))+
+  facet_wrap(factor("PLATFORM", levels = c("DB01", "DB02", "DB03", "ES01", "ES02", "ES03", "CB01", "CB02", "CB03"))~., ncol= 3)
   
 
 
@@ -3243,7 +3257,7 @@ plotAcousticScene(x=allSite_chorusPresenceFormatted, by='site', combineYears=FAL
         legend.text = element_text(size= 16),
         legend.title= element_text(size=18),
        strip.text= element_text(size= 16))+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b-%Y", minor_breaks = NULL)+
+  scale_x_datetime(date_breaks = "2 months", date_labels= "%b-%Y", minor_breaks = NULL)+
   geom_rect(data=data.frame(site= factor("ES01")), aes(xmin = as_datetime("2022-06-10"), xmax = as_datetime("2023-10-12"), 
                                            ymin = -Inf, ymax = Inf, fill = ""),
                                            alpha = 0.3, inherit.aes = FALSE, show.legend= "none")
