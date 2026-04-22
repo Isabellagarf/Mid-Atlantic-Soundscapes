@@ -137,6 +137,43 @@ plotPSD(x=all_sites, style='quantile', q= 0.01, by='season', facet='PLATFORM')+
   theme_bw()+
   guides(color= guide_legend(title= "Season"))
 
+
+#testing Jess' code
+PSD_site_season <- all_sites |>
+  group_by(PLATFORM, season) |>
+  group_modify(~plotPSD((.),
+                        style= "quantile",
+                        q= c(0.1, 0.5, 0.9),
+                        returnData= TRUE))
+
+
+write.csv(PSD_site_season, here("data", "PSD_site_season.csv"))
+
+ggplot(data= PSD_site_season,
+       aes(x= frequency, y= qmed, color= season, group= season))+
+  geom_ribbon(aes(ymin= qlow,
+                  ymax= qhigh,
+                  fill= season, color= season), linetype= 1, linewidth= 0.5, alpha= 0.1)+
+  scale_fill_manual(values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
+  geom_line(linewidth= 1)+
+labs(x= "Frequency (Hz)",
+     y= expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz")),
+         color= "Season",
+         fill= "Season")+
+  scale_x_log10()+
+  facet_wrap(factor(PLATFORM, levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))~., ncol= 3)+
+  theme_bw()+
+  theme(axis.text= element_text(size= 10),
+        axis.title= element_text(size= 14),
+        legend.text = element_text(size= 13),
+        legend.title= element_text(size= 13.5),
+        strip.text= element_text(size= 12))+
+  scale_color_manual(labels= c("Winter", "Spring", "Summer", "Fall" ), values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))
+
+  
+
+
+
 #by month
 #discrete_rainbow <- color("discrete rainbow", )
 #plotPSD(x=all_sites, style='quantile', by='month', facet='PLATFORM')+
