@@ -147,13 +147,13 @@ PSD_site_season <- all_sites |>
                         returnData= TRUE))
 
 
-write.csv(PSD_site_season, here("data", "PSD_site_season.csv"))
+#write.csv(PSD_site_season, here("data", "PSD_site_season.csv"))
 
 shaded_PSD = ggplot(data= PSD_site_season,
        aes(x= frequency, y= qmed, color= season, group= season))+
   geom_ribbon(aes(ymin= qlow,
                   ymax= qhigh,
-                  fill= season, color= season), linetype= 1, linewidth= 0.5, alpha= 0.1)+
+                  fill= season, color= season), linetype= 6, linewidth= 0.1, alpha= 0.1)+
   scale_fill_manual(values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
   geom_line(linewidth= 1)+
 labs(x= "Frequency (Hz)",
@@ -171,6 +171,8 @@ labs(x= "Frequency (Hz)",
   scale_color_manual(labels= c("Winter", "Spring", "Summer", "Fall" ), values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))
 
   
+plot(shaded_PSD)
+
 ggsave(here("figs", "shaded_PSD.png"), shaded_PSD, width= 24, height= 14, units= "in")
 
 
