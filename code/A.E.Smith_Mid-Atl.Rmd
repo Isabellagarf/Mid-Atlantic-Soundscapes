@@ -913,40 +913,60 @@ CB03_OL$Lat = "Chesapeake"
 ```{r}
 #DB01
 DB01_chorusPresence <- read.csv(here("data/DB01_chorusPresence.csv"))
-#DB01_chorusPresence$X500_chorus = case_when(DB01_chorusPresence$X500_chorus == 1 ~ "yes",
- #                                           DB01_chorusPresence$X500_chorus == 0 ~ "no")
-#DB01_chorusPresence$X1000_chorus = case_when(DB01_chorusPresence$X1000_chorus == 1 ~ "yes",
-#                                            DB01_chorusPresence$X1000_chorus == 0 ~ "no")
-#DB01_chorusPresence$cusk_chorus = case_when(DB01_chorusPresence$cusk_chorus == 1 ~ "yes",
-#                                            DB01_chorusPresence$cusk_chorus == 0 ~ "no")
-#DB01_chorusPresence$oyster_chorus = case_when(DB01_chorusPresence$oyster_chorus == 1 ~ "yes",
-#                                            DB01_chorusPresence$oyster_chorus == 0 ~ "no")
-
 DB01_chorusPresence$date <- as.Date(DB01_chorusPresence$date, format= "%m/%d/%Y")
 colnames(DB01_chorusPresence)[1] <- "UTC"
 DB01_chorusPresence$site = "DB01"
+colnames(CB02_chorusPresence)[5] <- "toadfish_chorus"
+
+DB02_chorusPresence <- read.csv(here("data/DB02_chorusPresence.csv"))
+DB02_chorusPresence$date <- as.Date(DB02_chorusPresence$date, format= "%m/%d/%Y")
+colnames(DB02_chorusPresence)[1] <- "UTC"
+DB02_chorusPresence$site = "DB02"
+
+DB03_chorusPresence <- read.csv(here("data/DB03_chorusPresence.csv"))
+DB03_chorusPresence <- DB03_chorusPresence[-c(7)]
+DB03_chorusPresence$date <- as.Date(DB03_chorusPresence$date, format= "%m/%d/%Y")
+colnames(DB03_chorusPresence)[1] <- "UTC"
+DB03_chorusPresence$site = "DB03"
+colnames(DB03_chorusPresence)[6] <- "offshore_chorus"
+
 #not updated below
 ES01_chorusPresence <- read.csv(here("data/ES01_chorusPresence.csv"))
-#ES01_chorusPresence$X500_chorus = case_when(ES01_chorusPresence$X500_chorus == 1 ~ "yes",
-#                                            ES01_chorusPresence$X500_chorus == 0 ~ "no")
-#ES01_chorusPresence$X1000_chorus = case_when(ES01_chorusPresence$X1000_chorus == 1 ~ "yes",
-#                                            ES01_chorusPresence$X1000_chorus == 0 ~ "no")
-#ES01_chorusPresence$X2000_chorus = case_when(ES01_chorusPresence$X2000_chorus == 1 ~ "yes",
-#                                            ES01_chorusPresence$X2000_chorus == 0 ~ "no")
 ES01_chorusPresence$date <- as.Date(ES01_chorusPresence$date, format= "%m/%d/%Y")
 colnames(ES01_chorusPresence)[1] <- "UTC"
 ES01_chorusPresence$site = "ES01"
 
+ES02_chorusPresence <- read.csv(here("data/ES02_chorusPresence.csv"))
+ES02_chorusPresence$date <- as.Date(ES02_chorusPresence$date, format= "%m/%d/%Y")
+colnames(ES02_chorusPresence)[1] <- "UTC"
+ES02_chorusPresence$site = "ES02"
+
+ES03_chorusPresence <- read.csv(here("data/ES03_chorusPresence.csv"))
+ES03_chorusPresence$date <- as.Date(ES03_chorusPresence$date, format= "%m/%d/%Y")
+colnames(ES03_chorusPresence)[1] <- "UTC"
+ES03_chorusPresence$site = "ES03"
+colnames(ES03_chorusPresence)[6] <- "offshore_chorus"
+
 CB01_chorusPresence <- read.csv(here("data/CB01_chorusPresence.csv"))
-#CB01_chorusPresence$X500_chorus = case_when(CB01_chorusPresence$X500_chorus == 1 ~ "yes",
-#                                            CB01_chorusPresence$X500_chorus == 0 ~ "no")
-#CB01_chorusPresence$X1000_chorus = case_when(CB01_chorusPresence$X1000_chorus == 1 ~ "yes",
-#                                            CB01_chorusPresence$X1000_chorus == 0 ~ "no")
-#CB01_chorusPresence$X2000_chorus = case_when(CB01_chorusPresence$X2000_chorus == 1 ~ "yes",
-#                                            CB01_chorusPresence$X2000_chorus == 0 ~ "no")
 CB01_chorusPresence$date <- as.Date(CB01_chorusPresence$date, format= "%m/%d/%Y")
 colnames(CB01_chorusPresence)[1] <- "UTC"
 CB01_chorusPresence$site = "CB01"
+colnames(CB01_chorusPresence)[5] <- "toadfish_chorus"
+
+CB02_chorusPresence <- read.csv(here("data/CB02_chorusPresence.csv"))
+CB02_chorusPresence$date <- as.Date(CB02_chorusPresence$date, format= "%m/%d/%Y")
+colnames(CB02_chorusPresence)[1] <- "UTC"
+CB02_chorusPresence$site = "CB02"
+colnames(CB02_chorusPresence)[5] <- "toadfish_chorus"
+
+##COME BACK ONCE CB03 ERROR IS FIXED ON PYPAM##
+
+#CB03_chorusPresence <- read.csv(here("data/CB03_chorusPresence.csv"))
+#CB03_chorusPresence$date <- as.Date(CB03_chorusPresence$date, format= "%m/%d/%Y")
+#colnames(CB03_chorusPresence)[1] <- "UTC"
+#CB03_chorusPresence$site = "CB03"
+#colnames(CB03_chorusPresence)[5] <- "toadfish_chorus"
+
 ```
 #plotting sunrise/sunset with chorus presence
 ```{r}
