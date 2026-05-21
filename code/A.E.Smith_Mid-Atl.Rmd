@@ -990,10 +990,25 @@ CB01_OL$PLATFORM = "CB01"
 CB01_OL$shore = "Inshore"
 CB01_OL$Lat = "Chesapeake"
 
+
 CB02_OL <- read.csv(here("data/CB02_OL.csv"))
-CB02_OL <- CB02_OL[-c(1)]
+str_split(CB02_OL$UTC[2]," ", simplify = T)[,1]
+str_split(CB02_OL$UTC[2]," ", simplify = T)[,2]
+CB02_OL <- CB02_OL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2]) %>%
+  mutate(UTC_fixed = NA)
+CB02_OL %>% filter(UTC_hour == "")
+CB02_OL %>% filter(UTC_hour == "") %>% nrow # 843 rows having missing hour
+# Find empty rows in new columns and fill in 
+for (c in 1:nrow(CB02_OL)) { # for each row
+  if (CB02_OL$UTC_hour[c] == "") { # if the hour column was left empty
+    CB02_OL$UTC_hour[c] <- "00:00:00" # manually add midnight
+  }
+}
 CB02_OL$UTC_fixed <- paste(CB02_OL$UTC_date, CB02_OL$UTC_hour, sep = " ")
 CB02_OL$UTC_fixed <- as.POSIXct(CB02_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+CB02_OL <- CB02_OL[-c(1)]
 CB02_OL$PLATFORM = "CB02"
 CB02_OL$shore = "Mid-shore"
 CB02_OL$Lat = "Chesapeake"
@@ -5787,6 +5802,43 @@ ggplot(ES02cuskMedQuants, aes(x= hour, y= med_2000, group= 1))+
   geom_vline(xintercept = ES02cusk_sunrise_dechour$decimal_hour, color = "#F2C447", linetype = "solid", size =  2, alpha = .5) +
   geom_vline(xintercept = ES02cusk_sunset_dechour$decimal_hour, color = "#F2C447", linetype = "solid", size = 2, alpha = .5)
 
+#CB02 cusk: 09/11-09/17/2022
+CB02subset_0911_0917 <-  seq(ymd_hms("2022-09-11 04:00:00"), ymd_hms("2022-09-18 03:00:00"), by = "1 hour")
+CB02cusk <- data.frame(UTC= CB02subset_0911_0917)
+CB02cusk$UTC <- as.POSIXct(CB02cusk$UTC)
+colnames(CB02cusk)[1] <- "UTC_fixed"
+CB02cusk<- CB02cusk %>%
+  left_join(CB02_OL, by= "UTC_fixed")
+
+CB02cuskMed <- CB02cusk%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+quants= c(0.05, 0.95)
+CB02cuskQuants <- CB02cusk %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_2000 = quantile(OL_2000, probs= quants[1], na.rm= TRUE),
+            quant95_2000 = quantile(OL_2000, probs= quants[2], na.rm= TRUE))
+CB02cuskMedQuants <- CB02cuskMed %>%
+  full_join(CB02cuskQuants)
+CB02cuskMedQuants$site <- "CB02"
+CB02cuskMedQuants$UTC_hour <- hms(CB02cuskMedQuants$UTC_hour)
+CB02cuskMedQuants$hour <- hour(CB02cuskMedQuants$UTC_hour)
+
+ggplot(CB02cuskMedQuants, aes(x= hour, y= med_2000, group= 1))+
+  geom_ribbon(aes(ymin= quant05_2000,
+                  ymax= quant95_2000), 
+              linetype= 1, linewidth= 0.2, alpha= 0.1)+
+  geom_point(size= 1.5) + geom_line()+
+  theme_bw()+
+  xlab("Hour (UTC)")+
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("CB02 cusk eel- peak week median (9/11-9/17/2022)")+
+   scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 19))
 ```
 #500 chorus nautical dusk diel plot full effort
 ```{r}
