@@ -8918,7 +8918,7 @@ ES01_toadfish_threshold <- read.csv(here("data/ES01_toadfish_threshold.csv"))
 CB01_toadfish_threshold <- read.csv(here("data/CB01_toadfish_threshold.csv"))
 
 
-#######UNKNOWN PULSES- threshold med_500 >= 100 dB on days with chorus present#####
+#######Inshore: UNKNOWN PULSES- threshold med_500 >= 105 dB on days with chorus present#####
   #DB01
 DB01pulse_medDiels$dt_ma <- data.table::frollmean(DB01pulse_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
 DB01_unknownPulse <- DB01pulse_medDiels %>%
@@ -8941,7 +8941,7 @@ CB01_unknownPulse <- CB01_unknownPulse %>%
  filter(dt_ma >= 105)
 #write.csv(CB01_unknownPulse, here("data", "CB01_unknownPulse_threshold.csv"))
 
-#######CUSK EEL- threshold med_2000 >= 92 dB on days with chorus present####
+#######Inshore: CUSK EEL- threshold med_2000 >= 94 dB on days with chorus present####
   #DB01
 DB01cusk_medDiels$dt_ma <- data.table::frollmean(DB01cusk_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
 DB01_cuskEel <- DB01cusk_medDiels %>%
@@ -8964,7 +8964,7 @@ CB01_cuskEel <- CB01_cuskEel %>%
  filter(dt_ma >= 94)
 #write.csv(CB01_cuskEel, here("data", "CB01_cuskEel_threshold.csv"))
 
-#######TOADFISH- threshold med_1000 >= 100 dB on days with chorus present####
+#######Inshore: TOADFISH- threshold med_1000 >= 100 dB on days with chorus present####
   #DB01
 DB01toadfish_medDiels$dt_ma <- data.table::frollmean(DB01toadfish_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
 DB01_toadfish <- DB01toadfish_medDiels %>%
@@ -8987,6 +8987,84 @@ CB01_toadfish <- CB01_toadfish %>%
  filter(dt_ma >= 100)
 #write.csv(CB01_toadfish, here("data", "CB01_toadfish_threshold.csv"))
 
+#####Midshore: UNKNOWN PULSES- threshold med_500 >= 105 dB on days with chorus present####
+ #DB02
+DB02pulse_medDiels$dt_ma <- data.table::frollmean(DB02pulse_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
+DB02_unknownPulse <- DB02pulse_medDiels %>%
+ filter(X500_chorus== "Present")
+DB02_unknownPulse <- DB02_unknownPulse %>%
+ filter(dt_ma >= 105)
+#write.csv(DB02_unknownPulse, here("data", "DB02_unknownPulse_threshold.csv"))
+  #ES02
+ES02pulse_medDiels$dt_ma <- data.table::frollmean(ES02pulse_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
+ES02_unknownPulse <- ES02pulse_medDiels %>%
+ filter(X500_chorus== "Present")
+ES02_unknownPulse <- ES02_unknownPulse %>%
+ filter(dt_ma >= 105)
+#write.csv(ES02_unknownPulse, here("data", "ES02_unknownPulse_threshold.csv"))
+  #CB02
+CB02pulse_medDiels$dt_ma <- data.table::frollmean(CB02pulse_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
+CB02_unknownPulse <- CB02pulse_medDiels %>%
+ filter(X500_chorus== "Present")
+CB02_unknownPulse <- CB02_unknownPulse %>%
+ filter(dt_ma >= 105)
+#write.csv(CB02_unknownPulse, here("data", "CB02_unknownPulse_threshold.csv"))
+
+#####Midshore: UNKNOWN KNOCKS- threshold med_500 >= 95 dB on days with chorus present####
+  #DB02
+DB02_medDiels$dt_ma <- data.table::frollmean(DB02_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
+DB02_unknownKnocks <- DB02_medDiels %>%
+ filter(X1000_chorus== "1")
+DB02_unknownKnocks <- DB02_unknownKnocks %>%
+ filter(dt_ma >= 95)
+#write.csv(DB02_unknownKnocks, here("data", "DB02_unknownKnocks_threshold.csv"))
+  #ES02
+ES02_medDiels$dt_ma <- data.table::frollmean(ES02_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
+ES02_unknownKnocks <- ES02_medDiels %>%
+ filter(X1000_chorus== "1")
+ES02_unknownKnocks <- ES02_unknownKnocks %>%
+ filter(dt_ma >= 95)
+#write.csv(ES02_unknownKnocks, here("data", "ES02_unknownKnocks_threshold.csv"))
+  #CB02
+CB02_medDiels$dt_ma <- data.table::frollmean(CB02_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
+CB02_unknownKnocks <- CB02_medDiels %>%
+ filter(X1000_chorus== "1")
+CB02_unknownKnocks <- CB02_unknownKnocks %>%
+ filter(dt_ma >= 95)
+#write.csv(CB02_unknownKnocks, here("data", "CB02_unknownKnocks_threshold.csv"))
+
+
+#####Midshore: CUSK EEL- threshold med_2000 >= 94 dB on days with chorus present####
+ #ES02
+ES02cusk_medDiels$dt_ma <- data.table::frollmean(ES02cusk_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
+ES02_cuskEel <- ES02cusk_medDiels %>%
+ filter(cusk_chorus== "1")
+ES02_cuskEel <- ES02_cuskEel %>%
+ filter(dt_ma >= 94)
+write.csv(ES02_cuskEel, here("data", "ES02_cuskEel_threshold.csv"))
+  #CB02
+CB02cusk_medDiels$dt_ma <- data.table::frollmean(CB02cusk_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
+CB02_cuskEel <- CB02cusk_medDiels %>%
+ filter(cusk_chorus== "1")
+CB02_cuskEel <- CB02_cuskEel %>%
+ filter(dt_ma >= 94)
+write.csv(CB02_cuskEel, here("data", "CB02_cuskEel_threshold.csv"))
+
+#####Midshore: TOADFISH- threshold med_1000>= 100 dB####
+  #ES02
+ES02toadfish_medDiels$dt_ma <- data.table::frollmean(ES02toadfish_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
+ES02_toadfish <- ES02toadfish_medDiels %>%
+ filter(toadfish_chorus== "1")
+ES02_toadfish <- ES02_toadfish %>%
+ filter(dt_ma >= 100)
+#write.csv(ES02_toadfish, here("data", "ES02_toadfish_threshold.csv"))
+  #CB02
+CB02toadfish_medDiels$dt_ma <- data.table::frollmean(CB02toadfish_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
+CB02_toadfish <- CB02toadfish_medDiels %>%
+ filter(toadfish_chorus== "1")
+CB02_toadfish <- CB02_toadfish %>%
+ filter(dt_ma >= 100)
+#write.csv(CB02_toadfish, here("data", "CB02_toadfish_threshold.csv"))
 
 ```
 #minute-level threshold data
@@ -9022,7 +9100,7 @@ all_DB01Files <- list.files(NEFSC_DE_Folders, pattern="nc$", recursive=TRUE, ful
 
 threshold_nc <- all_DB01Files[basename(all_DB01Files) %in% DB01_unknownPulse_threshold$meetsThreshold]
 
-DB01_unknownPulseData<- loadSoundscapeData(threshold_nc, timeBin= "1minute")
+DB01_unknownPulseData<- loadSoundscapeData(threshold_nc, timeBin= "15minute")
 
 
 ```
