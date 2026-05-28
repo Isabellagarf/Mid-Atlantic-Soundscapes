@@ -1069,8 +1069,8 @@ ES03_chorusPresence$date <- as.Date(ES03_chorusPresence$date, format= "%m/%d/%Y"
 colnames(ES03_chorusPresence)[1] <- "UTC"
 ES03_chorusPresence$site = "ES03"
 colnames(ES03_chorusPresence)[6] <- "offshore_chorus"
-ES03_chorusPresence$shore = "offshore"
-ES03_chorusPresence$Lat = "Eastern Seaboard"
+#ES03_chorusPresence$shore = "offshore"
+#ES03_chorusPresence$Lat = "Eastern Seaboard"
 
 CB01_chorusPresence <- read.csv(here("data/CB01_chorusPresence.csv"))
 CB01_chorusPresence$date <- as.Date(CB01_chorusPresence$date, format= "%m/%d/%Y")
@@ -3429,7 +3429,7 @@ colnames(allSite_chorusPresence)[2] <- "Unknown pulses"
 colnames(allSite_chorusPresence)[3] <- "Unknown knocks"
 colnames(allSite_chorusPresence)[4] <- "Cusk eel chorus"
 colnames(allSite_chorusPresence)[5] <- "Toadfish chorus"
-colnames(allSite_chorusPresence)[9] <- "Unknown offshore"
+colnames(allSite_chorusPresence)[7] <- "Unknown offshore"
 
 allSite_chorusPresenceFormatted <- loadDetectionData(x=allSite_chorusPresence, source='csv', detectionType='presence', wide=TRUE, 
 tz='UTC', presenceDuration='1day', extraCols='site', 
@@ -3444,6 +3444,7 @@ allSite_chorusPresenceFormatted$site = factor(allSite_chorusPresenceFormatted$si
   
 plotAcousticScene(x=allSite_chorusPresenceFormatted, by='site', combineYears=FALSE, freqMap=data.frame(species=c('Unknown knocks', 'Unknown pulses', 'Unknown offshore', 'Cusk eel chorus', 'Toadfish chorus'), freqMin=c(140, 60, 400, 1200, 150), freqMax=c(6500, 930, 2200, 2600, 3650)), alpha= .85)+
   theme_bw()+
+  facet_wrap(factor(site, levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))~., ncol= 3)+
   ylim(15, 7500)+
   scale_fill_manual(values= c("#4B8320", "#00008B", "purple", "#DB2207","#FFAB38","grey"))+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
@@ -3452,7 +3453,7 @@ plotAcousticScene(x=allSite_chorusPresenceFormatted, by='site', combineYears=FAL
         legend.text = element_text(size= 16),
         legend.title= element_text(size=18),
        strip.text= element_text(size= 16))+
-  scale_x_datetime(date_breaks = "2 months", date_labels= "%b-%Y", minor_breaks = NULL)+
+  scale_x_datetime(date_breaks = "3 months", date_labels= "%b-%Y", minor_breaks = NULL)+
   geom_rect(data=data.frame(site= factor("ES01")), aes(xmin = as_datetime("2022-06-10"), xmax = as_datetime("2023-10-12"), 
                                            ymin = -Inf, ymax = Inf, fill = ""),
                                            alpha = 0.3, inherit.aes = FALSE, show.legend= "none")+
@@ -3778,6 +3779,7 @@ ES01500_astrdusk_dechour <- ES01500_astrdusk %>%
   mutate(decimal_hour = hour + (min/60) + (sec/3600))
 
 ##########ES01 1000#######
+ES01_location <- matrix(c(-75.29, 37.69), nrow = 1)
 ES011000_date_Time <- seq(ymd_hms("2024-05-26 00:00:00"), ymd_hms("2024-06-01 23:00:00"), by = "1 hour")
 
 ES011000_sunrise <- sunriset(crds = ES01_location, dateTime = ES011000_date_Time, direction = "sunrise", POSIXct.out = TRUE)
@@ -3966,6 +3968,7 @@ CB01500_astrdusk_dechour <- CB01500_astrdusk %>%
 
 
 ##########CB01 1000#########
+CB01_location <- matrix(c(-75.67, 36.98), nrow = 1)
 CB011000_date_Time <- seq(ymd_hms("2024-07-04 00:00:00"), ymd_hms("2024-07-10 23:00:00"), by = "1 hour")
 
 CB011000_sunrise <- sunriset(crds = CB01_location, dateTime = CB011000_date_Time, direction = "sunrise", POSIXct.out = TRUE)
@@ -5464,26 +5467,26 @@ DB021000 <- DB021000 %>%
 DB021000Med <- DB021000%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
-    med_500= median(TOL_500, na.rm= TRUE))
+    med_400= median(TOL_400, na.rm= TRUE))
 quants= c(0.05, 0.95)
 DB021000Quants <- DB021000 %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_500 = quantile(TOL_500, probs= quants[1], na.rm= TRUE),
-            quant95_500 = quantile(TOL_500, probs= quants[2], na.rm= TRUE))
+  summarize(quant05_400 = quantile(TOL_400, probs= quants[1], na.rm= TRUE),
+            quant95_400 = quantile(TOL_400, probs= quants[2], na.rm= TRUE))
 DB021000MedQuants <- DB021000Med %>%
   full_join(DB021000Quants)
 DB021000MedQuants$site = "DB02"
 DB021000MedQuants$UTC_hour <- hms(DB021000MedQuants$UTC_hour)
 DB021000MedQuants$hour <- hour(DB021000MedQuants$UTC_hour)
 
-ggplot(DB021000MedQuants, aes(x= hour, y= med_500, group= 1))+
-  geom_ribbon(aes(ymin= quant05_500,
-                  ymax= quant95_500), 
+ggplot(DB021000MedQuants, aes(x= hour, y= med_400, group= 1))+
+  geom_ribbon(aes(ymin= quant05_400,
+                  ymax= quant95_400), 
               linetype= 1, linewidth= 0.2, alpha= 0.1)+
   geom_point(size= 1.5) + geom_line()+
   theme_bw()+
   xlab("Hour (UTC)")+
-  ylab(expression(paste('Median 500Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 400Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
   ggtitle("DB02 unknown knocks- peak week median (7/10-7/16/2022)")+
    scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
@@ -5510,26 +5513,26 @@ ES021000 <- ES021000 %>%
 ES021000Med <- ES021000%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
-    med_500= median(TOL_500, na.rm= TRUE))
+    med_400= median(TOL_400, na.rm= TRUE))
 quants= c(0.05, 0.95)
 ES021000Quants <- ES021000 %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_500 = quantile(TOL_500, probs= quants[1], na.rm= TRUE),
-            quant95_500 = quantile(TOL_500, probs= quants[2], na.rm= TRUE))
+  summarize(quant05_400 = quantile(TOL_400, probs= quants[1], na.rm= TRUE),
+            quant95_400 = quantile(TOL_400, probs= quants[2], na.rm= TRUE))
 ES021000MedQuants <- ES021000Med %>%
   full_join(ES021000Quants)
 ES021000MedQuants$site = "ES02"
 ES021000MedQuants$UTC_hour <- hms(ES021000MedQuants$UTC_hour)
 ES021000MedQuants$hour <- hour(ES021000MedQuants$UTC_hour)
 
-ggplot(ES021000MedQuants, aes(x= hour, y= med_500, group= 1))+
-  geom_ribbon(aes(ymin= quant05_500,
-                  ymax= quant95_500), 
+ggplot(ES021000MedQuants, aes(x= hour, y= med_400, group= 1))+
+  geom_ribbon(aes(ymin= quant05_400,
+                  ymax= quant95_400), 
               linetype= 1, linewidth= 0.2, alpha= 0.1)+
   geom_point(size= 1.5) + geom_line()+
   theme_bw()+
   xlab("Hour (UTC)")+
-  ylab(expression(paste('Median 500Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 400Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
   ggtitle("ES02 unknown knocks- peak week median (8/26-9/01/2024)")+
    scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
@@ -5556,26 +5559,26 @@ CB021000 <- CB021000 %>%
 CB021000Med <- CB021000%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
-    med_500= median(TOL_500, na.rm= TRUE))
+    med_400= median(TOL_400, na.rm= TRUE))
 quants= c(0.05, 0.95)
 CB021000Quants <- CB021000 %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_500 = quantile(TOL_500, probs= quants[1], na.rm= TRUE),
-            quant95_500 = quantile(TOL_500, probs= quants[2], na.rm= TRUE))
+  summarize(quant05_400 = quantile(TOL_400, probs= quants[1], na.rm= TRUE),
+            quant95_400 = quantile(TOL_400, probs= quants[2], na.rm= TRUE))
 CB021000MedQuants <- CB021000Med %>%
   full_join(CB021000Quants)
 CB021000MedQuants$site = "CB02"
 CB021000MedQuants$UTC_hour <- hms(CB021000MedQuants$UTC_hour)
 CB021000MedQuants$hour <- hour(CB021000MedQuants$UTC_hour)
 
-ggplot(CB021000MedQuants, aes(x= hour, y= med_500, group= 1))+
-  geom_ribbon(aes(ymin= quant05_500,
-                  ymax= quant95_500), 
+ggplot(CB021000MedQuants, aes(x= hour, y= med_400, group= 1))+
+  geom_ribbon(aes(ymin= quant05_400,
+                  ymax= quant95_400), 
               linetype= 1, linewidth= 0.2, alpha= 0.1)+
   geom_point(size= 1.5) + geom_line()+
   theme_bw()+
   xlab("Hour (UTC)")+
-  ylab(expression(paste('Median 500Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 400Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
   ggtitle("CB02 unknown knocks- peak week median (6/27-7/3/2022)")+
    scale_x_continuous(limits = c(0, 24), breaks = seq(0, 22, by = 2))+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
@@ -5600,9 +5603,9 @@ midshore1000_MedQuants$site = factor(midshore1000_MedQuants$site,
                                         levels= c("DB02", "ES02", "CB02"),
                                         labels= c("DB02", "ES02", "CB02"))
 
-ggplot(midshore1000_MedQuants, aes(x= hour, y= med_500, group= site, color= site))+
-  geom_ribbon(aes(ymin= quant05_500,
-                  ymax= quant95_500,
+ggplot(midshore1000_MedQuants, aes(x= hour, y= med_400, group= site, color= site))+
+  geom_ribbon(aes(ymin= quant05_400,
+                  ymax= quant95_400,
                   fill= site, color= site), linetype= 0, linewidth= 0.2, alpha= 0.1)+
   scale_fill_manual(values= c("#00797F",  "#003087",  "#B71300"))+
   guides(fill= guide_legend(title= "Site"))+
@@ -5611,7 +5614,7 @@ ggplot(midshore1000_MedQuants, aes(x= hour, y= med_500, group= site, color= site
 #  ylim(72, 135)+
   theme_bw()+
   xlab("Hour (UTC)")+
-  ylab(expression(paste('Median 500Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 400Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
   ggtitle("Unknown knocks: peak one-week period")+
   scale_color_manual(values= c("#00797F",  "#003087",  "#B71300"))+
   guides(color= guide_legend(title= "Site"))+
@@ -7763,13 +7766,19 @@ DB01_civdusk <- DB01_TOL %>%
   right_join(DB01_fullEffort_civduskDate, join_by(UTC_fixed))
 
 #remove columns not needed for full join
-DB01_civdusk <- DB01_civdusk[-c(1, 5:19, 21:37, 41)]
+#DB01_civdusk <- DB01_civdusk[-c(1, 5:19, 21:37, 41)] #for TOL 500
+#DB01_civdusk <- DB01_civdusk[-c(1, 5:18, 20:37, 41)] #for TOL 400
+DB01_civdusk <- DB01_civdusk[-c(1, 5:26, 28:37, 41)] #for TOL 2500
 colnames(DB01_civdusk)[7] <- "UTC_date"
 DB01_civdusk$diel <- "civdusk"
-DB01_civduskPlus <- DB01_civduskPlus[-c(1:19, 21:37, 41)]
+#DB01_civduskPlus <- DB01_civduskPlus[-c(1:19, 21:37, 41)]
+#DB01_civduskPlus <- DB01_civduskPlus[-c(1:18, 20:37, 41)]
+DB01_civduskPlus <- DB01_civduskPlus[-c(1:26, 28:37, 41)]
 colnames(DB01_civduskPlus)[4] <- "UTC_date"
 DB01_civduskPlus$diel <- "plus"
-DB01_civduskMinus <- DB01_civduskMinus[-c(1:19, 21:37, 41)]
+#DB01_civduskMinus <- DB01_civduskMinus[-c(1:19, 21:37, 41)]
+#DB01_civduskMinus <- DB01_civduskMinus[-c(1:18, 20:37, 41)]
+DB01_civduskMinus <- DB01_civduskMinus[-c(1:26, 28:37, 41)]
 colnames(DB01_civduskMinus)[4] <- "UTC_date"
 DB01_civduskMinus$diel <- "minus"
 
@@ -7793,9 +7802,17 @@ DB01_civdusk_diels <- DB01_civdusk_diels %>%
   drop_na(X1000_chorus)
 DB01_civdusk_diels$site <- "DB01"
 
+#DB01_medDiels <- DB01_civdusk_diels %>%
+#  group_by(UTC_date, site) %>%
+#  dplyr::summarize(med_500 = median(TOL_500, na.rm=TRUE))
+#DB01_medDiels <- DB01_civdusk_diels %>%
+#  group_by(UTC_date, site) %>%
+#  dplyr::summarize(med_400 = median(TOL_400, na.rm=TRUE))
+
 DB01_medDiels <- DB01_civdusk_diels %>%
   group_by(UTC_date, site) %>%
-  dplyr::summarize(med_500 = median(TOL_500, na.rm=TRUE))
+  dplyr::summarize(med_2500 = median(TOL_2500, na.rm=TRUE))
+
 DB01_medDiels <- DB01_chorusPresence %>%
   right_join(DB01_medDiels, join_by(UTC_date))
 DB01_medDiels <- DB01_medDiels[-c(2, 4:7)]
@@ -7854,13 +7871,19 @@ ES01_civdusk <- ES01_TOL %>%
   right_join(ES01_fullEffort_civduskDate, join_by(UTC_fixed))
 
 #remove columns not needed for full join
-ES01_civdusk <- ES01_civdusk[-c(1, 5:19, 21:37, 41)]
+#ES01_civdusk <- ES01_civdusk[-c(1, 5:19, 21:37, 41)]
+#ES01_civdusk <- ES01_civdusk[-c(1, 5:18, 20:37, 41)]
+ES01_civdusk <- ES01_civdusk[-c(1, 5:26, 28:37, 41)]
 colnames(ES01_civdusk)[7] <- "UTC_date"
 ES01_civdusk$diel <- "civdusk"
-ES01_civduskPlus <- ES01_civduskPlus[-c(1:19, 21:37, 41)]
+#ES01_civduskPlus <- ES01_civduskPlus[-c(1:19, 21:37, 41)]
+#ES01_civduskPlus <- ES01_civduskPlus[-c(1:18, 20:37, 41)]
+ES01_civduskPlus <- ES01_civduskPlus[-c(1:26, 28:37, 41)]
 colnames(ES01_civduskPlus)[4] <- "UTC_date"
 ES01_civduskPlus$diel <- "plus"
-ES01_civduskMinus <- ES01_civduskMinus[-c(1:19, 21:37, 41)]
+#ES01_civduskMinus <- ES01_civduskMinus[-c(1:19, 21:37, 41)]
+#ES01_civduskMinus <- ES01_civduskMinus[-c(1:18, 20:37, 41)]
+ES01_civduskMinus <- ES01_civduskMinus[-c(1:26, 28:37, 41)]
 colnames(ES01_civduskMinus)[4] <- "UTC_date"
 ES01_civduskMinus$diel <- "minus"
 
@@ -7885,9 +7908,18 @@ ES01_civdusk_diels <- ES01_civdusk_diels %>%
 ES01_civdusk_diels$site <- "ES01"
 
 
+#ES01_medDiels <- ES01_civdusk_diels %>%
+#  group_by(UTC_date, site) %>%
+#  dplyr::summarize(med_500 = median(TOL_500, na.rm=TRUE))
+
+#ES01_medDiels <- ES01_civdusk_diels %>%
+#  group_by(UTC_date, site) %>%
+#  dplyr::summarize(med_400 = median(TOL_400, na.rm=TRUE))
+
 ES01_medDiels <- ES01_civdusk_diels %>%
   group_by(UTC_date, site) %>%
-  dplyr::summarize(med_500 = median(TOL_500, na.rm=TRUE))
+  dplyr::summarize(med_2500 = median(TOL_2500, na.rm=TRUE))
+
 ES01_medDiels <- ES01_chorusPresence %>%
   right_join(ES01_medDiels, join_by(UTC_date))
 ES01_medDiels <- ES01_medDiels[-c(2, 4:7)]
@@ -7948,13 +7980,19 @@ CB01_civdusk <- CB01_TOL %>%
   right_join(CB01_fullEffort_civduskDate, join_by(UTC_fixed))
 
 #remove columns not needed for full join
-CB01_civdusk <- CB01_civdusk[-c(1, 5:19, 21:37, 41)]
+#CB01_civdusk <- CB01_civdusk[-c(1, 5:19, 21:37, 41)]
+#CB01_civdusk <- CB01_civdusk[-c(1, 5:18, 20:37, 41)]
+CB01_civdusk <- CB01_civdusk[-c(1, 5:26, 28:37, 41)]
 colnames(CB01_civdusk)[7] <- "UTC_date"
 CB01_civdusk$diel <- "civdusk"
-CB01_civduskPlus <- CB01_civduskPlus[-c(1:19, 21:37, 41)]
+#CB01_civduskPlus <- CB01_civduskPlus[-c(1:19, 21:37, 41)]
+#CB01_civduskPlus <- CB01_civduskPlus[-c(1:18, 20:37, 41)]
+CB01_civduskPlus <- CB01_civduskPlus[-c(1:26, 28:37, 41)]
 colnames(CB01_civduskPlus)[4] <- "UTC_date"
 CB01_civduskPlus$diel <- "plus"
-CB01_civduskMinus <- CB01_civduskMinus[-c(1:19, 21:37, 41)]
+#CB01_civduskMinus <- CB01_civduskMinus[-c(1:19, 21:37, 41)]
+#CB01_civduskMinus <- CB01_civduskMinus[-c(1:18, 20:37, 41)]
+CB01_civduskMinus <- CB01_civduskMinus[-c(1:26, 28:37, 41)]
 colnames(CB01_civduskMinus)[4] <- "UTC_date"
 CB01_civduskMinus$diel <- "minus"
 
@@ -7978,9 +8016,16 @@ CB01_civdusk_diels <- CB01_civdusk_diels %>%
   drop_na(X1000_chorus)
 CB01_civdusk_diels$site <- "CB01"
 
+#CB01_medDiels <- CB01_civdusk_diels %>%
+#  group_by(UTC_date, site) %>%
+#  dplyr::summarize(med_500 = median(TOL_500, na.rm=TRUE))
+#CB01_medDiels <- CB01_civdusk_diels %>%
+#  group_by(UTC_date, site) %>%
+#  dplyr::summarize(med_400 = median(TOL_400, na.rm=TRUE))
 CB01_medDiels <- CB01_civdusk_diels %>%
   group_by(UTC_date, site) %>%
-  dplyr::summarize(med_500 = median(TOL_500, na.rm=TRUE))
+  dplyr::summarize(med_2500 = median(TOL_2500, na.rm=TRUE))
+
 CB01_medDiels <- CB01_chorusPresence %>%
   right_join(CB01_medDiels, join_by(UTC_date))
 CB01_medDiels <- CB01_medDiels[-c(2, 4:7)]
@@ -8008,13 +8053,13 @@ dplyr::mutate(X1000_chorus = factor(X1000_chorus,
                                     levels = c(0, 1),
                                     labels = c("Absent", "Present")))
 
-ggplot(all_medDiels, aes(x= UTC, group= year(UTC), y= med_500, group= X1000_chorus, color= X1000_chorus))+
+ggplot(all_medDiels, aes(x= UTC, group= year(UTC), y= med_2500, group= X1000_chorus, color= X1000_chorus))+
   geom_line(linewidth= 0.75, na.rm= TRUE)+
 #  geom_ma(ma_fun= SMA, n= 3, color= "black", linetype= 1, show.legend= TRUE)+
   theme_bw()+
 #  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   xlab("Date")+
-  ylab(expression(paste('Median 500Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 2500Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
   facet_grid(factor(site, levels = c('DB01', 'ES01', 'CB01'))~.,)+
   scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#B7130095"))+
   scale_fill_manual(values= c("grey", "#B7130095"))+
@@ -8084,13 +8129,19 @@ DB02_civdusk <- DB02_TOL %>%
   right_join(DB02_fullEffort_civduskDate, join_by(UTC_fixed))
 
 #remove columns not needed for full join
-DB02_civdusk <- DB02_civdusk[-c(1, 5:19, 21:37, 41)]
+#DB02_civdusk <- DB02_civdusk[-c(1, 5:19, 21:37, 41)]
+#DB02_civdusk <- DB02_civdusk[-c(1, 5:18, 20:37, 41)]
+DB02_civdusk <- DB02_civdusk[-c(1, 5:26, 28:37, 41)]
 colnames(DB02_civdusk)[7] <- "UTC_date"
 DB02_civdusk$diel <- "civdusk"
-DB02_civduskPlus <- DB02_civduskPlus[-c(1:19, 21:37, 41)]
+#DB02_civduskPlus <- DB02_civduskPlus[-c(1:19, 21:37, 41)]
+#DB02_civduskPlus <- DB02_civduskPlus[-c(1:18, 20:37, 41)]
+DB02_civduskPlus <- DB02_civduskPlus[-c(1:26, 28:37, 41)]
 colnames(DB02_civduskPlus)[4] <- "UTC_date"
 DB02_civduskPlus$diel <- "plus"
-DB02_civduskMinus <- DB02_civduskMinus[-c(1:19, 21:37, 41)]
+#DB02_civduskMinus <- DB02_civduskMinus[-c(1:19, 21:37, 41)]
+#DB02_civduskMinus <- DB02_civduskMinus[-c(1:18, 20:37, 41)]
+DB02_civduskMinus <- DB02_civduskMinus[-c(1:26, 28:37, 41)]
 colnames(DB02_civduskMinus)[4] <- "UTC_date"
 DB02_civduskMinus$diel <- "minus"
 
@@ -8114,9 +8165,16 @@ DB02_civdusk_diels <- DB02_civdusk_diels %>%
   drop_na(X1000_chorus)
 DB02_civdusk_diels$site <- "DB02"
 
+#DB02_medDiels <- DB02_civdusk_diels %>%
+#  group_by(UTC_date, site) %>%
+#  dplyr::summarize(med_500 = median(TOL_500, na.rm=TRUE))
+#DB02_medDiels <- DB02_civdusk_diels %>%
+#  group_by(UTC_date, site) %>%
+#  dplyr::summarize(med_400 = median(TOL_400, na.rm=TRUE))
 DB02_medDiels <- DB02_civdusk_diels %>%
   group_by(UTC_date, site) %>%
-  dplyr::summarize(med_500 = median(TOL_500, na.rm=TRUE))
+  dplyr::summarize(med_2500 = median(TOL_2500, na.rm=TRUE))
+
 DB02_medDiels <- DB02_chorusPresence %>%
   right_join(DB02_medDiels, join_by(UTC_date))
 DB02_medDiels <- DB02_medDiels[-c(2, 4:7)]
@@ -8175,13 +8233,19 @@ ES02_civdusk <- ES02_TOL %>%
   right_join(ES02_fullEffort_civduskDate, join_by(UTC_fixed))
 
 #remove columns not needed for full join
-ES02_civdusk <- ES02_civdusk[-c(1, 5:19, 21:37, 41)]
+#ES02_civdusk <- ES02_civdusk[-c(1, 5:19, 21:37, 41)]
+#ES02_civdusk <- ES02_civdusk[-c(1, 5:18, 20:37, 41)]
+ES02_civdusk <- ES02_civdusk[-c(1, 5:26, 28:37, 41)]
 colnames(ES02_civdusk)[7] <- "UTC_date"
 ES02_civdusk$diel <- "civdusk"
-ES02_civduskPlus <- ES02_civduskPlus[-c(1:19, 21:37, 41)]
+#ES02_civduskPlus <- ES02_civduskPlus[-c(1:19, 21:37, 41)]
+#ES02_civduskPlus <- ES02_civduskPlus[-c(1:18, 20:37, 41)]
+ES02_civduskPlus <- ES02_civduskPlus[-c(1:26, 28:37, 41)]
 colnames(ES02_civduskPlus)[4] <- "UTC_date"
 ES02_civduskPlus$diel <- "plus"
-ES02_civduskMinus <- ES02_civduskMinus[-c(1:19, 21:37, 41)]
+#ES02_civduskMinus <- ES02_civduskMinus[-c(1:19, 21:37, 41)]
+#ES02_civduskMinus <- ES02_civduskMinus[-c(1:18, 20:37, 41)]
+ES02_civduskMinus <- ES02_civduskMinus[-c(1:26, 28:37, 41)]
 colnames(ES02_civduskMinus)[4] <- "UTC_date"
 ES02_civduskMinus$diel <- "minus"
 
@@ -8206,9 +8270,16 @@ ES02_civdusk_diels <- ES02_civdusk_diels %>%
 ES02_civdusk_diels$site <- "ES02"
 
 
+#ES02_medDiels <- ES02_civdusk_diels %>%
+#  group_by(UTC_date, site) %>%
+#  dplyr::summarize(med_500 = median(TOL_500, na.rm=TRUE))
+#ES02_medDiels <- ES02_civdusk_diels %>%
+#  group_by(UTC_date, site) %>%
+#  dplyr::summarize(med_400 = median(TOL_400, na.rm=TRUE))
 ES02_medDiels <- ES02_civdusk_diels %>%
   group_by(UTC_date, site) %>%
-  dplyr::summarize(med_500 = median(TOL_500, na.rm=TRUE))
+  dplyr::summarize(med_2500 = median(TOL_2500, na.rm=TRUE))
+
 ES02_medDiels <- ES02_chorusPresence %>%
   right_join(ES02_medDiels, join_by(UTC_date))
 ES02_medDiels <- ES02_medDiels[-c(2, 4:7)]
@@ -8269,13 +8340,19 @@ CB02_civdusk <- CB02_TOL %>%
   right_join(CB02_fullEffort_civduskDate, join_by(UTC_fixed))
 
 #remove columns not needed for full join
-CB02_civdusk <- CB02_civdusk[-c(1, 5:19, 21:37, 41)]
+#CB02_civdusk <- CB02_civdusk[-c(1, 5:19, 21:37, 41)]
+#CB02_civdusk <- CB02_civdusk[-c(1, 5:18, 20:37, 41)]
+CB02_civdusk <- CB02_civdusk[-c(1, 5:26, 28:37, 41)]
 colnames(CB02_civdusk)[7] <- "UTC_date"
 CB02_civdusk$diel <- "civdusk"
-CB02_civduskPlus <- CB02_civduskPlus[-c(1:19, 21:37, 41)]
+#CB02_civduskPlus <- CB02_civduskPlus[-c(1:19, 21:37, 41)]
+#CB02_civduskPlus <- CB02_civduskPlus[-c(1:18, 20:37, 41)]
+CB02_civduskPlus <- CB02_civduskPlus[-c(1:26, 28:37, 41)]
 colnames(CB02_civduskPlus)[4] <- "UTC_date"
 CB02_civduskPlus$diel <- "plus"
-CB02_civduskMinus <- CB02_civduskMinus[-c(1:19, 21:37, 41)]
+#CB02_civduskMinus <- CB02_civduskMinus[-c(1:19, 21:37, 41)]
+#CB02_civduskMinus <- CB02_civduskMinus[-c(1:18, 20:37, 41)]
+CB02_civduskMinus <- CB02_civduskMinus[-c(1:26, 28:37, 41)]
 colnames(CB02_civduskMinus)[4] <- "UTC_date"
 CB02_civduskMinus$diel <- "minus"
 
@@ -8299,9 +8376,16 @@ CB02_civdusk_diels <- CB02_civdusk_diels %>%
   drop_na(X1000_chorus)
 CB02_civdusk_diels$site <- "CB02"
 
+#CB02_medDiels <- CB02_civdusk_diels %>%
+#  group_by(UTC_date, site) %>%
+#  dplyr::summarize(med_500 = median(TOL_500, na.rm=TRUE))
+#CB02_medDiels <- CB02_civdusk_diels %>%
+ # group_by(UTC_date, site) %>%
+#  dplyr::summarize(med_400 = median(TOL_400, na.rm=TRUE))
 CB02_medDiels <- CB02_civdusk_diels %>%
   group_by(UTC_date, site) %>%
-  dplyr::summarize(med_500 = median(TOL_500, na.rm=TRUE))
+  dplyr::summarize(med_2500 = median(TOL_2500, na.rm=TRUE))
+
 CB02_medDiels <- CB02_chorusPresence %>%
   right_join(CB02_medDiels, join_by(UTC_date))
 CB02_medDiels <- CB02_medDiels[-c(2, 4:7)]
@@ -8329,13 +8413,13 @@ dplyr::mutate(X1000_chorus = factor(X1000_chorus,
                                     levels = c(0, 1),
                                     labels = c("Absent", "Present")))
 
-ggplot(all_midshore1000_medDiels, aes(x= UTC, group= year(UTC), y= med_500, group= X1000_chorus, color= X1000_chorus))+
+ggplot(all_midshore1000_medDiels, aes(x= UTC, group= year(UTC), y= med_2500, group= X1000_chorus, color= X1000_chorus))+
   geom_line(linewidth= 0.75, na.rm= TRUE)+
 #  geom_ma(ma_fun= SMA, n= 3, color= "black", linetype= 1, show.legend= TRUE)+
   theme_bw()+
 #  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   xlab("Date")+
-  ylab(expression(paste('Median 500Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 2500Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
   facet_grid(factor(site, levels = c('DB02', 'ES02', 'CB02'))~.,)+
   scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#B7130095"))+
   scale_fill_manual(values= c("grey", "#B7130095"))+
@@ -9034,7 +9118,7 @@ CB02_unknownKnocks <- CB02_unknownKnocks %>%
 #write.csv(CB02_unknownKnocks, here("data", "CB02_unknownKnocks_threshold.csv"))
 
 
-#####Midshore: CUSK EEL- threshold med_2000 >= 94 dB on days with chorus present####
+#####Midshore: CUSK EEL (***not using***) threshold med_2000 >= 94 dB on days with chorus present####
  #ES02
 ES02cusk_medDiels$dt_ma <- data.table::frollmean(ES02cusk_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
 ES02_cuskEel <- ES02cusk_medDiels %>%
