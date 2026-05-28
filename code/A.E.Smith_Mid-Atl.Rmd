@@ -9151,7 +9151,7 @@ CB02_toadfish <- CB02_toadfish %>%
 #write.csv(CB02_toadfish, here("data", "CB02_toadfish_threshold.csv"))
 
 ```
-#minute-level threshold data
+#threshold data- used on Rserver
 ```{r}
 NEFSC_DE_Folders <- (c('Z:/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202207_DB01/NC', 'Z:/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202301_DB01/NC', 'Z:/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202306_DB01/NC', 'Z:/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202311_DB01/NC', 'Z:/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202405_DB01/NC'))
 
@@ -9186,6 +9186,588 @@ threshold_nc <- all_DB01Files[basename(all_DB01Files) %in% DB01_unknownPulse_thr
 
 DB01_unknownPulseData<- loadSoundscapeData(threshold_nc, timeBin= "15minute")
 
+
+```
+#minute level threshold data- plotting diel plots w/15min resolution
+```{r}
+#Inshore unknown pulse####
+DB01_unknownPulse_min <- read.csv(here("data/DB01_unknownPulse_minData.csv"))
+DB01_unknownPulse_min$UTC <- as.POSIXct(DB01_unknownPulse_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB01_unknownPulse_minOL <- createOctaveLevel(DB01_unknownPulse_min, type= 'ol')
+
+ES01_unknownPulse_min <- read.csv(here("data/ES01_unknownPulse_minData.csv"))
+ES01_unknownPulse_min$UTC <- as.POSIXct(ES01_unknownPulse_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+ES01_unknownPulse_minOL <- createOctaveLevel(ES01_unknownPulse_min, type= 'ol')
+
+CB01_unknownPulse_min <- read.csv(here("data/CB01_unknownPulse_minData.csv"))
+CB01_unknownPulse_min$UTC <- as.POSIXct(CB01_unknownPulse_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+CB01_unknownPulse_minOL <- createOctaveLevel(CB01_unknownPulse_min, type= 'ol')
+
+
+DB01_unknownPulse_minOL <- DB01_unknownPulse_minOL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2])
+DB01_unknownPulse_minOL %>% filter(UTC_hour == "") %>% nrow 
+for (c in 1:nrow(DB01_unknownPulse_minOL)) { 
+  if (DB01_unknownPulse_minOL$UTC_hour[c] == "") { 
+    DB01_unknownPulse_minOL$UTC_hour[c] <- "00:00:00" 
+  }
+}
+
+DB01Unknown_minOLMed <- DB01_unknownPulse_minOL%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_500= median(OL_500, na.rm= TRUE))
+quants= c(0.05, 0.95)
+DB01Unknown_minOLQuants <- DB01_unknownPulse_minOL %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
+            quant95_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
+DB01Unknown_minOLMedQuants <- DB01Unknown_minOLMed %>%
+  full_join(DB01Unknown_minOLQuants)
+DB01Unknown_minOLMedQuants$site <- "DB01"
+#DB01Unknown_minOLMedQuants$UTC_hour <- hms(DB01Unknown_minOLMedQuants$UTC_hour)
+#DB01Unknown_minOLMedQuants$hour <- hour(DB01Unknown_minOLMedQuants$UTC_hour)
+
+
+
+ES01_unknownPulse_minOL <- ES01_unknownPulse_minOL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2])
+ES01_unknownPulse_minOL %>% filter(UTC_hour == "") %>% nrow 
+for (c in 1:nrow(ES01_unknownPulse_minOL)) { 
+  if (ES01_unknownPulse_minOL$UTC_hour[c] == "") { 
+    ES01_unknownPulse_minOL$UTC_hour[c] <- "00:00:00" 
+  }
+}
+ES01Unknown_minOLMed <- ES01_unknownPulse_minOL%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_500= median(OL_500, na.rm= TRUE))
+quants= c(0.05, 0.95)
+ES01Unknown_minOLQuants <- ES01_unknownPulse_minOL %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
+            quant95_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
+ES01Unknown_minOLMedQuants <- ES01Unknown_minOLMed %>%
+  full_join(ES01Unknown_minOLQuants)
+ES01Unknown_minOLMedQuants$site <- "ES01"
+#ES01Unknown_minOLMedQuants$UTC_hour <- hms(ES01Unknown_minOLMedQuants$UTC_hour)
+#ES01Unknown_minOLMedQuants$hour <- hour(ES01Unknown_minOLMedQuants$UTC_hour)
+
+
+CB01_unknownPulse_minOL <- CB01_unknownPulse_minOL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2])
+CB01_unknownPulse_minOL %>% filter(UTC_hour == "") %>% nrow 
+for (c in 1:nrow(CB01_unknownPulse_minOL)) { 
+  if (CB01_unknownPulse_minOL$UTC_hour[c] == "") { 
+    CB01_unknownPulse_minOL$UTC_hour[c] <- "00:00:00" 
+  }
+}
+CB01Unknown_minOLMed <- CB01_unknownPulse_minOL%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_500= median(OL_500, na.rm= TRUE))
+quants= c(0.05, 0.95)
+CB01Unknown_minOLQuants <- CB01_unknownPulse_minOL %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
+            quant95_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
+CB01Unknown_minOLMedQuants <- CB01Unknown_minOLMed %>%
+  full_join(CB01Unknown_minOLQuants)
+CB01Unknown_minOLMedQuants$site <- "CB01"
+#CB01Unknown_minOLMedQuants$UTC_hour <- hms(CB01Unknown_minOLMedQuants$UTC_hour)
+#CB01Unknown_minOLMedQuants$hour <- hour(CB01Unknown_minOLMedQuants$UTC_hour)
+
+
+all_inUnknown_minOL <- DB01Unknown_minOLMedQuants %>%
+  full_join(ES01Unknown_minOLMedQuants) %>%
+  full_join(CB01Unknown_minOLMedQuants)
+
+all_inUnknown_minOL$site = factor(all_inUnknown_minOL$site,
+                                        levels= c("DB01", "ES01", "CB01"),
+                                        labels= c("DB01", "ES01", "CB01"))
+all_inUnknown_minOL$UTC_hour = as.POSIXct(strptime(all_inUnknown_minOL$UTC_hour,"%H:%M:%S", tz= "GMT"))
+
+ggplot(all_inUnknown_minOL, aes(x= UTC_hour, y= med_500, group= site, color= site))+
+  geom_ribbon(aes(ymin= quant05_500,
+                  ymax= quant95_500,
+                  fill= site, color= site), linetype= 0, linewidth= 0.2, alpha= 0.1)+
+  scale_fill_manual(values= c("#00797F",  "#003087",  "#B71300"))+
+  guides(fill= guide_legend(title= "Site"))+
+  scale_x_datetime(breaks = breaks_width("1 hour"),labels=date_format("%H:%M"), minor_breaks = NULL)+
+  geom_point(size= 1.5) + geom_line()+
+  theme_bw()+
+  xlab("Hour (UTC)")+
+  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("Unknown pulse full effort")+
+  scale_color_manual(values= c("#00797F",  "#003087",  "#B71300"))+
+  guides(color= guide_legend(title= "Site"))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 19),
+        legend.title= element_text(size= 18),
+        legend.text= element_text(size= 16))
+
+#Mid-shore unknown pulse####
+DB02_unknownPulse_min <- read.csv(here("data/DB02_unknownPulse_minData.csv"))
+DB02_unknownPulse_min$UTC <- as.POSIXct(DB02_unknownPulse_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB02_unknownPulse_minOL <- createOctaveLevel(DB02_unknownPulse_min, type= 'ol')
+
+ES02_unknownPulse_min <- read.csv(here("data/ES02_unknownPulse_minData.csv"))
+ES02_unknownPulse_min$UTC <- as.POSIXct(ES02_unknownPulse_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+ES02_unknownPulse_minOL <- createOctaveLevel(ES02_unknownPulse_min, type= 'ol')
+
+ES02_toadfish_min <- read.csv(here("data/ES02_toadfish_minData.csv"))
+ES02_toadfish_min$UTC <- as.POSIXct(ES02_toadfish_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+ES02_toadfish_minTOL <- createOctaveLevel(ES02_toadfish_min, type= 'tol')
+
+CB02_unknownPulse_min <- read.csv(here("data/CB02_unknownPulse_minData.csv"))
+CB02_unknownPulse_min$UTC <- as.POSIXct(CB02_unknownPulse_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+CB02_unknownPulse_minOL <- createOctaveLevel(CB02_unknownPulse_min, type= 'ol')
+
+CB02_toadfish_min <- read.csv(here("data/CB02_toadfish_minData.csv"))
+CB02_toadfish_min$UTC <- as.POSIXct(CB02_toadfish_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+CB02_toadfish_minTOL <- createOctaveLevel(CB02_toadfish_min, type= 'tol')
+
+
+#Unknown pulse
+DB02_unknownPulse_minOL <- DB02_unknownPulse_minOL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2])
+DB02_unknownPulse_minOL %>% filter(UTC_hour == "") %>% nrow 
+for (c in 1:nrow(DB02_unknownPulse_minOL)) { 
+  if (DB02_unknownPulse_minOL$UTC_hour[c] == "") { 
+    DB02_unknownPulse_minOL$UTC_hour[c] <- "00:00:00" 
+  }
+}
+
+DB02Unknown_minOLMed <- DB02_unknownPulse_minOL%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_500= median(OL_500, na.rm= TRUE))
+quants= c(0.05, 0.95)
+DB02Unknown_minOLQuants <- DB02_unknownPulse_minOL %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
+            quant95_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
+DB02Unknown_minOLMedQuants <- DB02Unknown_minOLMed %>%
+  full_join(DB02Unknown_minOLQuants)
+DB02Unknown_minOLMedQuants$site <- "DB02"
+#DB02Unknown_minOLMedQuants$UTC_hour <- hms(DB02Unknown_minOLMedQuants$UTC_hour)
+#DB02Unknown_minOLMedQuants$hour <- hour(DB02Unknown_minOLMedQuants$UTC_hour)
+
+
+
+ES02_unknownPulse_minOL <- ES02_unknownPulse_minOL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2])
+ES02_unknownPulse_minOL %>% filter(UTC_hour == "") %>% nrow 
+for (c in 1:nrow(ES02_unknownPulse_minOL)) { 
+  if (ES02_unknownPulse_minOL$UTC_hour[c] == "") { 
+    ES02_unknownPulse_minOL$UTC_hour[c] <- "00:00:00" 
+  }
+}
+ES02Unknown_minOLMed <- ES02_unknownPulse_minOL%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_500= median(OL_500, na.rm= TRUE))
+quants= c(0.05, 0.95)
+ES02Unknown_minOLQuants <- ES02_unknownPulse_minOL %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
+            quant95_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
+ES02Unknown_minOLMedQuants <- ES02Unknown_minOLMed %>%
+  full_join(ES02Unknown_minOLQuants)
+ES02Unknown_minOLMedQuants$site <- "ES02"
+#ES02Unknown_minOLMedQuants$UTC_hour <- hms(ES02Unknown_minOLMedQuants$UTC_hour)
+#ES02Unknown_minOLMedQuants$hour <- hour(ES02Unknown_minOLMedQuants$UTC_hour)
+
+
+CB02_unknownPulse_minOL <- CB02_unknownPulse_minOL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2])
+CB02_unknownPulse_minOL %>% filter(UTC_hour == "") %>% nrow 
+for (c in 1:nrow(CB02_unknownPulse_minOL)) { 
+  if (CB02_unknownPulse_minOL$UTC_hour[c] == "") { 
+    CB02_unknownPulse_minOL$UTC_hour[c] <- "00:00:00" 
+  }
+}
+CB02Unknown_minOLMed <- CB02_unknownPulse_minOL%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_500= median(OL_500, na.rm= TRUE))
+quants= c(0.05, 0.95)
+CB02Unknown_minOLQuants <- CB02_unknownPulse_minOL %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
+            quant95_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
+CB02Unknown_minOLMedQuants <- CB02Unknown_minOLMed %>%
+  full_join(CB02Unknown_minOLQuants)
+CB02Unknown_minOLMedQuants$site <- "CB02"
+#CB02Unknown_minOLMedQuants$UTC_hour <- hms(CB02Unknown_minOLMedQuants$UTC_hour)
+#CB02Unknown_minOLMedQuants$hour <- hour(CB02Unknown_minOLMedQuants$UTC_hour)
+
+
+all_midUnknown_minOL <- DB02Unknown_minOLMedQuants %>%
+  full_join(ES02Unknown_minOLMedQuants) %>%
+  full_join(CB02Unknown_minOLMedQuants)
+
+all_midUnknown_minOL$site = factor(all_midUnknown_minOL$site,
+                                        levels= c("DB02", "ES02", "CB02"),
+                                        labels= c("DB02", "ES02", "CB02"))
+all_midUnknown_minOL$UTC_hour = as.POSIXct(strptime(all_midUnknown_minOL$UTC_hour,"%H:%M:%S", tz= "GMT"))
+
+ggplot(all_midUnknown_minOL, aes(x= UTC_hour, y= med_500, group= site, color= site))+
+  geom_ribbon(aes(ymin= quant05_500,
+                  ymax= quant95_500,
+                  fill= site, color= site), linetype= 0, linewidth= 0.2, alpha= 0.1)+
+  scale_fill_manual(values= c("#509c87",  "steelblue",  "#E84A5FFF"))+
+  guides(fill= guide_legend(title= "Site"))+
+  scale_x_datetime(breaks = breaks_width("1 hour"),labels=date_format("%H:%M"), minor_breaks = NULL)+
+  geom_point(size= 1.5) + geom_line()+
+  theme_bw()+
+  xlab("Hour (UTC)")+
+  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("Unknown pulse full effort")+
+  scale_color_manual(values= c("#509c87",  "steelblue",  "#E84A5FFF"))+
+  guides(color= guide_legend(title= "Site"))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 19),
+        legend.title= element_text(size= 18),
+        legend.text= element_text(size= 16))
+
+#Inshore cusk eel####
+DB01_cuskEel_min <- read.csv(here("data/DB01_cuskEel_minData.csv"))
+DB01_cuskEel_min$UTC <- as.POSIXct(DB01_cuskEel_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB01_cuskEel_minOL <- createOctaveLevel(DB01_cuskEel_min, type= 'ol')
+
+ES01_cuskEel_min <- read.csv(here("data/ES01_cuskEel_minData.csv"))
+ES01_cuskEel_min$UTC <- as.POSIXct(ES01_cuskEel_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+ES01_cuskEel_minOL <- createOctaveLevel(ES01_cuskEel_min, type= 'ol')
+
+CB01_cuskEel_min <- read.csv(here("data/CB01_cuskEel_minData.csv"))
+CB01_cuskEel_min$UTC <- as.POSIXct(CB01_cuskEel_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+CB01_cuskEel_minOL <- createOctaveLevel(CB01_cuskEel_min, type= 'ol')
+
+DB01_cuskEel_minOL <- DB01_cuskEel_minOL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2])
+DB01_cuskEel_minOL %>% filter(UTC_hour == "") %>% nrow 
+for (c in 1:nrow(DB01_cuskEel_minOL)) { 
+  if (DB01_cuskEel_minOL$UTC_hour[c] == "") { 
+    DB01_cuskEel_minOL$UTC_hour[c] <- "00:00:00" 
+  }
+}
+
+DB01cuskEel_minOLMed <- DB01_cuskEel_minOL%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+quants= c(0.05, 0.95)
+DB01cuskEel_minOLQuants <- DB01_cuskEel_minOL %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_2000 = quantile(OL_2000, probs= quants[1], na.rm= TRUE),
+            quant95_2000 = quantile(OL_2000, probs= quants[2], na.rm= TRUE))
+DB01cuskEel_minOLMedQuants <- DB01cuskEel_minOLMed %>%
+  full_join(DB01cuskEel_minOLQuants)
+DB01cuskEel_minOLMedQuants$site <- "DB01"
+#DB01cuskEel_minOLMedQuants$UTC_hour <- hms(DB01cuskEel_minOLMedQuants$UTC_hour)
+#DB01cuskEel_minOLMedQuants$hour <- hour(DB01cuskEel_minOLMedQuants$UTC_hour)
+
+
+
+ES01_cuskEel_minOL <- ES01_cuskEel_minOL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2])
+ES01_cuskEel_minOL %>% filter(UTC_hour == "") %>% nrow 
+for (c in 1:nrow(ES01_cuskEel_minOL)) { 
+  if (ES01_cuskEel_minOL$UTC_hour[c] == "") { 
+    ES01_cuskEel_minOL$UTC_hour[c] <- "00:00:00" 
+  }
+}
+ES01cuskEel_minOLMed <- ES01_cuskEel_minOL%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+quants= c(0.05, 0.95)
+ES01cuskEel_minOLQuants <- ES01_cuskEel_minOL %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_2000 = quantile(OL_2000, probs= quants[1], na.rm= TRUE),
+            quant95_2000 = quantile(OL_2000, probs= quants[2], na.rm= TRUE))
+ES01cuskEel_minOLMedQuants <- ES01cuskEel_minOLMed %>%
+  full_join(ES01cuskEel_minOLQuants)
+ES01cuskEel_minOLMedQuants$site <- "ES01"
+#ES01cuskEel_minOLMedQuants$UTC_hour <- hms(ES01cuskEel_minOLMedQuants$UTC_hour)
+#ES01cuskEel_minOLMedQuants$hour <- hour(ES01cuskEel_minOLMedQuants$UTC_hour)
+
+
+CB01_cuskEel_minOL <- CB01_cuskEel_minOL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2])
+CB01_cuskEel_minOL %>% filter(UTC_hour == "") %>% nrow 
+for (c in 1:nrow(CB01_cuskEel_minOL)) { 
+  if (CB01_cuskEel_minOL$UTC_hour[c] == "") { 
+    CB01_cuskEel_minOL$UTC_hour[c] <- "00:00:00" 
+  }
+}
+CB01cuskEel_minOLMed <- CB01_cuskEel_minOL%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+quants= c(0.05, 0.95)
+CB01cuskEel_minOLQuants <- CB01_cuskEel_minOL %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_2000 = quantile(OL_2000, probs= quants[1], na.rm= TRUE),
+            quant95_2000 = quantile(OL_2000, probs= quants[2], na.rm= TRUE))
+CB01cuskEel_minOLMedQuants <- CB01cuskEel_minOLMed %>%
+  full_join(CB01cuskEel_minOLQuants)
+CB01cuskEel_minOLMedQuants$site <- "CB01"
+#CB01cuskEel_minOLMedQuants$UTC_hour <- hms(CB01cuskEel_minOLMedQuants$UTC_hour)
+#CB01cuskEel_minOLMedQuants$hour <- hour(CB01cuskEel_minOLMedQuants$UTC_hour)
+
+
+all_incuskEel_minOL <- DB01cuskEel_minOLMedQuants %>%
+  full_join(ES01cuskEel_minOLMedQuants) %>%
+  full_join(CB01cuskEel_minOLMedQuants)
+
+all_incuskEel_minOL$site = factor(all_incuskEel_minOL$site,
+                                        levels= c("DB01", "ES01", "CB01"),
+                                        labels= c("DB01", "ES01", "CB01"))
+all_incuskEel_minOL$UTC_hour = as.POSIXct(strptime(all_incuskEel_minOL$UTC_hour,"%H:%M:%S", tz= "GMT"))
+
+ggplot(all_incuskEel_minOL, aes(x= UTC_hour, y= med_2000, group= site, color= site))+
+  geom_ribbon(aes(ymin= quant05_2000,
+                  ymax= quant95_2000,
+                  fill= site, color= site), linetype= 0, linewidth= 0.2, alpha= 0.1)+
+  scale_fill_manual(values= c("#00797F",  "#003087",  "#B71300"))+
+  guides(fill= guide_legend(title= "Site"))+
+  scale_x_datetime(breaks = breaks_width("1 hour"),labels=date_format("%H:%M"), minor_breaks = NULL)+
+  geom_point(size= 1.5) + geom_line()+
+  theme_bw()+
+  xlab("Hour (UTC)")+
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("Cusk Eel full effort")+
+  scale_color_manual(values= c("#00797F",  "#003087",  "#B71300"))+
+  guides(color= guide_legend(title= "Site"))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 19),
+        legend.title= element_text(size= 18),
+        legend.text= element_text(size= 16))
+
+#Inshore toadfish####
+DB01_toadfish_min <- read.csv(here("data/DB01_toadfish_minData.csv"))
+DB01_toadfish_min$UTC <- as.POSIXct(DB01_toadfish_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+DB01_toadfish_minTOL <- createOctaveLevel(DB01_toadfish_min, type= 'tol')
+
+ES01_toadfish_min <- read.csv(here("data/ES01_toadfish_minData.csv"))
+ES01_toadfish_min$UTC <- as.POSIXct(ES01_toadfish_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+ES01_toadfish_minTOL <- createOctaveLevel(ES01_toadfish_min, type= 'tol')
+
+CB01_toadfish_min <- read.csv(here("data/CB01_toadfish_minData.csv"))
+CB01_toadfish_min$UTC <- as.POSIXct(CB01_toadfish_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+CB01_toadfish_minTOL <- createOctaveLevel(CB01_toadfish_min, type= 'tol')
+
+DB01_toadfish_minTOL <- DB01_toadfish_minTOL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2])
+DB01_toadfish_minTOL %>% filter(UTC_hour == "") %>% nrow 
+for (c in 1:nrow(DB01_toadfish_minTOL)) { 
+  if (DB01_toadfish_minTOL$UTC_hour[c] == "") { 
+    DB01_toadfish_minTOL$UTC_hour[c] <- "00:00:00" 
+  }
+}
+
+DB01toadfish_minTOLMed <- DB01_toadfish_minTOL%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_2000= median(TOL_2000, na.rm= TRUE))
+quants= c(0.05, 0.95)
+DB01toadfish_minTOLQuants <- DB01_toadfish_minTOL %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_2000 = quantile(TOL_2000, probs= quants[1], na.rm= TRUE),
+            quant95_2000 = quantile(TOL_2000, probs= quants[2], na.rm= TRUE))
+DB01toadfish_minTOLMedQuants <- DB01toadfish_minTOLMed %>%
+  full_join(DB01toadfish_minTOLQuants)
+DB01toadfish_minTOLMedQuants$site <- "DB01"
+#DB01toadfish_minOLMedQuants$UTC_hour <- hms(DB01toadfish_minOLMedQuants$UTC_hour)
+#DB01toadfish_minOLMedQuants$hour <- hour(DB01toadfish_minOLMedQuants$UTC_hour)
+
+
+
+ES01_toadfish_minTOL <- ES01_toadfish_minTOL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2])
+ES01_toadfish_minTOL %>% filter(UTC_hour == "") %>% nrow 
+for (c in 1:nrow(ES01_toadfish_minTOL)) { 
+  if (ES01_toadfish_minTOL$UTC_hour[c] == "") { 
+    ES01_toadfish_minTOL$UTC_hour[c] <- "00:00:00" 
+  }
+}
+ES01toadfish_minTOLMed <- ES01_toadfish_minTOL%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_2000= median(TOL_2000, na.rm= TRUE))
+quants= c(0.05, 0.95)
+ES01toadfish_minTOLQuants <- ES01_toadfish_minTOL %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_2000 = quantile(TOL_2000, probs= quants[1], na.rm= TRUE),
+            quant95_2000 = quantile(TOL_2000, probs= quants[2], na.rm= TRUE))
+ES01toadfish_minTOLMedQuants <- ES01toadfish_minTOLMed %>%
+  full_join(ES01toadfish_minTOLQuants)
+ES01toadfish_minTOLMedQuants$site <- "ES01"
+#ES01toadfish_minOLMedQuants$UTC_hour <- hms(ES01toadfish_minOLMedQuants$UTC_hour)
+#ES01toadfish_minOLMedQuants$hour <- hour(ES01toadfish_minOLMedQuants$UTC_hour)
+
+
+CB01_toadfish_minTOL <- CB01_toadfish_minTOL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2])
+CB01_toadfish_minTOL %>% filter(UTC_hour == "") %>% nrow 
+for (c in 1:nrow(CB01_toadfish_minTOL)) { 
+  if (CB01_toadfish_minTOL$UTC_hour[c] == "") { 
+    CB01_toadfish_minTOL$UTC_hour[c] <- "00:00:00" 
+  }
+}
+CB01toadfish_minTOLMed <- CB01_toadfish_minTOL%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_2000= median(TOL_2000, na.rm= TRUE))
+quants= c(0.05, 0.95)
+CB01toadfish_minTOLQuants <- CB01_toadfish_minTOL %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_2000 = quantile(TOL_2000, probs= quants[1], na.rm= TRUE),
+            quant95_2000 = quantile(TOL_2000, probs= quants[2], na.rm= TRUE))
+CB01toadfish_minTOLMedQuants <- CB01toadfish_minTOLMed %>%
+  full_join(CB01toadfish_minTOLQuants)
+CB01toadfish_minTOLMedQuants$site <- "CB01"
+#CB01toadfish_minOLMedQuants$UTC_hour <- hms(CB01toadfish_minOLMedQuants$UTC_hour)
+#CB01toadfish_minOLMedQuants$hour <- hour(CB01toadfish_minOLMedQuants$UTC_hour)
+
+
+all_intoadfish_minTOL <- DB01toadfish_minTOLMedQuants %>%
+  full_join(ES01toadfish_minTOLMedQuants) %>%
+  full_join(CB01toadfish_minTOLMedQuants)
+
+all_intoadfish_minTOL$site = factor(all_intoadfish_minTOL$site,
+                                        levels= c("DB01", "ES01", "CB01"),
+                                        labels= c("DB01", "ES01", "CB01"))
+all_intoadfish_minTOL$UTC_hour = as.POSIXct(strptime(all_intoadfish_minTOL$UTC_hour,"%H:%M:%S", tz= "GMT"))
+
+ggplot(all_intoadfish_minTOL, aes(x= UTC_hour, y= med_2000, group= site, color= site))+
+  geom_ribbon(aes(ymin= quant05_2000,
+                  ymax= quant95_2000,
+                  fill= site, color= site), linetype= 0, linewidth= 0.2, alpha= 0.1)+
+  scale_fill_manual(values= c("#00797F",  "#003087",  "#B71300"))+
+  guides(fill= guide_legend(title= "Site"))+
+  scale_x_datetime(breaks = breaks_width("1 hour"),labels=date_format("%H:%M"), minor_breaks = NULL)+
+  geom_point(size= 1.5) + geom_line()+
+  theme_bw()+
+  xlab("Hour (UTC)")+
+  ylab(expression(paste('Median 2000Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("Toadfish full effort")+
+  scale_color_manual(values= c("#00797F",  "#003087",  "#B71300"))+
+  guides(color= guide_legend(title= "Site"))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 19),
+        legend.title= element_text(size= 18),
+        legend.text= element_text(size= 16))
+
+#Mid-shore toadfish####
+ES02_toadfish_min <- read.csv(here("data/ES02_toadfish_minData.csv"))
+ES02_toadfish_min$UTC <- as.POSIXct(ES02_toadfish_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+ES02_toadfish_minTOL <- createOctaveLevel(ES02_toadfish_min, type= 'tol')
+
+CB02_toadfish_min <- read.csv(here("data/CB02_toadfish_minData.csv"))
+CB02_toadfish_min$UTC <- as.POSIXct(CB02_toadfish_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
+CB02_toadfish_minTOL <- createOctaveLevel(CB02_toadfish_min, type= 'tol')
+
+ES02_toadfish_minTOL <- ES02_toadfish_minTOL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2])
+ES02_toadfish_minTOL %>% filter(UTC_hour == "") %>% nrow 
+for (c in 1:nrow(ES02_toadfish_minTOL)) { 
+  if (ES02_toadfish_minTOL$UTC_hour[c] == "") { 
+    ES02_toadfish_minTOL$UTC_hour[c] <- "00:00:00" 
+  }
+}
+ES02toadfish_minTOLMed <- ES02_toadfish_minTOL%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_2000= median(TOL_2000, na.rm= TRUE))
+quants= c(0.05, 0.95)
+ES02toadfish_minTOLQuants <- ES02_toadfish_minTOL %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_2000 = quantile(TOL_2000, probs= quants[1], na.rm= TRUE),
+            quant95_2000 = quantile(TOL_2000, probs= quants[2], na.rm= TRUE))
+ES02toadfish_minTOLMedQuants <- ES02toadfish_minTOLMed %>%
+  full_join(ES02toadfish_minTOLQuants)
+ES02toadfish_minTOLMedQuants$site <- "ES02"
+#ES02toadfish_minOLMedQuants$UTC_hour <- hms(ES02toadfish_minOLMedQuants$UTC_hour)
+#ES02toadfish_minOLMedQuants$hour <- hour(ES02toadfish_minOLMedQuants$UTC_hour)
+
+
+CB02_toadfish_minTOL <- CB02_toadfish_minTOL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2])
+CB02_toadfish_minTOL %>% filter(UTC_hour == "") %>% nrow 
+for (c in 1:nrow(CB02_toadfish_minTOL)) { 
+  if (CB02_toadfish_minTOL$UTC_hour[c] == "") { 
+    CB02_toadfish_minTOL$UTC_hour[c] <- "00:00:00" 
+  }
+}
+CB02toadfish_minTOLMed <- CB02_toadfish_minTOL%>%
+  dplyr::group_by(UTC_hour)%>%
+  dplyr::summarise(
+    med_2000= median(TOL_2000, na.rm= TRUE))
+quants= c(0.05, 0.95)
+CB02toadfish_minTOLQuants <- CB02_toadfish_minTOL %>%
+   group_by(UTC_hour) %>%
+  summarize(quant05_2000 = quantile(TOL_2000, probs= quants[1], na.rm= TRUE),
+            quant95_2000 = quantile(TOL_2000, probs= quants[2], na.rm= TRUE))
+CB02toadfish_minTOLMedQuants <- CB02toadfish_minTOLMed %>%
+  full_join(CB02toadfish_minTOLQuants)
+CB02toadfish_minTOLMedQuants$site <- "CB02"
+#CB02toadfish_minOLMedQuants$UTC_hour <- hms(CB02toadfish_minOLMedQuants$UTC_hour)
+#CB02toadfish_minOLMedQuants$hour <- hour(CB02toadfish_minOLMedQuants$UTC_hour)
+
+
+all_intoadfish_minTOL <-ES02toadfish_minTOLMedQuants %>%
+  full_join(CB02toadfish_minTOLMedQuants)
+
+all_intoadfish_minTOL$site = factor(all_intoadfish_minTOL$site,
+                                        levels= c("ES02", "CB02"),
+                                        labels= c("ES02", "CB02"))
+all_intoadfish_minTOL$UTC_hour = as.POSIXct(strptime(all_intoadfish_minTOL$UTC_hour,"%H:%M:%S", tz= "GMT"))
+
+ggplot(all_intoadfish_minTOL, aes(x= UTC_hour, y= med_2000, group= site, color= site))+
+  geom_ribbon(aes(ymin= quant05_2000,
+                  ymax= quant95_2000,
+                  fill= site, color= site), linetype= 0, linewidth= 0.2, alpha= 0.1)+
+  scale_fill_manual(values= c( "#003087",  "#B71300"))+
+  guides(fill= guide_legend(title= "Site"))+
+  scale_x_datetime(breaks = breaks_width("1 hour"),labels=date_format("%H:%M"), minor_breaks = NULL)+
+  geom_point(size= 1.5) + geom_line()+
+  theme_bw()+
+  xlab("Hour (UTC)")+
+  ylab(expression(paste('Median 2000Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("Toadfish full effort")+
+  scale_color_manual(values= c("#003087",  "#B71300"))+
+  guides(color= guide_legend(title= "Site"))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 19),
+        legend.title= element_text(size= 18),
+        legend.text= element_text(size= 16))
 
 ```
 #PSD day/night in fall- come back to this later if needed
