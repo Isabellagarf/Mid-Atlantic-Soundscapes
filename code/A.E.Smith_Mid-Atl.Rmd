@@ -9587,12 +9587,12 @@ for (c in 1:nrow(DB01_toadfish_minTOL)) {
 DB01toadfish_minTOLMed <- DB01_toadfish_minTOL%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
-    med_2000= median(TOL_2000, na.rm= TRUE))
+    med_1000= median(TOL_1000, na.rm= TRUE))
 quants= c(0.05, 0.95)
 DB01toadfish_minTOLQuants <- DB01_toadfish_minTOL %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_2000 = quantile(TOL_2000, probs= quants[1], na.rm= TRUE),
-            quant95_2000 = quantile(TOL_2000, probs= quants[2], na.rm= TRUE))
+  summarize(quant05_1000 = quantile(TOL_1000, probs= quants[1], na.rm= TRUE),
+            quant95_1000 = quantile(TOL_1000, probs= quants[2], na.rm= TRUE))
 DB01toadfish_minTOLMedQuants <- DB01toadfish_minTOLMed %>%
   full_join(DB01toadfish_minTOLQuants)
 DB01toadfish_minTOLMedQuants$site <- "DB01"
@@ -9613,12 +9613,12 @@ for (c in 1:nrow(ES01_toadfish_minTOL)) {
 ES01toadfish_minTOLMed <- ES01_toadfish_minTOL%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
-    med_2000= median(TOL_2000, na.rm= TRUE))
+    med_1000= median(TOL_1000, na.rm= TRUE))
 quants= c(0.05, 0.95)
 ES01toadfish_minTOLQuants <- ES01_toadfish_minTOL %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_2000 = quantile(TOL_2000, probs= quants[1], na.rm= TRUE),
-            quant95_2000 = quantile(TOL_2000, probs= quants[2], na.rm= TRUE))
+  summarize(quant05_1000 = quantile(TOL_1000, probs= quants[1], na.rm= TRUE),
+            quant95_1000 = quantile(TOL_1000, probs= quants[2], na.rm= TRUE))
 ES01toadfish_minTOLMedQuants <- ES01toadfish_minTOLMed %>%
   full_join(ES01toadfish_minTOLQuants)
 ES01toadfish_minTOLMedQuants$site <- "ES01"
@@ -9638,12 +9638,12 @@ for (c in 1:nrow(CB01_toadfish_minTOL)) {
 CB01toadfish_minTOLMed <- CB01_toadfish_minTOL%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
-    med_2000= median(TOL_2000, na.rm= TRUE))
+    med_1000= median(TOL_1000, na.rm= TRUE))
 quants= c(0.05, 0.95)
 CB01toadfish_minTOLQuants <- CB01_toadfish_minTOL %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_2000 = quantile(TOL_2000, probs= quants[1], na.rm= TRUE),
-            quant95_2000 = quantile(TOL_2000, probs= quants[2], na.rm= TRUE))
+  summarize(quant05_1000 = quantile(TOL_1000, probs= quants[1], na.rm= TRUE),
+            quant95_1000 = quantile(TOL_1000, probs= quants[2], na.rm= TRUE))
 CB01toadfish_minTOLMedQuants <- CB01toadfish_minTOLMed %>%
   full_join(CB01toadfish_minTOLQuants)
 CB01toadfish_minTOLMedQuants$site <- "CB01"
@@ -9660,9 +9660,9 @@ all_intoadfish_minTOL$site = factor(all_intoadfish_minTOL$site,
                                         labels= c("DB01", "ES01", "CB01"))
 all_intoadfish_minTOL$UTC_hour = as.POSIXct(strptime(all_intoadfish_minTOL$UTC_hour,"%H:%M:%S", tz= "GMT"))
 
-ggplot(all_intoadfish_minTOL, aes(x= UTC_hour, y= med_2000, group= site, color= site))+
-  geom_ribbon(aes(ymin= quant05_2000,
-                  ymax= quant95_2000,
+ggplot(all_intoadfish_minTOL, aes(x= UTC_hour, y= med_1000, group= site, color= site))+
+  geom_ribbon(aes(ymin= quant05_1000,
+                  ymax= quant95_1000,
                   fill= site, color= site), linetype= 0, linewidth= 0.2, alpha= 0.1)+
   scale_fill_manual(values= c("#00797F",  "#003087",  "#B71300"))+
   guides(fill= guide_legend(title= "Site"))+
@@ -9670,7 +9670,7 @@ ggplot(all_intoadfish_minTOL, aes(x= UTC_hour, y= med_2000, group= site, color= 
   geom_point(size= 1.5) + geom_line()+
   theme_bw()+
   xlab("Hour (UTC)")+
-  ylab(expression(paste('Median 2000Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 1000Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
   ggtitle("Toadfish full effort")+
   scale_color_manual(values= c("#00797F",  "#003087",  "#B71300"))+
   guides(color= guide_legend(title= "Site"))+
@@ -9702,12 +9702,12 @@ for (c in 1:nrow(ES02_toadfish_minTOL)) {
 ES02toadfish_minTOLMed <- ES02_toadfish_minTOL%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
-    med_2000= median(TOL_2000, na.rm= TRUE))
+    med_1000= median(TOL_1000, na.rm= TRUE))
 quants= c(0.05, 0.95)
 ES02toadfish_minTOLQuants <- ES02_toadfish_minTOL %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_2000 = quantile(TOL_2000, probs= quants[1], na.rm= TRUE),
-            quant95_2000 = quantile(TOL_2000, probs= quants[2], na.rm= TRUE))
+  summarize(quant05_1000 = quantile(TOL_1000, probs= quants[1], na.rm= TRUE),
+            quant95_1000 = quantile(TOL_1000, probs= quants[2], na.rm= TRUE))
 ES02toadfish_minTOLMedQuants <- ES02toadfish_minTOLMed %>%
   full_join(ES02toadfish_minTOLQuants)
 ES02toadfish_minTOLMedQuants$site <- "ES02"
@@ -9727,12 +9727,12 @@ for (c in 1:nrow(CB02_toadfish_minTOL)) {
 CB02toadfish_minTOLMed <- CB02_toadfish_minTOL%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
-    med_2000= median(TOL_2000, na.rm= TRUE))
+    med_1000= median(TOL_1000, na.rm= TRUE))
 quants= c(0.05, 0.95)
 CB02toadfish_minTOLQuants <- CB02_toadfish_minTOL %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_2000 = quantile(TOL_2000, probs= quants[1], na.rm= TRUE),
-            quant95_2000 = quantile(TOL_2000, probs= quants[2], na.rm= TRUE))
+  summarize(quant05_1000 = quantile(TOL_1000, probs= quants[1], na.rm= TRUE),
+            quant95_1000 = quantile(TOL_1000, probs= quants[2], na.rm= TRUE))
 CB02toadfish_minTOLMedQuants <- CB02toadfish_minTOLMed %>%
   full_join(CB02toadfish_minTOLQuants)
 CB02toadfish_minTOLMedQuants$site <- "CB02"
@@ -9748,9 +9748,9 @@ all_intoadfish_minTOL$site = factor(all_intoadfish_minTOL$site,
                                         labels= c("ES02", "CB02"))
 all_intoadfish_minTOL$UTC_hour = as.POSIXct(strptime(all_intoadfish_minTOL$UTC_hour,"%H:%M:%S", tz= "GMT"))
 
-ggplot(all_intoadfish_minTOL, aes(x= UTC_hour, y= med_2000, group= site, color= site))+
-  geom_ribbon(aes(ymin= quant05_2000,
-                  ymax= quant95_2000,
+ggplot(all_intoadfish_minTOL, aes(x= UTC_hour, y= med_1000, group= site, color= site))+
+  geom_ribbon(aes(ymin= quant05_1000,
+                  ymax= quant95_1000,
                   fill= site, color= site), linetype= 0, linewidth= 0.2, alpha= 0.1)+
   scale_fill_manual(values= c( "#003087",  "#B71300"))+
   guides(fill= guide_legend(title= "Site"))+
@@ -9758,7 +9758,7 @@ ggplot(all_intoadfish_minTOL, aes(x= UTC_hour, y= med_2000, group= site, color= 
   geom_point(size= 1.5) + geom_line()+
   theme_bw()+
   xlab("Hour (UTC)")+
-  ylab(expression(paste('Median 2000Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ylab(expression(paste('Median 1000Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
   ggtitle("Toadfish full effort")+
   scale_color_manual(values= c("#003087",  "#B71300"))+
   guides(color= guide_legend(title= "Site"))+
@@ -10121,17 +10121,428 @@ guides(shape= guide_legend(title= "Site"), color= guide_legend(title= "Year"))+
 
 
 #Cusk eel####
-  #DB01- onset days:
-  #ES01- onset days:
-  #CB01- onset days:
+  #DB01- onset days:8/17/2022, 6/28/2023, 8/19/2024####
+DB01_81722 <-  format(seq(ymd_hms("2022-08-16 20:00:00"), ymd_hms("2022-08-17 19:45:00"), by = "15 min")) #weird timezone things so shift by 4 hours
+DB01_81722df <- data.frame(UTC= DB01_81722)
+DB01_81722df$UTC <- as.POSIXct(DB01_81722df$UTC)
+DB01_81722df <-DB01_81722df %>%
+  left_join(DB01_cuskEel_minOL, by= "UTC")
+DB01_81722df$hour <- hour(DB01_81722df$UTC)
+DB01_81722df <- DB01_81722df %>%
+  filter(DB01_81722df$hour== c("23"))
+DB01_81722Med <- DB01_81722df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+DB01_81722Med$site <- "DB01"
+
+DB01_62823 <-  format(seq(ymd_hms("2023-06-27 20:00:00"), ymd_hms("2023-06-28 19:45:00"), by = "15 min")) 
+DB01_62823df <- data.frame(UTC= DB01_62823)
+DB01_62823df$UTC <- as.POSIXct(DB01_62823df$UTC)
+DB01_62823df <-DB01_62823df %>%
+  left_join(DB01_cuskEel_minOL, by= "UTC")
+DB01_62823df$hour <- hour(DB01_62823df$UTC)
+DB01_62823df <- DB01_62823df %>%
+  filter(DB01_62823df$hour== c("0"))
+DB01_62823Med <- DB01_62823df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+DB01_62823Med$site <- "DB01"
+
+DB01_81924 <-  format(seq(ymd_hms("2024-08-18 20:00:00"), ymd_hms("2024-08-19 19:45:00"), by = "15 min")) 
+DB01_81924df <- data.frame(UTC= DB01_81924)
+DB01_81924df$UTC <- as.POSIXct(DB01_81924df$UTC)
+DB01_81924df <-DB01_81924df %>%
+  left_join(DB01_cuskEel_minOL, by= "UTC")
+DB01_81924df$hour <- hour(DB01_81924df$UTC)
+DB01_81924df <- DB01_81924df %>%
+  filter(DB01_81924df$hour== c("23"))
+DB01_81924Med <- DB01_81924df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+DB01_81924Med$site <- "DB01"
+
+DB01_cuskEel_onsets <- DB01_81722Med %>%
+  full_join(DB01_62823Med) %>%
+  full_join(DB01_81924Med)
+
+DB01_cuskEel_onsets <- DB01_cuskEel_onsets %>%
+  mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
+  mutate(month =  str_split(UTC_date,"-", simplify = T)[,2]) %>%
+  mutate(day = str_split(UTC_date, "-", simplify= T)[,3])
+DB01_cuskEel_onsets$month_day <- paste(DB01_cuskEel_onsets$month, DB01_cuskEel_onsets$day, sep = "-")
+DB01_cuskEel_onsets$shore <- "Inshore"
+DB01_cuskEel_onsets$lat <- "Delaware"
+
+
+  #ES01- onset days:8/31/2024####
+ES01_83124 <-  format(seq(ymd_hms("2024-08-30 20:00:00"), ymd_hms("2024-08-31 19:45:00"), by = "15 min")) #weird timezone things so shift by 4 hours
+ES01_83124df <- data.frame(UTC= ES01_83124)
+ES01_83124df$UTC <- as.POSIXct(ES01_83124df$UTC)
+ES01_83124df <-ES01_83124df %>%
+  left_join(ES01_cuskEel_minOL, by= "UTC")
+ES01_83124df$hour <- hour(ES01_83124df$UTC)
+ES01_83124df <- ES01_83124df %>%
+  filter(ES01_83124df$hour== c("23"))
+ES01_83124Med <- ES01_83124df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+ES01_83124Med$site <- "ES01"
+
+ES01_cuskEel_onsets <- ES01_83124Med
+
+ES01_cuskEel_onsets <- ES01_cuskEel_onsets %>%
+  mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
+  mutate(month =  str_split(UTC_date,"-", simplify = T)[,2]) %>%
+  mutate(day = str_split(UTC_date, "-", simplify= T)[,3])
+ES01_cuskEel_onsets$month_day <- paste(ES01_cuskEel_onsets$month, ES01_cuskEel_onsets$day, sep = "-")
+ES01_cuskEel_onsets$shore <- "Inshore"
+ES01_cuskEel_onsets$lat <- "Eastern"
+
+  #CB01- onset days:8/18/2022, 6/2/2023, 7/26/2024####
+CB01_81822 <-  format(seq(ymd_hms("2022-08-17 20:00:00"), ymd_hms("2022-08-18 19:45:00"), by = "15 min")) #weird timezone things so shift by 4 hours
+CB01_81822df <- data.frame(UTC= CB01_81822)
+CB01_81822df$UTC <- as.POSIXct(CB01_81822df$UTC)
+CB01_81822df <-CB01_81822df %>%
+  left_join(CB01_cuskEel_minOL, by= "UTC")
+CB01_81822df$hour <- hour(CB01_81822df$UTC)
+CB01_81822df <- CB01_81822df %>%
+  filter(CB01_81822df$hour== c("23"))
+CB01_81822Med <- CB01_81822df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+CB01_81822Med$site <- "CB01"
+
+CB01_6223 <-  format(seq(ymd_hms("2023-06-01 20:00:00"), ymd_hms("2023-06-02 19:45:00"), by = "15 min")) 
+CB01_6223df <- data.frame(UTC= CB01_6223)
+CB01_6223df$UTC <- as.POSIXct(CB01_6223df$UTC)
+CB01_6223df <-CB01_6223df %>%
+  left_join(CB01_cuskEel_minOL, by= "UTC")
+CB01_6223df$hour <- hour(CB01_6223df$UTC)
+CB01_6223df <- CB01_6223df %>%
+  filter(CB01_6223df$hour== c("0"))
+CB01_6223Med <- CB01_6223df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+CB01_6223Med$site <- "CB01"
+
+CB01_72624 <-  format(seq(ymd_hms("2024-07-25 20:00:00"), ymd_hms("2024-07-26 19:45:00"), by = "15 min")) 
+CB01_72624df <- data.frame(UTC= CB01_72624)
+CB01_72624df$UTC <- as.POSIXct(CB01_72624df$UTC)
+CB01_72624df <-CB01_72624df %>%
+  left_join(CB01_cuskEel_minOL, by= "UTC")
+CB01_72624df$hour <- hour(CB01_72624df$UTC)
+CB01_72624df <- CB01_72624df %>%
+  filter(CB01_72624df$hour== c("0"))
+CB01_72624Med <- CB01_72624df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+CB01_72624Med$site <- "CB01"
+
+CB01_cuskEel_onsets <- CB01_81822Med %>%
+  full_join(CB01_6223Med) %>%
+  full_join(CB01_72624Med)
+
+CB01_cuskEel_onsets <- CB01_cuskEel_onsets %>%
+  mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
+  mutate(month =  str_split(UTC_date,"-", simplify = T)[,2]) %>%
+  mutate(day = str_split(UTC_date, "-", simplify= T)[,3])
+CB01_cuskEel_onsets$month_day <- paste(CB01_cuskEel_onsets$month, CB01_cuskEel_onsets$day, sep = "-")
+CB01_cuskEel_onsets$shore <- "Inshore"
+CB01_cuskEel_onsets$lat <- "Chesapeake"
+
+#plot####
+inshore_cuskEel_onsets <- DB01_cuskEel_onsets %>%
+  full_join(ES01_cuskEel_onsets) %>%
+  full_join(CB01_cuskEel_onsets)
+inshore_cuskEel_onsets$lat = factor(inshore_cuskEel_onsets$lat,
+                                        levels= c('Delaware', 'Eastern', 'Chesapeake'),
+                                        labels= c('Delaware', 'Eastern', 'Chesapeake'))
+
+ggplot(inshore_cuskEel_onsets, aes(x= month_day, y= med_2000, color= year, shape= interaction (lat, shore)))+
+  geom_point(size= 5, stroke= 1.75)+
+  scale_shape_manual(values= c(1, 2, 22, 16, 17, 15))+
+  scale_color_manual(values= c("#00797F",  "#003087",  "#B71300"))+
+guides(shape= guide_legend(title= "Site"), color= guide_legend(title= "Year"))+
+  theme_bw()+
+  xlab("Onset Date")+
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("Cusk Eel: median peak diel on first day of chorusing")+
+  theme(axis.text.x = element_text(vjust = 0.5,  size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 21),
+        legend.title= element_text(size= 18),
+        legend.text= element_text(size= 16))
 
 #Toadfish####
-  #DB01- onset days:
-  #ES01- onset days:
-  #CB01- onset days:
-  #ES02- onset days:
-  #CB02- onset days:
-  #CB03- onset days:
+  #DB01- onset days:9/8/2022, 6/23/2023, 9/12/2024####
+DB01_9822 <-  format(seq(ymd_hms("2022-09-07 20:00:00"), ymd_hms("2022-09-08 19:45:00"), by = "15 min")) 
+DB01_9822df <- data.frame(UTC= DB01_9822)
+DB01_9822df$UTC <- as.POSIXct(DB01_9822df$UTC)
+DB01_9822df <-DB01_9822df %>%
+  left_join(DB01_toadfish_minTOL, by= "UTC")
+DB01_9822df$hour <- hour(DB01_9822df$UTC)
+DB01_9822df <- DB01_9822df %>%
+  filter(DB01_9822df$hour== c("0"))
+DB01_9822Med <- DB01_9822df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+DB01_9822Med$site <- "DB01"
+
+DB01_62323 <-  format(seq(ymd_hms("2023-06-22 20:00:00"), ymd_hms("2023-06-23 19:45:00"), by = "15 min")) 
+DB01_62323df <- data.frame(UTC= DB01_62323)
+DB01_62323df$UTC <- as.POSIXct(DB01_62323df$UTC)
+DB01_62323df <-DB01_62323df %>%
+  left_join(DB01_toadfish_minTOL, by= "UTC")
+DB01_62323df$hour <- hour(DB01_62323df$UTC)
+DB01_62323df <- DB01_62323df %>%
+  filter(DB01_62323df$hour== c("2"))
+DB01_62323Med <- DB01_62323df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+DB01_62323Med$site <- "DB01"
+
+DB01_91224 <-  format(seq(ymd_hms("2024-09-11 20:00:00"), ymd_hms("2024-09-12 19:45:00"), by = "15 min")) 
+DB01_91224df <- data.frame(UTC= DB01_91224)
+DB01_91224df$UTC <- as.POSIXct(DB01_91224df$UTC)
+DB01_91224df <-DB01_91224df %>%
+  left_join(DB01_toadfish_minTOL, by= "UTC")
+DB01_91224df$hour <- hour(DB01_91224df$UTC)
+DB01_91224df <- DB01_91224df %>%
+  filter(DB01_91224df$hour== c("0"))
+DB01_91224Med <- DB01_91224df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+DB01_91224Med$site <- "DB01"
+
+DB01_toadfish_onsets <- DB01_9822Med %>%
+  full_join(DB01_62323Med) %>%
+  full_join(DB01_91224Med)
+
+DB01_toadfish_onsets <- DB01_toadfish_onsets %>%
+  mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
+  mutate(month =  str_split(UTC_date,"-", simplify = T)[,2]) %>%
+  mutate(day = str_split(UTC_date, "-", simplify= T)[,3])
+DB01_toadfish_onsets$month_day <- paste(DB01_toadfish_onsets$month, DB01_toadfish_onsets$day, sep = "-")
+DB01_toadfish_onsets$shore <- "Inshore"
+DB01_toadfish_onsets$lat <- "Delaware"
+
+  #ES01- onset day: 9/3/2024####
+ES01_9324 <-  format(seq(ymd_hms("2024-09-02 20:00:00"), ymd_hms("2024-09-03 19:45:00"), by = "15 min")) 
+ES01_9324df <- data.frame(UTC= ES01_9324)
+ES01_9324df$UTC <- as.POSIXct(ES01_9324df$UTC)
+ES01_9324df <-ES01_9324df %>%
+  left_join(ES01_toadfish_minTOL, by= "UTC")
+ES01_9324df$hour <- hour(ES01_9324df$UTC)
+ES01_9324df <- ES01_9324df %>%
+  filter(ES01_9324df$hour== c("0"))
+ES01_9324Med <- ES01_9324df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+ES01_9324Med$site <- "ES01"
+
+ES01_toadfish_onsets <- ES01_9324Med
+
+ES01_toadfish_onsets <- ES01_toadfish_onsets %>%
+  mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
+  mutate(month =  str_split(UTC_date,"-", simplify = T)[,2]) %>%
+  mutate(day = str_split(UTC_date, "-", simplify= T)[,3])
+ES01_toadfish_onsets$month_day <- paste(ES01_toadfish_onsets$month, ES01_toadfish_onsets$day, sep = "-")
+ES01_toadfish_onsets$shore <- "Inshore"
+ES01_toadfish_onsets$lat <- "Eastern"
+
+  #CB01- onset days:8/18/2022, 6/23/2023, 8/5/2023, 9/3/2024 ####
+CB01_81822 <-  format(seq(ymd_hms("2022-08-17 20:00:00"), ymd_hms("2022-08-18 19:45:00"), by = "15 min")) 
+CB01_81822df <- data.frame(UTC= CB01_81822)
+CB01_81822df$UTC <- as.POSIXct(CB01_81822df$UTC)
+CB01_81822df <-CB01_81822df %>%
+  left_join(CB01_toadfish_minTOL, by= "UTC")
+CB01_81822df$hour <- hour(CB01_81822df$UTC)
+CB01_81822df <- CB01_81822df %>%
+  filter(CB01_81822df$hour== c("1"))
+CB01_81822Med <- CB01_81822df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+CB01_81822Med$site <- "CB01"
+
+CB01_62323 <-  format(seq(ymd_hms("2023-06-22 20:00:00"), ymd_hms("2023-06-23 19:45:00"), by = "15 min")) 
+CB01_62323df <- data.frame(UTC= CB01_62323)
+CB01_62323df$UTC <- as.POSIXct(CB01_62323df$UTC)
+CB01_62323df <-CB01_62323df %>%
+  left_join(CB01_toadfish_minTOL, by= "UTC")
+CB01_62323df$hour <- hour(CB01_62323df$UTC)
+CB01_62323df <- CB01_62323df %>%
+  filter(CB01_62323df$hour== c("2"))
+CB01_62323Med <- CB01_62323df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+CB01_62323Med$site <- "CB01"
+
+CB01_8523 <-  format(seq(ymd_hms("2023-08-04 20:00:00"), ymd_hms("2023-08-05 19:45:00"), by = "15 min")) 
+CB01_8523df <- data.frame(UTC= CB01_8523)
+CB01_8523df$UTC <- as.POSIXct(CB01_8523df$UTC)
+CB01_8523df <-CB01_8523df %>%
+  left_join(CB01_toadfish_minTOL, by= "UTC")
+CB01_8523df$hour <- hour(CB01_8523df$UTC)
+CB01_8523df <- CB01_8523df %>%
+  filter(CB01_8523df$hour== c("1"))
+CB01_8523Med <- CB01_8523df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+CB01_8523Med$site <- "CB01"
+
+CB01_9324 <-  format(seq(ymd_hms("2024-09-02 20:00:00"), ymd_hms("2024-09-03 19:45:00"), by = "15 min")) 
+CB01_9324df <- data.frame(UTC= CB01_9324)
+CB01_9324df$UTC <- as.POSIXct(CB01_9324df$UTC)
+CB01_9324df <-CB01_9324df %>%
+  left_join(CB01_toadfish_minTOL, by= "UTC")
+CB01_9324df$hour <- hour(CB01_9324df$UTC)
+CB01_9324df <- CB01_9324df %>%
+  filter(CB01_9324df$hour== c("0"))
+CB01_9324Med <- CB01_9324df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+CB01_9324Med$site <- "CB01"
+
+CB01_toadfish_onsets <- CB01_81822Med %>%
+  full_join(CB01_62323Med) %>%
+  full_join(CB01_8523Med) %>%
+  full_join(CB01_9324Med)
+
+CB01_toadfish_onsets <- CB01_toadfish_onsets %>%
+  mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
+  mutate(month =  str_split(UTC_date,"-", simplify = T)[,2]) %>%
+  mutate(day = str_split(UTC_date, "-", simplify= T)[,3])
+CB01_toadfish_onsets$month_day <- paste(CB01_toadfish_onsets$month, CB01_toadfish_onsets$day, sep = "-")
+CB01_toadfish_onsets$shore <- "Inshore"
+CB01_toadfish_onsets$lat <- "Chesapeake"
+
+  #ES02- onset days:9/21/2024 NAUT DUSK####
+ES02_92124 <-  format(seq(ymd_hms("2024-09-20 20:00:00"), ymd_hms("2024-09-21 19:45:00"), by = "15 min")) 
+ES02_92124df <- data.frame(UTC= ES02_92124)
+ES02_92124df$UTC <- as.POSIXct(ES02_92124df$UTC)
+ES02_92124df <-ES02_92124df %>%
+  left_join(ES02_toadfish_minTOL, by= "UTC")
+ES02_92124df$hour <- hour(ES02_92124df$UTC)
+ES02_92124df <- ES02_92124df %>%
+  filter(ES02_92124df$hour== c("23"))
+ES02_92124Med <- ES02_92124df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+ES02_92124Med$site <- "ES02"
+
+ES02_toadfish_onsets <- ES02_92124Med
+
+ES02_toadfish_onsets <- ES02_toadfish_onsets %>%
+  mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
+  mutate(month =  str_split(UTC_date,"-", simplify = T)[,2]) %>%
+  mutate(day = str_split(UTC_date, "-", simplify= T)[,3])
+ES02_toadfish_onsets$month_day <- paste(ES02_toadfish_onsets$month, ES02_toadfish_onsets$day, sep = "-")
+ES02_toadfish_onsets$shore <- "Mid-Shore"
+ES02_toadfish_onsets$lat <- "Eastern"
+
+  #CB02- onset days:9/12/2022, 9/24/2023, 9/23/2024 ####
+CB02_91222 <-  format(seq(ymd_hms("2022-09-11 20:00:00"), ymd_hms("2022-09-12 19:45:00"), by = "15 min")) 
+CB02_91222df <- data.frame(UTC= CB02_91222)
+CB02_91222df$UTC <- as.POSIXct(CB02_91222df$UTC)
+CB02_91222df <-CB02_91222df %>%
+  left_join(CB02_toadfish_minTOL, by= "UTC")
+CB02_91222df$hour <- hour(CB02_91222df$UTC)
+CB02_91222df <- CB02_91222df %>%
+  filter(CB02_91222df$hour== c("0"))
+CB02_91222Med <- CB02_91222df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+CB02_91222Med$site <- "CB02"
+
+CB02_92423 <-  format(seq(ymd_hms("2023-09-23 20:00:00"), ymd_hms("2023-09-24 19:45:00"), by = "15 min")) 
+CB02_92423df <- data.frame(UTC= CB02_92423)
+CB02_92423df$UTC <- as.POSIXct(CB02_92423df$UTC)
+CB02_92423df <-CB02_92423df %>%
+  left_join(CB02_toadfish_minTOL, by= "UTC")
+CB02_92423df$hour <- hour(CB02_92423df$UTC)
+CB02_92423df <- CB02_92423df %>%
+  filter(CB02_92423df$hour== c("23"))
+CB02_92423Med <- CB02_92423df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+CB02_92423Med$site <- "CB02"
+
+CB02_92324 <-  format(seq(ymd_hms("2024-09-22 20:00:00"), ymd_hms("2024-09-23 19:45:00"), by = "15 min")) 
+CB02_92324df <- data.frame(UTC= CB02_92324)
+CB02_92324df$UTC <- as.POSIXct(CB02_92324df$UTC)
+CB02_92324df <-CB02_92324df %>%
+  left_join(CB02_toadfish_minTOL, by= "UTC")
+CB02_92324df$hour <- hour(CB02_92324df$UTC)
+CB02_92324df <- CB02_92324df %>%
+  filter(CB02_92324df$hour== c("23"))
+CB02_92324Med <- CB02_92324df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+CB02_92324Med$site <- "CB02"
+
+
+CB02_toadfish_onsets <- CB02_91222Med %>%
+  full_join(CB02_92423Med) %>%
+  full_join(CB02_92324Med)
+
+CB02_toadfish_onsets <- CB02_toadfish_onsets %>%
+  mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
+  mutate(month =  str_split(UTC_date,"-", simplify = T)[,2]) %>%
+  mutate(day = str_split(UTC_date, "-", simplify= T)[,3])
+CB02_toadfish_onsets$month_day <- paste(CB02_toadfish_onsets$month, CB02_toadfish_onsets$day, sep = "-")
+CB02_toadfish_onsets$shore <- "Mid-Shore"
+CB02_toadfish_onsets$lat <- "Chesapeake"
+  #CB03- onset days:####
+#plot####
+inshore_toadfish_onsets <- DB01_toadfish_onsets %>%
+  full_join(ES01_toadfish_onsets) %>%
+  full_join(CB01_toadfish_onsets)
+midshore_toadfish_onsets <- ES02_toadfish_onsets %>%
+  full_join(CB02_toadfish_onsets)
+all_toadfish_onsets <- inshore_toadfish_onsets %>%
+  full_join(midshore_toadfish_onsets)
+all_toadfish_onsets$shore = factor(all_toadfish_onsets$shore,
+                                        levels= c('Inshore', 'Mid-Shore'),
+                                        labels= c('Inshore', 'Mid-Shore'))
+all_toadfish_onsets$lat = factor(all_toadfish_onsets$lat,
+                                        levels= c('Delaware', 'Eastern', 'Chesapeake'),
+                                        labels= c('Delaware', 'Eastern', 'Chesapeake'))
+
+ggplot(all_toadfish_onsets, aes(x= month_day, y= med_1000, color= year, shape= interaction (lat, shore)))+
+  geom_point(size= 5, stroke= 1.75)+
+  scale_shape_manual(values= c(1, 2, 22, 17, 15))+
+  scale_color_manual(values= c("#00797F",  "#003087",  "#B71300"))+
+guides(shape= guide_legend(title= "Site"), color= guide_legend(title= "Year"))+
+  theme_bw()+
+  xlab("Onset Date")+
+  ylab(expression(paste('Median 1000Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("Toadfish: median peak diel on first day of chorusing")+
+  theme(axis.text.x = element_text(vjust = 0.5,  size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 21),
+        legend.title= element_text(size= 18),
+        legend.text= element_text(size= 16))
 
 ```
 #spatial/temporal trends- peak per chorus
@@ -10478,7 +10889,7 @@ ggplot(all_unknownPulse_peaks, aes(x= month_day, y= med_500, color= year, shape=
   scale_color_manual(values= c("#00797F",  "#003087",  "#B71300"))+
 guides(shape= guide_legend(title= "Site"), color= guide_legend(title= "Year"))+
   theme_bw()+
-  xlab("Onset Date")+
+  xlab("Peak Date")+
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   ggtitle("Unknown pulse: median peak diel on peak day of chorusing")+
   theme(axis.text.x = element_text(vjust = 0.5,  size= 16),
@@ -10487,6 +10898,184 @@ guides(shape= guide_legend(title= "Site"), color= guide_legend(title= "Year"))+
         plot.title = element_text(size= 21),
         legend.title= element_text(size= 18),
         legend.text= element_text(size= 16))
+
+#Cusk eel####
+CB01_cuskEel_minOL$year <- year(CB01_cuskEel_minOL$UTC)
+CB01_cuskEel_peaks <- CB01_cuskEel_minOL %>%
+  group_by(year) %>%
+  slice_max(OL_2000, n= 15)
+  #DB01 peak days:9/16/2022 (23:30), 9/10/2023 (23:45), 9/11/2024 (23:45)
+  #ES01 peak day: 9/19/2024
+  #CB01 peak days: 9/9/2022 (23:30), 9/5/2023 (23:45), 9/10/2024 (0)
+#DB01####
+DB01_91622 <-  format(seq(ymd_hms("2022-09-15 20:00:00"), ymd_hms("2022-09-16 19:45:00"), by = "15 min")) 
+DB01_91622df <- data.frame(UTC= DB01_91622)
+DB01_91622df$UTC <- as.POSIXct(DB01_91622df$UTC)
+DB01_91622df <-DB01_91622df %>%
+  left_join(DB01_cuskEel_minOL, by= "UTC")
+DB01_91622df$hour <- hour(DB01_91622df$UTC)
+DB01_91622df <- DB01_91622df %>%
+  filter(DB01_91622df$hour== c("23"))
+DB01_91622Med <- DB01_91622df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+DB01_91622Med$site <- "DB01"
+
+DB01_91023 <-  format(seq(ymd_hms("2023-09-09 20:00:00"), ymd_hms("2023-09-10 19:45:00"), by = "15 min")) 
+DB01_91023df <- data.frame(UTC= DB01_91023)
+DB01_91023df$UTC <- as.POSIXct(DB01_91023df$UTC)
+DB01_91023df <-DB01_91023df %>%
+  left_join(DB01_cuskEel_minOL, by= "UTC")
+DB01_91023df$hour <- hour(DB01_91023df$UTC)
+DB01_91023df <- DB01_91023df %>%
+  filter(DB01_91023df$hour== c("23"))
+DB01_91023Med <- DB01_91023df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+DB01_91023Med$site <- "DB01"
+
+DB01_91124 <-  format(seq(ymd_hms("2024-09-10 20:00:00"), ymd_hms("2024-09-11 19:45:00"), by = "15 min")) 
+DB01_91124df <- data.frame(UTC= DB01_91124)
+DB01_91124df$UTC <- as.POSIXct(DB01_91124df$UTC)
+DB01_91124df <-DB01_91124df %>%
+  left_join(DB01_cuskEel_minOL, by= "UTC")
+DB01_91124df$hour <- hour(DB01_91124df$UTC)
+DB01_91124df <- DB01_91124df %>%
+  filter(DB01_91124df$hour== c("23"))
+DB01_91124Med <- DB01_91124df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+DB01_91124Med$site <- "DB01"
+
+DB01_cuskEel_peaks <- DB01_91622Med %>%
+  full_join(DB01_91023Med) %>%
+  full_join(DB01_91124Med)
+
+DB01_cuskEel_peaks <- DB01_cuskEel_peaks %>%
+  mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
+  mutate(month =  str_split(UTC_date,"-", simplify = T)[,2]) %>%
+  mutate(day = str_split(UTC_date, "-", simplify= T)[,3])
+DB01_cuskEel_peaks$month_day <- paste(DB01_cuskEel_peaks$month, DB01_cuskEel_peaks$day, sep = "-")
+DB01_cuskEel_peaks$shore <- "Inshore"
+DB01_cuskEel_peaks$lat <- "Delaware"
+
+#ES01####
+ES01_91924 <-  format(seq(ymd_hms("2024-09-18 20:00:00"), ymd_hms("2024-09-19 19:45:00"), by = "15 min")) 
+ES01_91924df <- data.frame(UTC= ES01_91924)
+ES01_91924df$UTC <- as.POSIXct(ES01_91924df$UTC)
+ES01_91924df <-ES01_91924df %>%
+  left_join(ES01_cuskEel_minOL, by= "UTC")
+ES01_91924df$hour <- hour(ES01_91924df$UTC)
+ES01_91924df <- ES01_91924df %>%
+  filter(ES01_91924df$hour== c("23"))
+ES01_91924Med <- ES01_91924df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+ES01_91924Med$site <- "ES01"
+
+ES01_cuskEel_peaks <- ES01_91924Med 
+
+ES01_cuskEel_peaks <- ES01_cuskEel_peaks %>%
+  mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
+  mutate(month =  str_split(UTC_date,"-", simplify = T)[,2]) %>%
+  mutate(day = str_split(UTC_date, "-", simplify= T)[,3])
+ES01_cuskEel_peaks$month_day <- paste(ES01_cuskEel_peaks$month, ES01_cuskEel_peaks$day, sep = "-")
+ES01_cuskEel_peaks$shore <- "Inshore"
+ES01_cuskEel_peaks$lat <- "Eastern"
+
+#CB01####
+CB01_9922 <-  format(seq(ymd_hms("2022-09-08 20:00:00"), ymd_hms("2022-09-09 19:45:00"), by = "15 min")) 
+CB01_9922df <- data.frame(UTC= CB01_9922)
+CB01_9922df$UTC <- as.POSIXct(CB01_9922df$UTC)
+CB01_9922df <-CB01_9922df %>%
+  left_join(CB01_cuskEel_minOL, by= "UTC")
+CB01_9922df$hour <- hour(CB01_9922df$UTC)
+CB01_9922df <- CB01_9922df %>%
+  filter(CB01_9922df$hour== c("0"))
+CB01_9922Med <- CB01_9922df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+CB01_9922Med$site <- "CB01"
+
+CB01_9523 <-  format(seq(ymd_hms("2023-09-04 20:00:00"), ymd_hms("2023-09-05 19:45:00"), by = "15 min")) 
+CB01_9523df <- data.frame(UTC= CB01_9523)
+CB01_9523df$UTC <- as.POSIXct(CB01_9523df$UTC)
+CB01_9523df <-CB01_9523df %>%
+  left_join(CB01_cuskEel_minOL, by= "UTC")
+CB01_9523df$hour <- hour(CB01_9523df$UTC)
+CB01_9523df <- CB01_9523df %>%
+  filter(CB01_9523df$hour== c("23"))
+CB01_9523Med <- CB01_9523df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+CB01_9523Med$site <- "CB01"
+
+CB01_91024 <-  format(seq(ymd_hms("2024-09-09 20:00:00"), ymd_hms("2024-09-10 19:45:00"), by = "15 min")) 
+CB01_91024df <- data.frame(UTC= CB01_91024)
+CB01_91024df$UTC <- as.POSIXct(CB01_91024df$UTC)
+CB01_91024df <-CB01_91024df %>%
+  left_join(CB01_cuskEel_minOL, by= "UTC")
+CB01_91024df$hour <- hour(CB01_91024df$UTC)
+CB01_91024df <- CB01_91024df %>%
+  filter(CB01_91024df$hour== c("0"))
+CB01_91024Med <- CB01_91024df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_2000= median(OL_2000, na.rm= TRUE))
+CB01_91024Med$site <- "CB01"
+
+CB01_cuskEel_peaks <- CB01_9922Med %>%
+  full_join(CB01_9523Med) %>%
+  full_join(CB01_91024Med)
+
+CB01_cuskEel_peaks <- CB01_cuskEel_peaks %>%
+  mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
+  mutate(month =  str_split(UTC_date,"-", simplify = T)[,2]) %>%
+  mutate(day = str_split(UTC_date, "-", simplify= T)[,3])
+CB01_cuskEel_peaks$month_day <- paste(CB01_cuskEel_peaks$month, CB01_cuskEel_peaks$day, sep = "-")
+CB01_cuskEel_peaks$shore <- "Inshore"
+CB01_cuskEel_peaks$lat <- "Chesapeake"
+
+#plot####
+inshore_cuskEel_peaks <- DB01_cuskEel_peaks %>%
+  full_join(ES01_cuskEel_peaks) %>%
+  full_join(CB01_cuskEel_peaks)
+
+inshore_cuskEel_peaks$lat = factor(inshore_cuskEel_peaks$lat,
+                                        levels= c('Delaware', 'Eastern', 'Chesapeake'),
+                                        labels= c('Delaware', 'Eastern', 'Chesapeake'))
+
+ggplot(inshore_cuskEel_peaks, aes(x= month_day, y= med_2000, color= year, shape= interaction (lat, shore)))+
+  geom_point(size= 5, stroke= 1.75)+
+  scale_shape_manual(values= c(1, 2, 22, 16, 17, 15))+
+  scale_color_manual(values= c("#00797F",  "#003087",  "#B71300"))+
+guides(shape= guide_legend(title= "Site"), color= guide_legend(title= "Year"))+
+  theme_bw()+
+  xlab("Peak Date")+
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("Cusk Eel: median peak diel on peak day of chorusing")+
+  theme(axis.text.x = element_text(vjust = 0.5,  size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 21),
+        legend.title= element_text(size= 18),
+        legend.text= element_text(size= 16))
+#Toadfish####
+DB01_toadfish_minTOL$year <- year(DB01_toadfish_minTOL$UTC)
+DB01_toadfish_peaks <- DB01_toadfish_minTOL %>%
+  group_by(year) %>%
+  slice_max(TOL_1000, n= 5)
+  #DB01 peak days
+  #ES01 peak days
+  #CB01 peak days
+  #ES02 peak days
+  #CB02 peak days
 
 ```
 #PSD day/night in fall- come back to this later if needed
