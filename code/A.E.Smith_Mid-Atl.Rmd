@@ -9320,17 +9320,9 @@ ES02_unknownPulse_min <- read.csv(here("data/ES02_unknownPulse_minData.csv"))
 ES02_unknownPulse_min$UTC <- as.POSIXct(ES02_unknownPulse_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
 ES02_unknownPulse_minOL <- createOctaveLevel(ES02_unknownPulse_min, type= 'ol')
 
-ES02_toadfish_min <- read.csv(here("data/ES02_toadfish_minData.csv"))
-ES02_toadfish_min$UTC <- as.POSIXct(ES02_toadfish_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
-ES02_toadfish_minTOL <- createOctaveLevel(ES02_toadfish_min, type= 'tol')
-
 CB02_unknownPulse_min <- read.csv(here("data/CB02_unknownPulse_minData.csv"))
 CB02_unknownPulse_min$UTC <- as.POSIXct(CB02_unknownPulse_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
 CB02_unknownPulse_minOL <- createOctaveLevel(CB02_unknownPulse_min, type= 'ol')
-
-CB02_toadfish_min <- read.csv(here("data/CB02_toadfish_minData.csv"))
-CB02_toadfish_min$UTC <- as.POSIXct(CB02_toadfish_min$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
-CB02_toadfish_minTOL <- createOctaveLevel(CB02_toadfish_min, type= 'tol')
 
 
 #Unknown pulse
@@ -9824,7 +9816,7 @@ DB01_52124Med <- DB01_52124df%>%
   dplyr::summarise(
     med_500= median(OL_500, na.rm= TRUE))
 DB01_52124Med$site <- "DB01"
-DB01_52124Med$season <- "Fall"
+DB01_52124Med$season <- "Spring"
 
 DB01_unknownPulse_onsets <- DB01_81622Med %>%
   full_join(DB01_52523Med) %>%
@@ -10120,6 +10112,14 @@ all_unknownPulse_onsets$shore = factor(all_unknownPulse_onsets$shore,
 all_unknownPulse_onsets$lat = factor(all_unknownPulse_onsets$lat,
                                         levels= c('Delaware', 'Eastern', 'Chesapeake'),
                                         labels= c('Delaware', 'Eastern', 'Chesapeake'))
+all_unknownPulse_onsets$season = factor(all_unknownPulse_onsets$season,
+                                        levels= c('Spring', 'Summer', 'Fall'),
+                                        labels= c('Spring', 'Summer', 'Fall'))
+
+custom_x_unknownPulse_onsets <- list(
+  scale_x_discrete(labels= c("05-12", "05-21", "05-23", "05-25")),
+  scale_x_discrete(labels= c("06-13", "07-23", "08-16")),
+  scale_x_discrete(labels= c("09-10", "09-16", "09-18", "09-20", "09-24", "10-03", "10-15")))
 
 ggplot(all_unknownPulse_onsets, aes(x= month_day, y= med_500, color= year, shape= interaction (lat, shore)))+
   geom_point(size= 5, stroke= 1.75)+
@@ -10127,11 +10127,12 @@ ggplot(all_unknownPulse_onsets, aes(x= month_day, y= med_500, color= year, shape
   scale_color_manual(values= c("#00797F",  "#003087",  "#B71300"))+
 guides(shape= guide_legend(title= "Site"), color= guide_legend(title= "Year"))+
   theme_bw()+
-#  facet_wrap("season")+
+  facet_wrap("season", scales= "free_x")+
+  facetted_pos_scales(x= custom_x_unknownPulse_onsets)+
   xlab("Onset Date")+
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   ggtitle("Unknown pulse: median peak diel on first day of chorusing")+
-  theme(axis.text.x = element_text(vjust = 0.5,  size= 16),
+  theme(axis.text.x = element_text(vjust = 0.5, angle= 90, size= 16),
         axis.title= element_text(size= 18),
         axis.text.y= element_text(size= 16),
         plot.title = element_text(size= 21),
@@ -10154,6 +10155,7 @@ DB01_81722Med <- DB01_81722df%>%
   dplyr::summarise(
     med_2000= median(OL_2000, na.rm= TRUE))
 DB01_81722Med$site <- "DB01"
+DB01_81722Med$season <- "Summer"
 
 DB01_62823 <-  format(seq(ymd_hms("2023-06-27 20:00:00"), ymd_hms("2023-06-28 19:45:00"), by = "15 min")) 
 DB01_62823df <- data.frame(UTC= DB01_62823)
@@ -10168,6 +10170,7 @@ DB01_62823Med <- DB01_62823df%>%
   dplyr::summarise(
     med_2000= median(OL_2000, na.rm= TRUE))
 DB01_62823Med$site <- "DB01"
+DB01_62823Med$season <- "Summer"
 
 DB01_81924 <-  format(seq(ymd_hms("2024-08-18 20:00:00"), ymd_hms("2024-08-19 19:45:00"), by = "15 min")) 
 DB01_81924df <- data.frame(UTC= DB01_81924)
@@ -10182,6 +10185,7 @@ DB01_81924Med <- DB01_81924df%>%
   dplyr::summarise(
     med_2000= median(OL_2000, na.rm= TRUE))
 DB01_81924Med$site <- "DB01"
+DB01_81924Med$season <- "Summer"
 
 DB01_cuskEel_onsets <- DB01_81722Med %>%
   full_join(DB01_62823Med) %>%
@@ -10210,6 +10214,7 @@ ES01_83124Med <- ES01_83124df%>%
   dplyr::summarise(
     med_2000= median(OL_2000, na.rm= TRUE))
 ES01_83124Med$site <- "ES01"
+ES01_83124Med$season <- "Summer"
 
 ES01_cuskEel_onsets <- ES01_83124Med
 
@@ -10235,6 +10240,7 @@ CB01_81822Med <- CB01_81822df%>%
   dplyr::summarise(
     med_2000= median(OL_2000, na.rm= TRUE))
 CB01_81822Med$site <- "CB01"
+CB01_81822Med$season <- "Summer"
 
 CB01_6223 <-  format(seq(ymd_hms("2023-06-01 20:00:00"), ymd_hms("2023-06-02 19:45:00"), by = "15 min")) 
 CB01_6223df <- data.frame(UTC= CB01_6223)
@@ -10249,6 +10255,7 @@ CB01_6223Med <- CB01_6223df%>%
   dplyr::summarise(
     med_2000= median(OL_2000, na.rm= TRUE))
 CB01_6223Med$site <- "CB01"
+CB01_6223Med$season <- "Summer"
 
 CB01_72624 <-  format(seq(ymd_hms("2024-07-25 20:00:00"), ymd_hms("2024-07-26 19:45:00"), by = "15 min")) 
 CB01_72624df <- data.frame(UTC= CB01_72624)
@@ -10263,6 +10270,7 @@ CB01_72624Med <- CB01_72624df%>%
   dplyr::summarise(
     med_2000= median(OL_2000, na.rm= TRUE))
 CB01_72624Med$site <- "CB01"
+CB01_72624Med$season <- "Summer"
 
 CB01_cuskEel_onsets <- CB01_81822Med %>%
   full_join(CB01_6223Med) %>%
@@ -10315,6 +10323,7 @@ DB01_9822Med <- DB01_9822df%>%
   dplyr::summarise(
     med_1000= median(TOL_1000, na.rm= TRUE))
 DB01_9822Med$site <- "DB01"
+DB01_9822Med$season <- "Fall"
 
 DB01_62323 <-  format(seq(ymd_hms("2023-06-22 20:00:00"), ymd_hms("2023-06-23 19:45:00"), by = "15 min")) 
 DB01_62323df <- data.frame(UTC= DB01_62323)
@@ -10329,6 +10338,7 @@ DB01_62323Med <- DB01_62323df%>%
   dplyr::summarise(
     med_1000= median(TOL_1000, na.rm= TRUE))
 DB01_62323Med$site <- "DB01"
+DB01_62323Med$season <- "Summer"
 
 DB01_91224 <-  format(seq(ymd_hms("2024-09-11 20:00:00"), ymd_hms("2024-09-12 19:45:00"), by = "15 min")) 
 DB01_91224df <- data.frame(UTC= DB01_91224)
@@ -10343,6 +10353,7 @@ DB01_91224Med <- DB01_91224df%>%
   dplyr::summarise(
     med_1000= median(TOL_1000, na.rm= TRUE))
 DB01_91224Med$site <- "DB01"
+DB01_91224Med$season <- "Fall"
 
 DB01_toadfish_onsets <- DB01_9822Med %>%
   full_join(DB01_62323Med) %>%
@@ -10370,6 +10381,7 @@ ES01_9324Med <- ES01_9324df%>%
   dplyr::summarise(
     med_1000= median(TOL_1000, na.rm= TRUE))
 ES01_9324Med$site <- "ES01"
+ES01_9324Med$season <- "Fall"
 
 ES01_toadfish_onsets <- ES01_9324Med
 
@@ -10395,6 +10407,7 @@ CB01_81822Med <- CB01_81822df%>%
   dplyr::summarise(
     med_1000= median(TOL_1000, na.rm= TRUE))
 CB01_81822Med$site <- "CB01"
+CB01_81822Med$season <- "Summer"
 
 CB01_62323 <-  format(seq(ymd_hms("2023-06-22 20:00:00"), ymd_hms("2023-06-23 19:45:00"), by = "15 min")) 
 CB01_62323df <- data.frame(UTC= CB01_62323)
@@ -10409,6 +10422,7 @@ CB01_62323Med <- CB01_62323df%>%
   dplyr::summarise(
     med_1000= median(TOL_1000, na.rm= TRUE))
 CB01_62323Med$site <- "CB01"
+CB01_62323Med$season <- "Summer"
 
 CB01_8523 <-  format(seq(ymd_hms("2023-08-04 20:00:00"), ymd_hms("2023-08-05 19:45:00"), by = "15 min")) 
 CB01_8523df <- data.frame(UTC= CB01_8523)
@@ -10423,6 +10437,7 @@ CB01_8523Med <- CB01_8523df%>%
   dplyr::summarise(
     med_1000= median(TOL_1000, na.rm= TRUE))
 CB01_8523Med$site <- "CB01"
+CB01_8523Med$season <- "Summer"
 
 CB01_9324 <-  format(seq(ymd_hms("2024-09-02 20:00:00"), ymd_hms("2024-09-03 19:45:00"), by = "15 min")) 
 CB01_9324df <- data.frame(UTC= CB01_9324)
@@ -10437,6 +10452,7 @@ CB01_9324Med <- CB01_9324df%>%
   dplyr::summarise(
     med_1000= median(TOL_1000, na.rm= TRUE))
 CB01_9324Med$site <- "CB01"
+CB01_9324Med$season <- "Fall"
 
 CB01_toadfish_onsets <- CB01_81822Med %>%
   full_join(CB01_62323Med) %>%
@@ -10465,6 +10481,7 @@ ES02_92124Med <- ES02_92124df%>%
   dplyr::summarise(
     med_1000= median(TOL_1000, na.rm= TRUE))
 ES02_92124Med$site <- "ES02"
+ES02_92124Med$season <- "Fall"
 
 ES02_toadfish_onsets <- ES02_92124Med
 
@@ -10490,6 +10507,7 @@ CB02_91222Med <- CB02_91222df%>%
   dplyr::summarise(
     med_1000= median(TOL_1000, na.rm= TRUE))
 CB02_91222Med$site <- "CB02"
+CB02_91222Med$season <- "Fall"
 
 CB02_92423 <-  format(seq(ymd_hms("2023-09-23 20:00:00"), ymd_hms("2023-09-24 19:45:00"), by = "15 min")) 
 CB02_92423df <- data.frame(UTC= CB02_92423)
@@ -10504,6 +10522,7 @@ CB02_92423Med <- CB02_92423df%>%
   dplyr::summarise(
     med_1000= median(TOL_1000, na.rm= TRUE))
 CB02_92423Med$site <- "CB02"
+CB02_92423Med$season <- "Fall"
 
 CB02_92324 <-  format(seq(ymd_hms("2024-09-22 20:00:00"), ymd_hms("2024-09-23 19:45:00"), by = "15 min")) 
 CB02_92324df <- data.frame(UTC= CB02_92324)
@@ -10518,6 +10537,7 @@ CB02_92324Med <- CB02_92324df%>%
   dplyr::summarise(
     med_1000= median(TOL_1000, na.rm= TRUE))
 CB02_92324Med$site <- "CB02"
+CB02_92324Med$season <- "Fall"
 
 
 CB02_toadfish_onsets <- CB02_91222Med %>%
@@ -10546,6 +10566,13 @@ all_toadfish_onsets$shore = factor(all_toadfish_onsets$shore,
 all_toadfish_onsets$lat = factor(all_toadfish_onsets$lat,
                                         levels= c('Delaware', 'Eastern', 'Chesapeake'),
                                         labels= c('Delaware', 'Eastern', 'Chesapeake'))
+all_toadfish_onsets$season = factor(all_toadfish_onsets$season,
+                                        levels= c('Summer', 'Fall'),
+                                        labels= c('Summer', 'Fall'))
+
+custom_x_toadfish_onsets <- list(
+  scale_x_discrete(labels= c("06-23", "08-05", "08-18")),
+  scale_x_discrete(labels= c("09-03", "09-08", "09-12", "09-21", "09-23", "09-24")))
 
 ggplot(all_toadfish_onsets, aes(x= month_day, y= med_1000, color= year, shape= interaction (lat, shore)))+
   geom_point(size= 5, stroke= 1.75)+
@@ -10553,10 +10580,12 @@ ggplot(all_toadfish_onsets, aes(x= month_day, y= med_1000, color= year, shape= i
   scale_color_manual(values= c("#00797F",  "#003087",  "#B71300"))+
 guides(shape= guide_legend(title= "Site"), color= guide_legend(title= "Year"))+
   theme_bw()+
+  facet_wrap("season", scales= "free_x")+
+  facetted_pos_scales(x= custom_x_toadfish_onsets)+
   xlab("Onset Date")+
   ylab(expression(paste('Median 1000Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
   ggtitle("Toadfish: median peak diel on first day of chorusing")+
-  theme(axis.text.x = element_text(vjust = 0.5,  size= 16),
+  theme(axis.text.x = element_text(vjust = 0.5, angle= 45, size= 16),
         axis.title= element_text(size= 18),
         axis.text.y= element_text(size= 16),
         plot.title = element_text(size= 21),
