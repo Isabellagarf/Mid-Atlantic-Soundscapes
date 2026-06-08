@@ -11698,13 +11698,197 @@ guides(shape= guide_legend(title= "Site"), color= guide_legend(title= "Year"))+
 DB01_toadfish_minTOL$year <- year(DB01_toadfish_minTOL$UTC)
 DB01_toadfish_peaks <- DB01_toadfish_minTOL %>%
   group_by(year) %>%
-  slice_max(TOL_1000, n= 5)
-  #DB01 peak days
-  #ES01 peak days
-  #CB01 peak days
-  #ES02 peak days
-  #CB02 peak days
+  slice_max(TOL_1000, n=12)
 
+  #DB01 peak days: 9/11/2023 (00:00)####
+DB01_91123 <-  format(seq(ymd_hms("2023-09-10 20:00:00"), ymd_hms("2023-09-11 19:45:00"), by = "15 min")) 
+DB01_91123df <- data.frame(UTC= DB01_91123)
+DB01_91123df$UTC <- as.POSIXct(DB01_91123df$UTC)
+DB01_91123df <-DB01_91123df %>%
+  left_join(DB01_toadfish_minTOL, by= "UTC")
+DB01_91123df$hour <- hour(DB01_91123df$UTC)
+DB01_91123df <- DB01_91123df %>%
+  filter(DB01_91123df$hour== c("0"))
+DB01_91123Med <- DB01_91123df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+DB01_91123Med$site <- "DB01"
+DB01_toadfish_peaks <- DB01_91123Med
+
+DB01_toadfish_peaks <- DB01_toadfish_peaks %>%
+  mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
+  mutate(month =  str_split(UTC_date,"-", simplify = T)[,2]) %>%
+  mutate(day = str_split(UTC_date, "-", simplify= T)[,3])
+DB01_toadfish_peaks$month_day <- paste(DB01_toadfish_peaks$month, DB01_toadfish_peaks$day, sep = "-")
+DB01_toadfish_peaks$shore <- "Inshore"
+DB01_toadfish_peaks$lat <- "Delaware"
+
+  #ES01 peak days: 9/4/2024 (01:00)####
+ES01_9424 <-  format(seq(ymd_hms("2024-09-03 20:00:00"), ymd_hms("2024-09-04 19:45:00"), by = "15 min")) 
+ES01_9424df <- data.frame(UTC= ES01_9424)
+ES01_9424df$UTC <- as.POSIXct(ES01_9424df$UTC)
+ES01_9424df <-ES01_9424df %>%
+  left_join(ES01_toadfish_minTOL, by= "UTC")
+ES01_9424df$hour <- hour(ES01_9424df$UTC)
+ES01_9424df <- ES01_9424df %>%
+  filter(ES01_9424df$hour== c("1"))
+ES01_9424Med <- ES01_9424df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+ES01_9424Med$site <- "ES01"
+ES01_toadfish_peaks <- ES01_9424Med
+
+ES01_toadfish_peaks <- ES01_toadfish_peaks %>%
+  mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
+  mutate(month =  str_split(UTC_date,"-", simplify = T)[,2]) %>%
+  mutate(day = str_split(UTC_date, "-", simplify= T)[,3])
+ES01_toadfish_peaks$month_day <- paste(ES01_toadfish_peaks$month, ES01_toadfish_peaks$day, sep = "-")
+ES01_toadfish_peaks$shore <- "Inshore"
+ES01_toadfish_peaks$lat <- "Eastern"
+
+  #CB01 peak days 8/20/2022 (02:00), 9/14/2023 (02:00), 9/18/2024 (01:00)####
+CB01_82022 <-  format(seq(ymd_hms("2022-08-19 20:00:00"), ymd_hms("2022-08-20 19:45:00"), by = "15 min")) 
+CB01_82022df <- data.frame(UTC= CB01_82022)
+CB01_82022df$UTC <- as.POSIXct(CB01_82022df$UTC)
+CB01_82022df <-CB01_82022df %>%
+  left_join(CB01_toadfish_minTOL, by= "UTC")
+CB01_82022df$hour <- hour(CB01_82022df$UTC)
+CB01_82022df <- CB01_82022df %>%
+  filter(CB01_82022df$hour== c("2"))
+CB01_82022Med <- CB01_82022df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+CB01_82022Med$site <- "CB01"
+
+CB01_91423 <-  format(seq(ymd_hms("2023-09-13 20:00:00"), ymd_hms("2023-09-14 19:45:00"), by = "15 min")) 
+CB01_91423df <- data.frame(UTC= CB01_91423)
+CB01_91423df$UTC <- as.POSIXct(CB01_91423df$UTC)
+CB01_91423df <-CB01_91423df %>%
+  left_join(CB01_toadfish_minTOL, by= "UTC")
+CB01_91423df$hour <- hour(CB01_91423df$UTC)
+CB01_91423df <- CB01_91423df %>%
+  filter(CB01_91423df$hour== c("2"))
+CB01_91423Med <- CB01_91423df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+CB01_91423Med$site <- "CB01"
+
+CB01_91824 <-  format(seq(ymd_hms("2024-09-17 20:00:00"), ymd_hms("2024-09-18 19:45:00"), by = "15 min")) 
+CB01_91824df <- data.frame(UTC= CB01_91824)
+CB01_91824df$UTC <- as.POSIXct(CB01_91824df$UTC)
+CB01_91824df <-CB01_91824df %>%
+  left_join(CB01_toadfish_minTOL, by= "UTC")
+CB01_91824df$hour <- hour(CB01_91824df$UTC)
+CB01_91824df <- CB01_91824df %>%
+  filter(CB01_91824df$hour== c("1"))
+CB01_91824Med <- CB01_91824df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+CB01_91824Med$site <- "CB01"
+
+CB01_toadfish_peaks <- CB01_82022Med %>%
+  full_join(CB01_91423Med) %>%
+  full_join(CB01_91824Med)
+
+CB01_toadfish_peaks <- CB01_toadfish_peaks %>%
+  mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
+  mutate(month =  str_split(UTC_date,"-", simplify = T)[,2]) %>%
+  mutate(day = str_split(UTC_date, "-", simplify= T)[,3])
+CB01_toadfish_peaks$month_day <- paste(CB01_toadfish_peaks$month, CB01_toadfish_peaks$day, sep = "-")
+CB01_toadfish_peaks$shore <- "Inshore"
+CB01_toadfish_peaks$lat <- "Chesapeake"
+
+  #ES02 peak days: 9/22/2024 (01:00)####
+ES02_92224 <-  format(seq(ymd_hms("2024-09-21 20:00:00"), ymd_hms("2024-09-22 19:45:00"), by = "15 min")) 
+ES02_92224df <- data.frame(UTC= ES02_92224)
+ES02_92224df$UTC <- as.POSIXct(ES02_92224df$UTC)
+ES02_92224df <-ES02_92224df %>%
+  left_join(ES02_toadfish_minTOL, by= "UTC")
+ES02_92224df$hour <- hour(ES02_92224df$UTC)
+ES02_92224df <- ES02_92224df %>%
+  filter(ES02_92224df$hour== c("1"))
+ES02_92224Med <- ES02_92224df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+ES02_92224Med$site <- "ES02"
+ES02_toadfish_peaks <- ES02_92224Med
+
+ES02_toadfish_peaks <- ES02_toadfish_peaks %>%
+  mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
+  mutate(month =  str_split(UTC_date,"-", simplify = T)[,2]) %>%
+  mutate(day = str_split(UTC_date, "-", simplify= T)[,3])
+ES02_toadfish_peaks$month_day <- paste(ES02_toadfish_peaks$month, ES02_toadfish_peaks$day, sep = "-")
+ES02_toadfish_peaks$shore <- "Mid-shore"
+ES02_toadfish_peaks$lat <- "Eastern"
+  #CB02 peak days: 9/13/2022 (01:00)####
+CB02_91322 <-  format(seq(ymd_hms("2022-09-12 20:00:00"), ymd_hms("2022-09-13 19:45:00"), by = "15 min")) 
+CB02_91322df <- data.frame(UTC= CB02_91322)
+CB02_91322df$UTC <- as.POSIXct(CB02_91322df$UTC)
+CB02_91322df <-CB02_91322df %>%
+  left_join(CB02_toadfish_minTOL, by= "UTC")
+CB02_91322df$hour <- hour(CB02_91322df$UTC)
+CB02_91322df <- CB02_91322df %>%
+  filter(CB02_91322df$hour== c("1"))
+CB02_91322Med <- CB02_91322df%>%
+  dplyr::group_by(hour, UTC_date)%>%
+  dplyr::summarise(
+    med_1000= median(TOL_1000, na.rm= TRUE))
+CB02_91322Med$site <- "CB02"
+CB02_toadfish_peaks <- CB02_91322Med
+
+CB02_toadfish_peaks <- CB02_toadfish_peaks %>%
+  mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
+  mutate(month =  str_split(UTC_date,"-", simplify = T)[,2]) %>%
+  mutate(day = str_split(UTC_date, "-", simplify= T)[,3])
+CB02_toadfish_peaks$month_day <- paste(CB02_toadfish_peaks$month, CB02_toadfish_peaks$day, sep = "-")
+CB02_toadfish_peaks$shore <- "Mid-shore"
+CB02_toadfish_peaks$lat <- "Chesapeake"
+
+#plot ####
+inshore_toadfish_peaks <- DB01_toadfish_peaks %>%
+  full_join(ES01_toadfish_peaks) %>%
+  full_join(CB01_toadfish_peaks)
+midshore_toadfish_peaks <- ES02_toadfish_peaks %>%
+  full_join(CB02_toadfish_peaks)
+all_toadfish_peaks <- inshore_toadfish_peaks %>%
+  full_join(midshore_toadfish_peaks)
+all_toadfish_peaks$shore = factor(all_toadfish_peaks$shore,
+                                        levels= c('Inshore', 'Mid-shore'),
+                                        labels= c('Inshore', 'Mid-Shore'))
+all_toadfish_peaks$lat = factor(all_toadfish_peaks$lat,
+                                        levels= c('Delaware', 'Eastern', 'Chesapeake'),
+                                        labels= c('Delaware', 'Eastern', 'Chesapeake'))
+all_toadfish_peaks$season = factor(all_toadfish_peaks$season,
+                                        levels= c('Summer', 'Fall'),
+                                        labels= c('Summer', 'Fall'))
+
+custom_x_toadfish_peaks <- list(
+  scale_x_discrete(labels= c("06-23", "08-05", "08-18")),
+  scale_x_discrete(labels= c("09-03", "09-08", "09-12", "09-21", "09-23", "09-24")))
+
+ggplot(all_toadfish_peaks, aes(x= month_day, y= med_1000, color= year, shape= interaction (lat, shore)))+
+  geom_point(size= 5, stroke= 1.75)+
+  scale_shape_manual(values= c(1, 2, 22, 17, 15))+
+  scale_color_manual(values= c("#00797F",  "#003087",  "#B71300"))+
+guides(shape= guide_legend(title= "Site"), color= guide_legend(title= "Year"))+
+  theme_bw()+
+#  facet_wrap("season", scales= "free_x")+
+#  facetted_pos_scales(x= custom_x_toadfish_peaks)+
+  xlab("Peak Date")+
+  ylab(expression(paste('Median 1000Hz Third Octave Level SPL (db re 1 \u00b5Pa)')))+
+  ggtitle("Toadfish: median peak diel on peak day of chorusing")+
+  theme(axis.text.x = element_text(vjust = 0.5, angle= 45, size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        plot.title = element_text(size= 21),
+        legend.title= element_text(size= 18),
+        legend.text= element_text(size= 16))
 ```
 #PSD day/night in fall- come back to this later if needed
 ```{r}
