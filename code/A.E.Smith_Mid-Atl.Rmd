@@ -1097,6 +1097,13 @@ CB03_chorusPresence$site = "CB03"
 #CB03_chorusPresence$shore = "offshore"
 #CB03_chorusPresence$Lat = "Chesapeake Bay"
 
+all_site_presence <- DB01_chorusPresence %>%
+  full_join(DB02_chorusPresence) %>%
+  full_join(ES01_chorusPresence) %>%
+  full_join(ES02_chorusPresence) %>%
+  full_join(CB01_chorusPresence) %>%
+  full_join(CB02_chorusPresence) %>%
+  full_join(CB03_chorusPresence)
 ```
 #plotting sunrise/sunset with chorus presence
 ```{r}
@@ -1174,22 +1181,38 @@ chorus500_plot/chorus1000_plot/chorus2000_plot +plot_layout(guides = "collect", 
 #DB sites
 DB01_temps <- read.csv(here("data/Temp_data/DB01_temps.csv"))
 DB01_temps <- DB01_temps[-c(1,2)]
+DB01_temps$site <- "DB01"
 DB02_temps <- read.csv(here("data/Temp_data/DB02_temps.csv"))
 DB02_temps <- DB02_temps[-c(1,2)]
+DB02_temps$site <- "DB02"
 
 #ES sites
 ES01_temps <- read.csv(here("data/Temp_data/ES01_temps.csv"))
 ES01_temps <- ES01_temps[-c(1,2)]
+ES01_temps$site <- "ES01"
 ES02_temps <- read.csv(here("data/Temp_data/ES02_temps.csv"))
 ES02_temps <- ES02_temps[-c(1,2)]
+ES02_temps$site <- "ES02"
 
 #CB sites
 CB01_temps <- read.csv(here("data/Temp_data/CB01_temps.csv"))
 CB01_temps <- CB01_temps[-c(1,2)]
+CB01_temps$site <- "CB01"
 CB02_temps <- read.csv(here("data/Temp_data/CB02_temps.csv"))
 CB02_temps <- CB02_temps[-c(1,2)]
+CB02_temps$site <- "CB02"
 CB03_temps <- read.csv(here("data/Temp_data/CB03_temps.csv"))
 CB03_temps <- CB03_temps[-c(1,2)]
+CB03_temps$site <- "CB03"
+
+all_site_temps <- DB01_temps %>%
+  full_join(DB02_temps) %>%
+  full_join(ES01_temps) %>%
+  full_join(ES02_temps) %>%
+  full_join(CB01_temps) %>%
+  full_join(CB02_temps) %>%
+  full_join(CB03_temps)
+all_site_temps$Datetime_UTC <- as.POSIXct(all_site_temps$Datetime_UTC, format= "%Y-%m-%d %H:%M:%S", tz = "GMT")
 
 ```
 #old temp plotting 
@@ -11889,6 +11912,69 @@ guides(shape= guide_legend(title= "Site"), color= guide_legend(title= "Year"))+
         plot.title = element_text(size= 21),
         legend.title= element_text(size= 18),
         legend.text= element_text(size= 16))
+```
+#temperature and onset/peak days tracking
+```{r}
+#DB01_dailyTemps <- DB01_temps %>%
+ # group_by(UTC_date) %>%
+#  summarize(temp= mean(Internal_temp_C))
+
+#DB01_unknownPulse_onsets <- DB01_unknownPulse_onsets %>%
+#  left_join(DB01_temps, join_by(UTC_date))
+#DB01_unknownPulse_peaks <- DB01_unknownPulse_peaks %>%
+#  left_join(DB01_temps, join_by(UTC_date))
+
+#unknown pulse chorus presence only:
+all_site_Unknownpresence <- all_site_presence[-c(3:5)]
+
+all_site_Unknownpresence$X500_chorus = case_when(all_site_Unknownpresence$X500_chorus == 0 ~ NA)
+
+all_site_Unknownpresence$site = factor(all_site_Unknownpresence$site,
+                                        levels= c('DB01', 'DB02', 'ES01', 'ES02', 'CB01', 'CB02', 'CB03'))
+all_site_Unknownpresence$X500_chorus = factor(all_site_Unknownpresence$X500_chorus,
+                                        levels= c("0", "1"),
+                                        labels= c("Absent", "Present"))
+all_site_Unknownpresence <- all_site_Unknownpresence %>%
+  drop_na(X500_chorus)
+colnames(all_site_Unknownpresence)[1] <- "Date"
+
+all_site_Unknownpresence |>
+  ggplot(aes(x=Date, y=site, col= X500_chorus:site, group= X500_chorus:site)) +
+  geom_line(size= 1.5) +
+  theme_bw()+
+  scale_color_manual(values= c("grey", "grey","grey","grey","grey","grey","grey","#00797F", "#1EBEC7", "#003087", "#0085CA" , "#B71300", "#DB2207", "#FF6C57"))+
+  ylab("Site")+
+  xlab("Date")+
+  theme(legend.position= 'none')
+
+
+all_site_temps$site = factor(all_site_temps$site,
+                                        levels= c('DB01', 'DB02', 'ES01', 'ES02', 'CB01', 'CB02', 'CB03'),
+                                        labels= c('DB01', 'DB02', 'ES01', 'ES02', 'CB01', 'CB02', 'CB03'))
+all_site_temps$Date <- as.Date(all_site_temps$Date)
+
+all_site_temps<- all_site_tempse %>%
+  drop_na(X500_chorus)
+
+ggplot(all_site_temps, aes(x= Datetime_UTC, y= Internal_temp_C, group= site, color= site))+
+  geom_line(size= .75)+
+  theme_bw()+
+  scale_color_manual(values= c("#00797F", "#1EBEC7", "#003087", "#0085CA" , "#B71300", "#DB2207", "#FF6C57"))+
+  scale_x_datetime(date_breaks = "5 months", date_labels= "%Y-%m", minor_breaks = NULL)+
+  scale_x_datetime(limits = as.POSIXct(c("2022-07-07 00:00:00", "2024-11-05 00:00:00")))
+
+
+all_site_temps_unknownPresence <- all_site_temps %>%
+  left_join(all_site_Unknownpresence, join_by(Date, site))
+
+ggplot(all_site_temps_unknownPresence, aes(x= Date, group= year(Date), y= Internal_temp_C, group= X500_chorus:site, color= X500_chorus:site))+
+  geom_line(size= .75)+
+  theme_bw()+
+  scale_color_manual(values= c(NA,NA,NA,NA,NA,NA,NA,"#00797F", "#1EBEC7", "#003087", "#0085CA" , "#B71300", "#DB2207", "#FF6C57"))+
+  scale_x_datetime(date_breaks = "5 months", date_labels= "%Y-%m", minor_breaks = NULL)+
+  scale_x_datetime(limits = as.POSIXct(c("2022-07-07 00:00:00", "2024-11-05 00:00:00")))
+
+
 ```
 #PSD day/night in fall- come back to this later if needed
 ```{r}
