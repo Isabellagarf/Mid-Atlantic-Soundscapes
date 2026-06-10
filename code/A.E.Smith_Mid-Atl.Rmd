@@ -10304,8 +10304,7 @@ DB01_52124Med <- DB01_52124df%>%
 DB01_52124Med$site <- "DB01"
 DB01_52124Med$season <- "Spring"
 
-DB01_unknownPulse_onsets <- DB01_81622Med %>%
-  full_join(DB01_52523Med) %>%
+DB01_unknownPulse_onsets <- DB01_52523Med %>%
   full_join(DB01_52124Med)
 
 DB01_unknownPulse_onsets <- DB01_unknownPulse_onsets %>%
@@ -10348,8 +10347,7 @@ ES01_72324Med <- ES01_72324df%>%
 ES01_72324Med$site <- "ES01"
 ES01_72324Med$season <- "Summer"
 
-ES01_unknownPulse_onsets <- ES01_101523Med %>%
-  full_join(ES01_72324Med)
+ES01_unknownPulse_onsets <- ES01_72324Med
 
 ES01_unknownPulse_onsets <- ES01_unknownPulse_onsets %>%
   mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
@@ -10406,8 +10404,7 @@ CB01_52324Med <- CB01_52324df%>%
 CB01_52324Med$site <- "CB01"
 CB01_52324Med$season <- "Spring"
 
-CB01_unknownPulse_onsets <- CB01_61322Med %>%
-  full_join(CB01_51223Med) %>%
+CB01_unknownPulse_onsets <- CB01_51223Med %>%
   full_join(CB01_52324Med)
 
 CB01_unknownPulse_onsets <- CB01_unknownPulse_onsets %>%
@@ -10464,8 +10461,7 @@ DB02_91824Med <- DB02_91824df%>%
 DB02_91824Med$site <- "DB02"
 DB02_91824Med$season <- "Fall"
 
-DB02_unknownPulse_onsets <- DB02_10322Med %>%
-  full_join(DB02_92423Med) %>%
+DB02_unknownPulse_onsets <-DB02_92423Med %>%
   full_join(DB02_91824Med)
 
 DB02_unknownPulse_onsets <- DB02_unknownPulse_onsets %>%
@@ -10508,8 +10504,7 @@ ES02_92024Med <- ES02_92024df%>%
 ES02_92024Med$site <- "ES02"
 ES02_92024Med$season <- "Fall"
 
-ES02_unknownPulse_onsets <- ES02_101523Med %>%
-  full_join(ES02_92024Med)
+ES02_unknownPulse_onsets <- ES02_92024Med
 
 ES02_unknownPulse_onsets <- ES02_unknownPulse_onsets %>%
   mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
@@ -10565,8 +10560,7 @@ CB02_91824Med <- CB02_91824df%>%
 CB02_91824Med$site <- "CB02"
 CB02_91824Med$season <- "Fall"
 
-CB02_unknownPulse_onsets <- CB02_91022Med %>%
-  full_join(CB02_91623Med) %>%
+CB02_unknownPulse_onsets <- CB02_91623Med %>%
   full_join(CB02_91824Med)
 
 CB02_unknownPulse_onsets <- CB02_unknownPulse_onsets %>%
@@ -10624,8 +10618,7 @@ CB03_91624Med <- CB03_91624df%>%
 CB03_91624Med$site <- "CB03"
 CB03_91624Med$season <- "Fall"
 
-CB03_unknownPulse_onsets <- CB03_8822Med %>%
-  full_join(CB03_91523Med) %>%
+CB03_unknownPulse_onsets <- CB03_91523Med %>%
   full_join(CB03_91624Med)
 
 CB03_unknownPulse_onsets <- CB03_unknownPulse_onsets %>%
@@ -11913,7 +11906,47 @@ guides(shape= guide_legend(title= "Site"), color= guide_legend(title= "Year"))+
         legend.title= element_text(size= 18),
         legend.text= element_text(size= 16))
 ```
-#temperature and onset/peak days tracking
+#onset error bar plots
+```{r}
+#SPL and date error bars
+
+all_unknownPulse_onsets %>%
+  mutate(
+    date= ymd(date)
+  )
+
+
+unknownPulse_onsetSummary <- all_unknownPulse_onsets %>%
+  group_by(site) %>%
+  summarize(median)
+
+
+
+
+scatter <- ggplot(siteboutsums, aes(x = average.length, y = average.calls, color = site)) +
+  geom_point(alpha = 1, size = 5) +
+  geom_errorbar(aes(ymin = average.calls - SE.calls, ymax = average.calls + SE.calls), width = 0.05) + # Vertical error bars
+  geom_errorbar(aes(xmin = average.length - SE.length, xmax = average.length + SE.length), height = 0.05, orientation = "y") + # Horizontal error bars
+  scale_color_manual(values=c("GOM" = "#BC4250",
+                              "SBNMS*" = "#DA8F2F",
+                              "SNE*" = "#FFC300",
+                              "NYB*" = "#8BB611",
+                              "NJ" = "#33B7B1",
+                              "DB" = "#3366FF",
+                              "CB" = "#C77CFF"),
+                     name = "Site") +
+  labs(x = "Average duration of bout (minutes)", y = "Average number of calls per bout") +
+  theme_bw() +
+  theme(axis.title.y=element_text(size=12),
+        axis.title.x=element_text(size=12),
+        axis.text.y=element_text(size=12, color="black"),
+        axis.text.x=element_text(size=12, color="black"),
+        strip.text=element_text(size=12),
+        legend.text=element_text(size=12),
+        legend.title=element_text(size=12))
+
+```
+#temperature all sites effort
 ```{r}
 #DB01_dailyTemps <- DB01_temps %>%
  # group_by(UTC_date) %>%
