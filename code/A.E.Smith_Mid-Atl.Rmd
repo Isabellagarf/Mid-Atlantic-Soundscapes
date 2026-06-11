@@ -11994,9 +11994,9 @@ all_unknownPulse_onsetTemps <- all_unknownPulse_onsets %>%
   left_join(allSite_dailyTemps, join_by(UTC_date, site))
 
 
-ggplot(all_unknownPulse_onsetSummary, aes(x = temp, y = median_month_date, color = site)) +
+ggplot(all_unknownPulse_onsetTemps, aes(x = temp, y = UTC_date, color = site)) +
   geom_point(alpha = 1, size = 5) +
-  geom_errorbar(aes(ymin = min_date, ymax = max_date), width = 0.05) + # Vertical error bars
+#  geom_errorbar(aes(ymin = min_date, ymax = max_date), width = 0.05) + # Vertical error bars
 #  geom_errorbar(aes(xmin = min_date, xmax = max_date), height = 0.05, orientation = "y") + # Horizontal error bars
   scale_color_manual(values=c("DB01" = "#00797F",
                               "DB02" = "#B71300",
