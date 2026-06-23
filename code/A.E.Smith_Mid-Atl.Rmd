@@ -1491,7 +1491,7 @@ Env2000OL_plot = ggplot(data = DB01_envData_daily, mapping = aes(x =UTC)) +
 Env500OL_plot/Env1000OL_plot/Env2000OL_plot+ plot_layout(axis_titles = "collect", guides= "collect")
 
 ```
-# plotting 22:00 hour for cusk eel w/ presence- USING
+# plotting 22:00 hour for cusk eel w/ presence
 ```{r}
 #inshore_sites_OL <- DB01_OL %>%
 #  full_join(ES01_OL)%>%
@@ -1567,7 +1567,7 @@ ggplot(inshore_sites_22_presence, aes(x= UTC_fixed, y= OL_2000, color= cusk_chor
         legend.text = element_text(size= 16))
 
 ```
-#plotting sunset hours with chorus presence- USING
+#plotting sunset hours with chorus presence
 ```{r}
 #DB01
 DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
@@ -3437,7 +3437,7 @@ allSite_chorusPresenceFormatted$site = factor(allSite_chorusPresenceFormatted$si
                                               labels= c("DB01", "DB02", "DB03", "ES01", "ES02", "ES03", "CB01", "CB02", "CB03"))
 
   
-plotAcousticScene(x=allSite_chorusPresenceFormatted, by='site', combineYears=FALSE, freqMap=data.frame(species=c('Unknown knocks', 'Unknown pulses', 'Unknown offshore', 'Cusk eel chorus', 'Toadfish chorus'), freqMin=c(140, 60, 400, 1200, 150), freqMax=c(6500, 930, 2200, 2600, 3650)), alpha= .85)+
+plotAcousticScene(x=allSite_chorusPresenceFormatted, by='site', combineYears=FALSE, freqMap=data.frame(species=c('Unknown knocks', 'Unknown pulses', 'Unknown offshore', 'Cusk eel chorus', 'Toadfish chorus'), freqMin=c(140, 60, 310, 1200, 150), freqMax=c(6500, 930, 5335, 2600, 3650)), alpha= .85)+
   theme_bw()+
   facet_wrap(factor(site, levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))~., ncol= 3)+
   ylim(15, 7500)+
