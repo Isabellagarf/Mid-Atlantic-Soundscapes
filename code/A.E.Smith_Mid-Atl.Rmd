@@ -10682,7 +10682,7 @@ guides(shape= guide_legend(title= "Site"), color= guide_legend(title= "Year"))+
 
 #Cusk eel####
   #DB01- onset days:8/17/2022, 6/28/2023, 8/19/2024####
-DB01_81722 <-  format(seq(ymd_hms("2022-08-16 20:00:00"), ymd_hms("2022-08-17 19:45:00"), by = "15 min")) #weird timezone things so shift by 4 hours
+DB01_81722 <-  format(seq(ymd_hms("2022-08-17 00:00:00"), ymd_hms("2022-08-17 23:45:00"), by = "15 min")) #weird timezone things so shift by 4 hours
 DB01_81722df <- data.frame(UTC= DB01_81722)
 DB01_81722df$UTC <- as.POSIXct(DB01_81722df$UTC)
 DB01_81722df <-DB01_81722df %>%
@@ -10697,7 +10697,7 @@ DB01_81722Med <- DB01_81722df%>%
 DB01_81722Med$site <- "DB01"
 DB01_81722Med$season <- "Summer"
 
-DB01_62823 <-  format(seq(ymd_hms("2023-06-27 20:00:00"), ymd_hms("2023-06-28 19:45:00"), by = "15 min")) 
+DB01_62823 <-  format(seq(ymd_hms("2023-06-28 00:00:00"), ymd_hms("2023-06-28 23:45:00"), by = "15 min")) 
 DB01_62823df <- data.frame(UTC= DB01_62823)
 DB01_62823df$UTC <- as.POSIXct(DB01_62823df$UTC)
 DB01_62823df <-DB01_62823df %>%
@@ -10712,7 +10712,7 @@ DB01_62823Med <- DB01_62823df%>%
 DB01_62823Med$site <- "DB01"
 DB01_62823Med$season <- "Summer"
 
-DB01_81924 <-  format(seq(ymd_hms("2024-08-18 20:00:00"), ymd_hms("2024-08-19 19:45:00"), by = "15 min")) 
+DB01_81924 <-  format(seq(ymd_hms("2024-08-19 00:00:00"), ymd_hms("2024-08-19 23:45:00"), by = "15 min")) 
 DB01_81924df <- data.frame(UTC= DB01_81924)
 DB01_81924df$UTC <- as.POSIXct(DB01_81924df$UTC)
 DB01_81924df <-DB01_81924df %>%
@@ -10741,7 +10741,7 @@ DB01_cuskEel_onsets$lat <- "Delaware"
 
 
   #ES01- onset days:8/31/2024####
-ES01_83124 <-  format(seq(ymd_hms("2024-08-30 20:00:00"), ymd_hms("2024-08-31 19:45:00"), by = "15 min")) #weird timezone things so shift by 4 hours
+ES01_83124 <-  format(seq(ymd_hms("2024-08-31 00:00:00"), ymd_hms("2024-08-31 23:45:00"), by = "15 min")) #weird timezone things so shift by 4 hours
 ES01_83124df <- data.frame(UTC= ES01_83124)
 ES01_83124df$UTC <- as.POSIXct(ES01_83124df$UTC)
 ES01_83124df <-ES01_83124df %>%
@@ -10767,7 +10767,7 @@ ES01_cuskEel_onsets$shore <- "Inshore"
 ES01_cuskEel_onsets$lat <- "Eastern"
 
   #CB01- onset days:8/18/2022, 6/2/2023, 7/26/2024####
-CB01_81822 <-  format(seq(ymd_hms("2022-08-17 20:00:00"), ymd_hms("2022-08-18 19:45:00"), by = "15 min")) #weird timezone things so shift by 4 hours
+CB01_81822 <-  format(seq(ymd_hms("2022-08-18 00:00:00"), ymd_hms("2022-08-18 23:45:00"), by = "15 min")) #weird timezone things so shift by 4 hours
 CB01_81822df <- data.frame(UTC= CB01_81822)
 CB01_81822df$UTC <- as.POSIXct(CB01_81822df$UTC)
 CB01_81822df <-CB01_81822df %>%
@@ -10782,7 +10782,7 @@ CB01_81822Med <- CB01_81822df%>%
 CB01_81822Med$site <- "CB01"
 CB01_81822Med$season <- "Summer"
 
-CB01_6223 <-  format(seq(ymd_hms("2023-06-01 20:00:00"), ymd_hms("2023-06-02 19:45:00"), by = "15 min")) 
+CB01_6223 <-  format(seq(ymd_hms("2023-06-02 00:00:00"), ymd_hms("2023-06-02 23:45:00"), by = "15 min")) 
 CB01_6223df <- data.frame(UTC= CB01_6223)
 CB01_6223df$UTC <- as.POSIXct(CB01_6223df$UTC)
 CB01_6223df <-CB01_6223df %>%
@@ -10797,7 +10797,7 @@ CB01_6223Med <- CB01_6223df%>%
 CB01_6223Med$site <- "CB01"
 CB01_6223Med$season <- "Summer"
 
-CB01_72624 <-  format(seq(ymd_hms("2024-07-25 20:00:00"), ymd_hms("2024-07-26 19:45:00"), by = "15 min")) 
+CB01_72624 <-  format(seq(ymd_hms("2024-07-26 00:00:00"), ymd_hms("2024-07-26 23:45:00"), by = "15 min")) 
 CB01_72624df <- data.frame(UTC= CB01_72624)
 CB01_72624df$UTC <- as.POSIXct(CB01_72624df$UTC)
 CB01_72624df <-CB01_72624df %>%
@@ -10825,8 +10825,8 @@ CB01_cuskEel_onsets$shore <- "Inshore"
 CB01_cuskEel_onsets$lat <- "Chesapeake"
 
 #plot####
-inshore_cuskEel_onsets <- DB01_cuskEel_onsets %>%
-  full_join(ES01_cuskEel_onsets) %>%
+all_cuskEel_onsets <- DB01_cuskEel_onsets %>%
+#  full_join(ES01_cuskEel_onsets) %>%
   full_join(CB01_cuskEel_onsets)
 inshore_cuskEel_onsets$lat = factor(inshore_cuskEel_onsets$lat,
                                         levels= c('Delaware', 'Eastern', 'Chesapeake'),
@@ -11547,7 +11547,7 @@ CB01_cuskEel_peaks <- CB01_cuskEel_minOL %>%
   #ES01 peak day: 9/19/2024
   #CB01 peak days: 9/9/2022 (23:30), 9/5/2023 (23:45), 9/10/2024 (0)
 #DB01####
-DB01_91622 <-  format(seq(ymd_hms("2022-09-15 20:00:00"), ymd_hms("2022-09-16 19:45:00"), by = "15 min")) 
+DB01_91622 <-  format(seq(ymd_hms("2022-09-16 00:00:00"), ymd_hms("2022-09-16 23:45:00"), by = "15 min")) 
 DB01_91622df <- data.frame(UTC= DB01_91622)
 DB01_91622df$UTC <- as.POSIXct(DB01_91622df$UTC)
 DB01_91622df <-DB01_91622df %>%
@@ -11561,7 +11561,7 @@ DB01_91622Med <- DB01_91622df%>%
     med_2000= median(OL_2000, na.rm= TRUE))
 DB01_91622Med$site <- "DB01"
 
-DB01_91023 <-  format(seq(ymd_hms("2023-09-09 20:00:00"), ymd_hms("2023-09-10 19:45:00"), by = "15 min")) 
+DB01_91023 <-  format(seq(ymd_hms("2023-09-10 00:00:00"), ymd_hms("2023-09-10 23:45:00"), by = "15 min")) 
 DB01_91023df <- data.frame(UTC= DB01_91023)
 DB01_91023df$UTC <- as.POSIXct(DB01_91023df$UTC)
 DB01_91023df <-DB01_91023df %>%
@@ -11575,7 +11575,7 @@ DB01_91023Med <- DB01_91023df%>%
     med_2000= median(OL_2000, na.rm= TRUE))
 DB01_91023Med$site <- "DB01"
 
-DB01_91124 <-  format(seq(ymd_hms("2024-09-10 20:00:00"), ymd_hms("2024-09-11 19:45:00"), by = "15 min")) 
+DB01_91124 <-  format(seq(ymd_hms("2024-09-11 00:00:00"), ymd_hms("2024-09-11 23:45:00"), by = "15 min")) 
 DB01_91124df <- data.frame(UTC= DB01_91124)
 DB01_91124df$UTC <- as.POSIXct(DB01_91124df$UTC)
 DB01_91124df <-DB01_91124df %>%
@@ -11602,7 +11602,7 @@ DB01_cuskEel_peaks$shore <- "Inshore"
 DB01_cuskEel_peaks$lat <- "Delaware"
 
 #ES01####
-ES01_91924 <-  format(seq(ymd_hms("2024-09-18 20:00:00"), ymd_hms("2024-09-19 19:45:00"), by = "15 min")) 
+ES01_91924 <-  format(seq(ymd_hms("2024-09-19 00:00:00"), ymd_hms("2024-09-19 23:45:00"), by = "15 min")) 
 ES01_91924df <- data.frame(UTC= ES01_91924)
 ES01_91924df$UTC <- as.POSIXct(ES01_91924df$UTC)
 ES01_91924df <-ES01_91924df %>%
@@ -11627,7 +11627,7 @@ ES01_cuskEel_peaks$shore <- "Inshore"
 ES01_cuskEel_peaks$lat <- "Eastern"
 
 #CB01####
-CB01_9922 <-  format(seq(ymd_hms("2022-09-08 20:00:00"), ymd_hms("2022-09-09 19:45:00"), by = "15 min")) 
+CB01_9922 <-  format(seq(ymd_hms("2022-09-09 00:00:00"), ymd_hms("2022-09-09 23:45:00"), by = "15 min")) 
 CB01_9922df <- data.frame(UTC= CB01_9922)
 CB01_9922df$UTC <- as.POSIXct(CB01_9922df$UTC)
 CB01_9922df <-CB01_9922df %>%
@@ -11641,7 +11641,7 @@ CB01_9922Med <- CB01_9922df%>%
     med_2000= median(OL_2000, na.rm= TRUE))
 CB01_9922Med$site <- "CB01"
 
-CB01_9523 <-  format(seq(ymd_hms("2023-09-04 20:00:00"), ymd_hms("2023-09-05 19:45:00"), by = "15 min")) 
+CB01_9523 <-  format(seq(ymd_hms("2023-09-05 00:00:00"), ymd_hms("2023-09-05 23:45:00"), by = "15 min")) 
 CB01_9523df <- data.frame(UTC= CB01_9523)
 CB01_9523df$UTC <- as.POSIXct(CB01_9523df$UTC)
 CB01_9523df <-CB01_9523df %>%
@@ -11655,7 +11655,7 @@ CB01_9523Med <- CB01_9523df%>%
     med_2000= median(OL_2000, na.rm= TRUE))
 CB01_9523Med$site <- "CB01"
 
-CB01_91024 <-  format(seq(ymd_hms("2024-09-09 20:00:00"), ymd_hms("2024-09-10 19:45:00"), by = "15 min")) 
+CB01_91024 <-  format(seq(ymd_hms("2024-09-10 00:00:00"), ymd_hms("2024-09-10 23:45:00"), by = "15 min")) 
 CB01_91024df <- data.frame(UTC= CB01_91024)
 CB01_91024df$UTC <- as.POSIXct(CB01_91024df$UTC)
 CB01_91024df <-CB01_91024df %>%
@@ -11682,8 +11682,8 @@ CB01_cuskEel_peaks$shore <- "Inshore"
 CB01_cuskEel_peaks$lat <- "Chesapeake"
 
 #plot####
-inshore_cuskEel_peaks <- DB01_cuskEel_peaks %>%
-  full_join(ES01_cuskEel_peaks) %>%
+all_cuskEel_peaks <- DB01_cuskEel_peaks %>%
+#  full_join(ES01_cuskEel_peaks) %>%
   full_join(CB01_cuskEel_peaks)
 
 inshore_cuskEel_peaks$lat = factor(inshore_cuskEel_peaks$lat,
@@ -11901,7 +11901,7 @@ guides(shape= guide_legend(title= "Site"), color= guide_legend(title= "Year"))+
         legend.title= element_text(size= 18),
         legend.text= element_text(size= 16))
 ```
-#error bar plots
+#error bar plots- unknown pulse
 ```{r}
 #SPL and onset dates scatter with error bars####
 #separating dates out
@@ -11944,27 +11944,47 @@ all_unknownPulse_onsetSummary <- all_unknownPulse_onsetDateSummary %>%
 #had to separate out ES sites since there was only 1 day and it messed up its date
 ES_unknownPulse_onsets <- ES01_unknownPulse_onsets %>%
   full_join(ES02_unknownPulse_onsets)
+ES_unknownPulse_onsetsDateMin <- ES_unknownPulse_onsets %>%
+  group_by(site)%>%
+  summarize(min_date= min(month_day))
+ES_unknownPulse_onsetsDateMax <- ES_unknownPulse_onsets %>%
+  group_by(site)%>%
+  summarize(max_date= max(month_day))
 ES_unknownPulse_onsets <- ES_unknownPulse_onsets [-c(1,2,5:8, 10, 11)]
 colnames(ES_unknownPulse_onsets )[3] <- "median_month_date"
+ES_unknownPulse_onsets <- ES_unknownPulse_onsets %>%
+  full_join(ES_unknownPulse_onsetsDateMax) %>%
+  full_join(ES_unknownPulse_onsetsDateMin)
 
 all_unknownPulse_onsetSummary <- all_unknownPulse_onsetSummary %>%
   full_join(ES_unknownPulse_onsets)
 
 all_unknownPulse_onsetSummary$site = factor(all_unknownPulse_onsetSummary$site,
                                         levels= c('DB01', 'DB02', 'ES01', 'ES02', 'CB01', 'CB02', 'CB03'))
+all_unknownPulse_onsetSummary$lat = case_when(all_unknownPulse_onsetSummary$site == "DB01" ~ "Delaware",
+                            all_unknownPulse_onsetSummary$site == "DB02" ~ "Delaware",
+                            all_unknownPulse_onsetSummary$site == "ES01" ~ "Eastern",
+                            all_unknownPulse_onsetSummary$site == "ES02" ~ "Eastern",
+                            all_unknownPulse_onsetSummary$site == "CB01" ~ "Chesapeake",
+                            all_unknownPulse_onsetSummary$site == "CB02" ~ "Chesapeake",
+                            all_unknownPulse_onsetSummary$site == "CB03" ~ "Chesapeake")
 
-ggplot(all_unknownPulse_onsetSummary, aes(x = median_month_date, y = med_500, color = site)) +
+all_unknownPulse_onsetSummary$lat = factor(all_unknownPulse_onsetSummary$lat,
+                                        levels= c('Delaware', 'Eastern', 'Chesapeake'))
+
+ggplot(all_unknownPulse_onsetSummary, aes(x = median_month_date, y = med_500, color = site, shape= lat)) +
   geom_point(size = 5) +
   geom_errorbar(aes(ymin = min_500, ymax = max_500), width = 0.05) + # Vertical error bars
   geom_errorbar(aes(xmin = min_date, xmax = max_date), height = 0.05, orientation = "y") + 
-  scale_color_manual(values=c("DB01" = "#00797F",
+  scale_color_manual(values=c("DB01" = "#001743",
                               "DB02" = "#B71300",
-                              "ES01" = "#003087",
-                              "ES02" = "maroon",
-                              "CB01" = "#1EBEC7",
-                              "CB02" = "#DB2207",
-                              "CB03" = "#FF6C57"),
+                              "ES01" = "#0085CA",
+                              "ES02" = "#DB6015",
+                              "CB01" = "#5EB6D9",
+                              "CB02" = "#FFAB28",
+                              "CB03" = "#FFDD6A"),
                      name = "Site") +
+ guides(shape= guide_legend(title= "Latitude"), color= guide_legend(title= "Site"))+
   labs(x = "Onset Date", title= "Unknown Pulse: Onset by site") +
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   theme_bw() +
@@ -11983,13 +12003,32 @@ allSite_dailyTemps <- all_site_temps %>%
  summarize(temp= median(Internal_temp_C))
 colnames(allSite_dailyTemps)[1] <- "UTC_date" 
 
+ES_unknownPulse_onsets <- ES01_unknownPulse_onsets %>%
+  full_join(ES02_unknownPulse_onsets)
+
 all_unknownPulse_onsetTemps <- all_unknownPulse_onsets %>%
   left_join(allSite_dailyTemps, join_by(UTC_date, site))
 
+ES_unknownPulse_onsetTemps <- ES_unknownPulse_onsets %>%
+  left_join(allSite_dailyTemps, join_by(UTC_date, site))
 
 all_unknownPulse_onsetMedTemps <- all_unknownPulse_onsetTemps %>%
   group_by(site) %>%
   summarize(med_temp= median(temp, na.rm= TRUE))
+
+ES_unknownPulse_onsetsDateMin <- ES_unknownPulse_onsets %>%
+  group_by(site)%>%
+  summarize(min_date= min(month_day))
+ES_unknownPulse_onsetsDateMax <- ES_unknownPulse_onsets %>%
+  group_by(site)%>%
+  summarize(max_date= max(month_day))
+
+ES_unknownPulse_onsetTemps <- ES_unknownPulse_onsetTemps[-c(1,2,5:8, 10, 11)]
+colnames(ES_unknownPulse_onsetTemps)[3] = "median_month_date"
+colnames(ES_unknownPulse_onsetTemps)[4] = "med_temp"
+ES_unknownPulse_onsetTemps <- ES_unknownPulse_onsetTemps %>%
+  full_join(ES_unknownPulse_onsetsDateMax) %>%
+  full_join(ES_unknownPulse_onsetsDateMin)
 
 all_unknownPulse_onsetTempMax <- all_unknownPulse_onsetTemps %>%
   group_by(site) %>%
@@ -12003,24 +12042,37 @@ all_unknownPulse_onsetTempSummary <- all_unknownPulse_onsetDateSummary %>%
   full_join(all_unknownPulse_onsetDateMax) %>%
   full_join(all_unknownPulse_onsetDateMin) %>%
   full_join(all_unknownPulse_onsetTempMax) %>%
-  full_join(all_unknownPulse_onsetTempMin)
+  full_join(all_unknownPulse_onsetTempMin) %>%
+  full_join(ES_unknownPulse_onsetTemps)
 
 
 all_unknownPulse_onsetTempSummary$site = factor(all_unknownPulse_onsetTempSummary$site,
                                         levels= c('DB01', 'DB02', 'ES01', 'ES02', 'CB01', 'CB02', 'CB03'))
 
-ggplot(all_unknownPulse_onsetTempSummary, aes(x = med_temp, y = median_month_date, color = site)) +
+all_unknownPulse_onsetTempSummary$lat = case_when(all_unknownPulse_onsetTempSummary$site == "DB01" ~ "Delaware",
+                            all_unknownPulse_onsetTempSummary$site == "DB02" ~ "Delaware",
+                            all_unknownPulse_onsetTempSummary$site == "ES01" ~ "Eastern",
+                            all_unknownPulse_onsetTempSummary$site == "ES02" ~ "Eastern",
+                            all_unknownPulse_onsetTempSummary$site == "CB01" ~ "Chesapeake",
+                            all_unknownPulse_onsetTempSummary$site == "CB02" ~ "Chesapeake",
+                            all_unknownPulse_onsetTempSummary$site == "CB03" ~ "Chesapeake")
+
+all_unknownPulse_onsetTempSummary$lat = factor(all_unknownPulse_onsetTempSummary$lat,
+                                        levels= c('Delaware', 'Eastern', 'Chesapeake'))
+
+
+ggplot(all_unknownPulse_onsetTempSummary, aes(x = med_temp, y = median_month_date, color = site, shape= lat)) +
   geom_point(alpha = 1, size = 5) +
   geom_errorbar(aes(ymin = min_date, ymax = max_date), width = 0.05) + # Vertical error bars
   geom_errorbar(aes(xmin = min_temp, xmax = max_temp), height = 0.05, orientation = "y") + # Horizontal error bars
-  scale_color_manual(values=c("DB01" = "#00797F",
+  scale_color_manual(values=c("DB01" = "#001743",
                               "DB02" = "#B71300",
-                              "ES01" = "#003087",
-                              "ES02" = "maroon",
-                              "CB01" = "#1EBEC7",
-                              "CB02" = "#DB2207",
-                              "CB03" = "#FF6C57"),
-                     name = "Site") +
+                              "ES01" = "#0085CA",
+                              "ES02" = "#DB6015",
+                              "CB01" = "#5EB6D9",
+                              "CB02" = "#FFAB28",
+                              "CB03" = "#FFDD6A")) +
+   guides(shape= guide_legend(title= "Latitude"), color= guide_legend(title= "Site"))+
   labs(x = "Temp (°C)", y= "Date", title= "Unknown Pulse: Onset by site") +
   theme_bw() +
   theme(axis.title.y=element_text(size=16),
@@ -12096,27 +12148,46 @@ all_unknownPulse_peakSummary <- all_unknownPulse_peakDateSummary %>%
 #had to separate out ES sites since there was only 1 day and it messed up its date
 ES_unknownPulse_peaks <- ES01_unknownPulse_peaks %>%
   full_join(ES02_unknownPulse_peaks)
+ES_unknownPulse_peaksDateMin <- ES_unknownPulse_peaks %>%
+  group_by(site)%>%
+  summarize(min_date= min(month_day))
+ES_unknownPulse_peaksDateMax <- ES_unknownPulse_peaks %>%
+  group_by(site)%>%
+  summarize(max_date= max(month_day))
 ES_unknownPulse_peaks <- ES_unknownPulse_peaks [-c(1,5:7, 9, 10)]
 colnames(ES_unknownPulse_peaks )[4] <- "median_month_date"
-
+ES_unknownPulse_peaks <- ES_unknownPulse_peaks %>%
+  full_join(ES_unknownPulse_peaksDateMax) %>%
+  full_join(ES_unknownPulse_peaksDateMin)
 all_unknownPulse_peakSummary <- all_unknownPulse_peakSummary %>%
   full_join(ES_unknownPulse_peaks)
 
 all_unknownPulse_peakSummary$site = factor(all_unknownPulse_peakSummary$site,
                                         levels= c('DB01', 'DB02', 'ES01', 'ES02', 'CB01', 'CB02', 'CB03'))
+all_unknownPulse_peakSummary$lat = case_when(all_unknownPulse_peakSummary$site == "DB01" ~ "Delaware",
+                            all_unknownPulse_peakSummary$site == "DB02" ~ "Delaware",
+                            all_unknownPulse_peakSummary$site == "ES01" ~ "Eastern",
+                            all_unknownPulse_peakSummary$site == "ES02" ~ "Eastern",
+                            all_unknownPulse_peakSummary$site == "CB01" ~ "Chesapeake",
+                            all_unknownPulse_peakSummary$site == "CB02" ~ "Chesapeake",
+                            all_unknownPulse_peakSummary$site == "CB03" ~ "Chesapeake")
 
-ggplot(all_unknownPulse_peakSummary, aes(x = median_month_date, y = med_500, color = site)) +
+all_unknownPulse_peakSummary$lat = factor(all_unknownPulse_peakSummary$lat,
+                                        levels= c('Delaware', 'Eastern', 'Chesapeake'))
+
+ggplot(all_unknownPulse_peakSummary, aes(x = median_month_date, y = med_500, color = site, shape= lat)) +
   geom_point(size = 5) +
   geom_errorbar(aes(ymin = min_500, ymax = max_500), width = 0.05) + # Vertical error bars
   geom_errorbar(aes(xmin = min_date, xmax = max_date), height = 0.05, orientation = "y") + 
-  scale_color_manual(values=c("DB01" = "#00797F",
+  scale_color_manual(values=c("DB01" = "#001743",
                               "DB02" = "#B71300",
-                              "ES01" = "#003087",
-                              "ES02" = "maroon",
-                              "CB01" = "#1EBEC7",
-                              "CB02" = "#DB2207",
-                              "CB03" = "#FF6C57"),
+                              "ES01" = "#0085CA",
+                              "ES02" = "#DB6015",
+                              "CB01" = "#5EB6D9",
+                              "CB02" = "#FFAB28",
+                              "CB03" = "#FFDD6A"),
                      name = "Site") +
+  guides(shape= guide_legend(title= "Latitude"), color= guide_legend(title= "Site"))+
   labs(x = "peak Date", title= "Unknown Pulse: peak by site") +
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   theme_bw() +
@@ -12134,15 +12205,32 @@ allSite_dailyTemps <- all_site_temps %>%
  summarize(temp= median(Internal_temp_C))
 colnames(allSite_dailyTemps)[1] <- "UTC_date" 
 
-all_unknownPulse_peaks <- all_unknownPulse_peaks %>%
-  full_join(ES_unknownPulse_peaks)
+ES_unknownPulse_peaks <- ES01_unknownPulse_peaks %>%
+  full_join(ES02_unknownPulse_peaks)
+
 all_unknownPulse_peakTemps <- all_unknownPulse_peaks %>%
   left_join(allSite_dailyTemps, join_by(UTC_date, site))
 
+ES_unknownPulse_peakTemps <- ES_unknownPulse_peaks %>%
+  left_join(allSite_dailyTemps, join_by(UTC_date, site))
 
 all_unknownPulse_peakMedTemps <- all_unknownPulse_peakTemps %>%
   group_by(site) %>%
   summarize(med_temp= median(temp, na.rm= TRUE))
+
+ES_unknownPulse_peaksDateMin <- ES_unknownPulse_peaks %>%
+  group_by(site)%>%
+  summarize(min_date= min(month_day))
+ES_unknownPulse_peaksDateMax <- ES_unknownPulse_peaks %>%
+  group_by(site)%>%
+  summarize(max_date= max(month_day))
+
+ES_unknownPulse_peakTemps <- ES_unknownPulse_peakTemps[-c(1,2,5:7, 9, 10)]
+colnames(ES_unknownPulse_peakTemps)[3] = "median_month_date"
+colnames(ES_unknownPulse_peakTemps)[4] = "med_temp"
+ES_unknownPulse_peakTemps <- ES_unknownPulse_peakTemps %>%
+  full_join(ES_unknownPulse_peaksDateMax) %>%
+  full_join(ES_unknownPulse_peaksDateMin)
 
 all_unknownPulse_peakTempMax <- all_unknownPulse_peakTemps %>%
   group_by(site) %>%
@@ -12156,24 +12244,36 @@ all_unknownPulse_peakTempSummary <- all_unknownPulse_peakDateSummary %>%
   full_join(all_unknownPulse_peakDateMax) %>%
   full_join(all_unknownPulse_peakDateMin) %>%
   full_join(all_unknownPulse_peakTempMax) %>%
-  full_join(all_unknownPulse_peakTempMin)
+  full_join(all_unknownPulse_peakTempMin) %>%
+  full_join(ES_unknownPulse_peakTemps)
 
 
 all_unknownPulse_peakTempSummary$site = factor(all_unknownPulse_peakTempSummary$site,
                                         levels= c('DB01', 'DB02', 'ES01', 'ES02', 'CB01', 'CB02', 'CB03'))
+all_unknownPulse_peakTempSummary$lat = case_when(all_unknownPulse_peakTempSummary$site == "DB01" ~ "Delaware",
+                            all_unknownPulse_peakTempSummary$site == "DB02" ~ "Delaware",
+                            all_unknownPulse_peakTempSummary$site == "ES01" ~ "Eastern",
+                            all_unknownPulse_peakTempSummary$site == "ES02" ~ "Eastern",
+                            all_unknownPulse_peakTempSummary$site == "CB01" ~ "Chesapeake",
+                            all_unknownPulse_peakTempSummary$site == "CB02" ~ "Chesapeake",
+                            all_unknownPulse_peakTempSummary$site == "CB03" ~ "Chesapeake")
 
-ggplot(all_unknownPulse_peakTempSummary, aes(x = med_temp, y = median_month_date, color = site)) +
+all_unknownPulse_peakTempSummary$lat = factor(all_unknownPulse_peakTempSummary$lat,
+                                        levels= c('Delaware', 'Eastern', 'Chesapeake'))
+
+ggplot(all_unknownPulse_peakTempSummary, aes(x = med_temp, y = median_month_date, color = site, shape= lat)) +
   geom_point(alpha = 1, size = 5) +
   geom_errorbar(aes(ymin = min_date, ymax = max_date), width = 0.05) + # Vertical error bars
   geom_errorbar(aes(xmin = min_temp, xmax = max_temp), height = 0.05, orientation = "y") + # Horizontal error bars
-  scale_color_manual(values=c("DB01" = "#00797F",
+  scale_color_manual(values=c("DB01" = "#001743",
                               "DB02" = "#B71300",
-                              "ES01" = "#003087",
-                              "ES02" = "maroon",
-                              "CB01" = "#1EBEC7",
-                              "CB02" = "#DB2207",
-                              "CB03" = "#FF6C57"),
+                              "ES01" = "#0085CA",
+                              "ES02" = "#DB6015",
+                              "CB01" = "#5EB6D9",
+                              "CB02" = "#FFAB28",
+                              "CB03" = "#FFDD6A"),
                      name = "Site") +
+  guides(shape= guide_legend(title= "Latitude"), color= guide_legend(title= "Site"))+
   labs(x = "Temp (°C)", y= "Date", title= "Unknown Pulse: peak by site") +
   theme_bw() +
   theme(axis.title.y=element_text(size=16),
@@ -12208,6 +12308,353 @@ ggplot(all_unknownPulse_peakTemps, aes(x = temp, y = UTC_date, color = site, sha
         strip.text=element_text(size=18),
         legend.text=element_text(size=16),
         legend.title=element_text(size=16))
+```
+#error bar plots- cusk eel
+```{r}
+#SPL and onset dates scatter with error bars####
+#separating dates out
+all_cuskEel_onsetDateSummary <- all_cuskEel_onsets %>%
+  mutate(
+    date= ymd(UTC_date),
+    days_since_January = as.numeric(date- ymd(paste(year(UTC_date), 1, 1, sep= "-")))
+  ) %>%
+  group_by(site) %>%
+  summarize(across(days_since_January, median), .groups= "keep") %>%
+  mutate(median_month_date = format(ymd("2023-01-01") + days(floor(days_since_January)), "%m-%d"))
+all_cuskEel_onsetDateMax <- all_cuskEel_onsets %>%
+  group_by(site)%>%
+  summarize(max_date= max(month_day))
+all_cuskEel_onsetDateMin <- all_cuskEel_onsets %>%
+  group_by(site)%>%
+  summarize(min_date= min(month_day))
+  
+#first get med SPL of the onset dates
+all_cuskEel_onsetSPLSummary <- all_cuskEel_onsets %>%
+  dplyr:: group_by(site) %>%
+  dplyr:: summarize(
+    med_2000 = median(med_2000)
+  )
+#only 1 value of each of these, but still separate out the min and max SPL values
+all_cuskEel_onsetSPLMax <- all_cuskEel_onsets %>%
+  group_by(site) %>%
+  summarize(max_2000= max(med_2000))
+all_cuskEel_onsetSPLMin <- all_cuskEel_onsets %>%
+  group_by(site) %>%
+  summarize(min_2000= min(med_2000))
+#put all together
+all_cuskEel_onsetSummary <- all_cuskEel_onsetDateSummary %>%
+  full_join(all_cuskEel_onsetSPLSummary) %>%
+  full_join(all_cuskEel_onsetSPLMax) %>%
+  full_join(all_cuskEel_onsetSPLMin) %>%
+  full_join(all_cuskEel_onsetDateMax) %>%
+  full_join(all_cuskEel_onsetDateMin)
+
+#had to separate out ES sites since there was only 1 day and it messed up its date
+colnames(ES01_cuskEel_onsets )[9] <- "median_month_date"
+ES01_cuskEel_onsetsDateMin <- ES01_cuskEel_onsets %>%
+  group_by(site) %>%
+  summarize(min_date= min(median_month_date))
+ES01_cuskEel_onsetsDateMax <- ES01_cuskEel_onsets %>%
+  group_by(site) %>%
+  summarize(max_date= max(median_month_date))
+ES01_cuskEel_onsets <- ES01_cuskEel_onsets [-c(1,2,5:8, 10, 11)]
+
+ES01_cuskEel_onsets <- ES01_cuskEel_onsets %>%
+  full_join(ES01_cuskEel_onsetsDateMax) %>%
+  full_join(ES01_cuskEel_onsetsDateMin)
+
+all_cuskEel_onsetSummary <- all_cuskEel_onsetSummary %>%
+  full_join(ES01_cuskEel_onsets)
+
+all_cuskEel_onsetSummary$site = factor(all_cuskEel_onsetSummary$site,
+                                        levels= c('DB01', 'ES01',  'CB01'))
+all_cuskEel_onsetSummary$lat = case_when(all_cuskEel_onsetSummary$site == "DB01" ~ "Delaware",
+                            all_cuskEel_onsetSummary$site == "ES01" ~ "Eastern",
+                            all_cuskEel_onsetSummary$site == "CB01" ~ "Chesapeake")
+
+all_cuskEel_onsetSummary$lat = factor(all_cuskEel_onsetSummary$lat,
+                                        levels= c('Delaware', 'Eastern', 'Chesapeake'))
+
+ggplot(all_cuskEel_onsetSummary, aes(x = median_month_date, y = med_2000, color = site, shape= lat)) +
+  geom_point(size = 5) +
+  geom_errorbar(aes(ymin = min_2000, ymax = max_2000), width = 0.05) + # Vertical error bars
+  geom_errorbar(aes(xmin = min_date, xmax = max_date), height = 0.05, orientation = "y") + 
+  scale_color_manual(values=c("DB01" = "#001743",
+                              "DB02" = "#B71300",
+                              "ES01" = "#0085CA",
+                              "ES02" = "#DB6015",
+                              "CB01" = "#5EB6D9",
+                              "CB02" = "#FFAB28",
+                              "CB03" = "#FFDD6A"),
+                     name = "Site") +
+ guides(color= guide_legend(title= "Site"), shape= guide_legend(title= "Latitude"))+
+  labs(x = "Onset Date", title= "Cusk Eel: Onset by site") +
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  theme_bw() +
+  theme(axis.title.y=element_text(size=16),
+        axis.title.x=element_text(size=16),
+        axis.text.y=element_text(size=15, color="black"),
+        axis.text.x=element_text(size=15, color="black"),
+        strip.text=element_text(size=18),
+        legend.text=element_text(size=16),
+        legend.title=element_text(size=16))
+
+
+#temp and onset date scatter####
+allSite_dailyTemps <- all_site_temps %>%
+  group_by(Date, site) %>%
+ summarize(temp= median(Internal_temp_C))
+colnames(allSite_dailyTemps)[1] <- "UTC_date" 
+
+ES_cuskEel_onsets <- ES01_cuskEel_onsets
+
+all_cuskEel_onsetTemps <- all_cuskEel_onsets %>%
+  left_join(allSite_dailyTemps, join_by(UTC_date, site))
+
+ES_cuskEel_onsetTemps <- ES_cuskEel_onsets %>%
+  left_join(allSite_dailyTemps, join_by(UTC_date, site))
+
+all_cuskEel_onsetMedTemps <- all_cuskEel_onsetTemps %>%
+  group_by(site) %>%
+  summarize(med_temp= median(temp, na.rm= TRUE))
+
+ES_cuskEel_onsetsDateMin <- ES_cuskEel_onsets %>%
+  group_by(site)%>%
+  summarize(min_date= min(month_day))
+ES_cuskEel_onsetsDateMax <- ES_cuskEel_onsets %>%
+  group_by(site)%>%
+  summarize(max_date= max(month_day))
+
+ES_cuskEel_onsetTemps <- ES_cuskEel_onsetTemps[-c(1,2,5:8, 10, 11)]
+colnames(ES_cuskEel_onsetTemps)[3] = "median_month_date"
+colnames(ES_cuskEel_onsetTemps)[4] = "med_temp"
+ES_cuskEel_onsetTemps <- ES_cuskEel_onsetTemps %>%
+  full_join(ES_cuskEel_onsetsDateMax) %>%
+  full_join(ES_cuskEel_onsetsDateMin)
+
+all_cuskEel_onsetTempMax <- all_cuskEel_onsetTemps %>%
+  group_by(site) %>%
+  summarize(max_temp= max(temp))
+all_cuskEel_onsetTempMin <- all_cuskEel_onsetTemps %>%
+  group_by(site) %>%
+  summarize(min_temp= min(temp))
+
+all_cuskEel_onsetTempSummary <- all_cuskEel_onsetDateSummary %>%
+  full_join(all_cuskEel_onsetMedTemps) %>%
+  full_join(all_cuskEel_onsetDateMax) %>%
+  full_join(all_cuskEel_onsetDateMin) %>%
+  full_join(all_cuskEel_onsetTempMax) %>%
+  full_join(all_cuskEel_onsetTempMin) %>%
+  full_join(ES_cuskEel_onsetTemps)
+
+
+all_cuskEel_onsetTempSummary$site = factor(all_cuskEel_onsetTempSummary$site,
+                                        levels= c('DB01', 'ES01', 'CB01'))
+
+all_cuskEel_onsetTempSummary$lat = case_when(all_cuskEel_onsetTempSummary$site == "DB01" ~ "Delaware",
+                            all_cuskEel_onsetTempSummary$site == "ES01" ~ "Eastern",
+                            all_cuskEel_onsetTempSummary$site == "CB01" ~ "Chesapeake")
+
+all_cuskEel_onsetTempSummary$lat = factor(all_cuskEel_onsetTempSummary$lat,
+                                        levels= c('Delaware', 'Eastern', 'Chesapeake'))
+
+
+ggplot(all_cuskEel_onsetTempSummary, aes(x = med_temp, y = median_month_date, color = site, shape= lat)) +
+  geom_point(alpha = 1, size = 5) +
+  geom_errorbar(aes(ymin = min_date, ymax = max_date), width = 0.05) + # Vertical error bars
+  geom_errorbar(aes(xmin = min_temp, xmax = max_temp), height = 0.05, orientation = "y") + # Horizontal error bars
+  scale_color_manual(values=c("DB01" = "#001743",
+                              "DB02" = "#B71300",
+                              "ES01" = "#0085CA",
+                              "ES02" = "#DB6015",
+                              "CB01" = "#5EB6D9",
+                              "CB02" = "#FFAB28",
+                              "CB03" = "#FFDD6A")) +
+   guides(shape= guide_legend(title= "Latitude"), color= guide_legend(title= "Site"))+
+  labs(x = "Temp (°C)", y= "Date", title= "Cusk Eel: Onset by site") +
+  theme_bw() +
+  theme(axis.title.y=element_text(size=16),
+        axis.title.x=element_text(size=16),
+        axis.text.y=element_text(size=15, color="black"),
+        axis.text.x=element_text(size=15, color="black"),
+        strip.text=element_text(size=18),
+        legend.text=element_text(size=16),
+        legend.title=element_text(size=16))
+
+
+
+#SPL and peak dates scatter with error bars####
+#separating dates out
+all_cuskEel_peakDateSummary <- all_cuskEel_peaks %>%
+  mutate(
+    date= ymd(UTC_date),
+    days_since_January = as.numeric(date- ymd(paste(year(UTC_date), 1, 1, sep= "-")))
+  ) %>%
+  group_by(site) %>%
+  summarize(across(days_since_January, median), .groups= "keep") %>%
+  mutate(median_month_date = format(ymd("2023-01-01") + days(floor(days_since_January)), "%m-%d"))
+all_cuskEel_peakDateMax <- all_cuskEel_peaks %>%
+  group_by(site)%>%
+  summarize(max_date= max(month_day))
+all_cuskEel_peakDateMin <- all_cuskEel_peaks %>%
+  group_by(site)%>%
+  summarize(min_date= min(month_day))
+  
+#first get med SPL of the peak dates
+all_cuskEel_peakSPLSummary <- all_cuskEel_peaks %>%
+  dplyr:: group_by(site) %>%
+  dplyr:: summarize(
+    med_2000 = median(med_2000)
+  )
+#only 1 value of each of these, but still separate out the min and max SPL values
+all_cuskEel_peakSPLMax <- all_cuskEel_peaks %>%
+  group_by(site) %>%
+  summarize(max_2000= max(med_2000))
+all_cuskEel_peakSPLMin <- all_cuskEel_peaks %>%
+  group_by(site) %>%
+  summarize(min_2000= min(med_2000))
+#put all together
+all_cuskEel_peakSummary <- all_cuskEel_peakDateSummary %>%
+  full_join(all_cuskEel_peakSPLSummary) %>%
+  full_join(all_cuskEel_peakSPLMax) %>%
+  full_join(all_cuskEel_peakSPLMin) %>%
+  full_join(all_cuskEel_peakDateMax) %>%
+  full_join(all_cuskEel_peakDateMin)
+
+#had to separate out ES sites since there was only 1 day and it messed up its date
+colnames(ES01_cuskEel_peaks )[8] <- "median_month_date"
+ES01_cuskEel_peaksDateMin <- ES01_cuskEel_peaks %>%
+  group_by(site) %>%
+  summarize(min_date= min(median_month_date))
+ES01_cuskEel_peaksDateMax <- ES01_cuskEel_peaks %>%
+  group_by(site) %>%
+  summarize(max_date= max(median_month_date))
+ES01_cuskEel_peaks <- ES01_cuskEel_peaks [-c(1,2,5:7, 9, 10)]
+
+ES01_cuskEel_peaks <- ES01_cuskEel_peaks %>%
+  full_join(ES01_cuskEel_peaksDateMax) %>%
+  full_join(ES01_cuskEel_peaksDateMin)
+
+all_cuskEel_peakSummary <- all_cuskEel_peakSummary %>%
+  full_join(ES01_cuskEel_peaks)
+
+all_cuskEel_peakSummary$site = factor(all_cuskEel_peakSummary$site,
+                                        levels= c('DB01', 'ES01',  'CB01'))
+all_cuskEel_peakSummary$lat = case_when(all_cuskEel_peakSummary$site == "DB01" ~ "Delaware",
+                            all_cuskEel_peakSummary$site == "ES01" ~ "Eastern",
+                            all_cuskEel_peakSummary$site == "CB01" ~ "Chesapeake")
+
+all_cuskEel_peakSummary$lat = factor(all_cuskEel_peakSummary$lat,
+                                        levels= c('Delaware', 'Eastern', 'Chesapeake'))
+
+ggplot(all_cuskEel_peakSummary, aes(x = median_month_date, y = med_2000, color = site, shape= lat)) +
+  geom_point(size = 5) +
+  geom_errorbar(aes(ymin = min_2000, ymax = max_2000), width = 0.05) + # Vertical error bars
+  geom_errorbar(aes(xmin = min_date, xmax = max_date), height = 0.05, orientation = "y") + 
+  scale_color_manual(values=c("DB01" = "#001743",
+                              "DB02" = "#B71300",
+                              "ES01" = "#0085CA",
+                              "ES02" = "#DB6015",
+                              "CB01" = "#5EB6D9",
+                              "CB02" = "#FFAB28",
+                              "CB03" = "#FFDD6A"),
+                     name = "Site") +
+ guides(color= guide_legend(title= "Site"), shape= guide_legend(title= "Latitude"))+
+  labs(x = "Peak Date", title= "Cusk Eel: Peak by site") +
+  ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+  theme_bw() +
+  theme(axis.title.y=element_text(size=16),
+        axis.title.x=element_text(size=16),
+        axis.text.y=element_text(size=15, color="black"),
+        axis.text.x=element_text(size=15, color="black"),
+        strip.text=element_text(size=18),
+        legend.text=element_text(size=16),
+        legend.title=element_text(size=16))
+
+
+#temp and peak date scatter####
+allSite_dailyTemps <- all_site_temps %>%
+  group_by(Date, site) %>%
+ summarize(temp= median(Internal_temp_C))
+colnames(allSite_dailyTemps)[1] <- "UTC_date" 
+
+ES_cuskEel_peaks <- ES01_cuskEel_peaks
+
+all_cuskEel_peakTemps <- all_cuskEel_peaks %>%
+  left_join(allSite_dailyTemps, join_by(UTC_date, site))
+
+ES_cuskEel_peakTemps <- ES_cuskEel_peaks %>%
+  left_join(allSite_dailyTemps, join_by(UTC_date, site))
+
+all_cuskEel_peakMedTemps <- all_cuskEel_peakTemps %>%
+  group_by(site) %>%
+  summarize(med_temp= median(temp, na.rm= TRUE))
+
+ES_cuskEel_peaksDateMin <- ES_cuskEel_peaks %>%
+  group_by(site)%>%
+  summarize(min_date= min(month_day))
+ES_cuskEel_peaksDateMax <- ES_cuskEel_peaks %>%
+  group_by(site)%>%
+  summarize(max_date= max(month_day))
+
+ES_cuskEel_peakTemps <- ES_cuskEel_peakTemps[-c(1,2,5:7, 9, 10)]
+colnames(ES_cuskEel_peakTemps)[3] = "median_month_date"
+colnames(ES_cuskEel_peakTemps)[4] = "med_temp"
+ES_cuskEel_peakTemps <- ES_cuskEel_peakTemps %>%
+  full_join(ES_cuskEel_peaksDateMax) %>%
+  full_join(ES_cuskEel_peaksDateMin)
+
+all_cuskEel_peakTempMax <- all_cuskEel_peakTemps %>%
+  group_by(site) %>%
+  summarize(max_temp= max(temp))
+all_cuskEel_peakTempMin <- all_cuskEel_peakTemps %>%
+  group_by(site) %>%
+  summarize(min_temp= min(temp))
+
+all_cuskEel_peakTempSummary <- all_cuskEel_peakDateSummary %>%
+  full_join(all_cuskEel_peakMedTemps) %>%
+  full_join(all_cuskEel_peakDateMax) %>%
+  full_join(all_cuskEel_peakDateMin) %>%
+  full_join(all_cuskEel_peakTempMax) %>%
+  full_join(all_cuskEel_peakTempMin) %>%
+  full_join(ES_cuskEel_peakTemps)
+
+
+all_cuskEel_peakTempSummary$site = factor(all_cuskEel_peakTempSummary$site,
+                                        levels= c('DB01', 'ES01', 'CB01'))
+
+all_cuskEel_peakTempSummary$lat = case_when(all_cuskEel_peakTempSummary$site == "DB01" ~ "Delaware",
+                            all_cuskEel_peakTempSummary$site == "ES01" ~ "Eastern",
+                            all_cuskEel_peakTempSummary$site == "CB01" ~ "Chesapeake")
+
+all_cuskEel_peakTempSummary$lat = factor(all_cuskEel_peakTempSummary$lat,
+                                        levels= c('Delaware', 'Eastern', 'Chesapeake'))
+
+
+ggplot(all_cuskEel_peakTempSummary, aes(x = med_temp, y = median_month_date, color = site, shape= lat)) +
+  geom_point(alpha = 1, size = 5) +
+  geom_errorbar(aes(ymin = min_date, ymax = max_date), width = 0.05) + # Vertical error bars
+  geom_errorbar(aes(xmin = min_temp, xmax = max_temp), height = 0.05, orientation = "y") + # Horizontal error bars
+  scale_color_manual(values=c("DB01" = "#001743",
+                              "DB02" = "#B71300",
+                              "ES01" = "#0085CA",
+                              "ES02" = "#DB6015",
+                              "CB01" = "#5EB6D9",
+                              "CB02" = "#FFAB28",
+                              "CB03" = "#FFDD6A")) +
+   guides(shape= guide_legend(title= "Latitude"), color= guide_legend(title= "Site"))+
+  labs(x = "Temp (°C)", y= "Date", title= "Cusk Eel: Peak by site") +
+  theme_bw() +
+  theme(axis.title.y=element_text(size=16),
+        axis.title.x=element_text(size=16),
+        axis.text.y=element_text(size=15, color="black"),
+        axis.text.x=element_text(size=15, color="black"),
+        strip.text=element_text(size=18),
+        legend.text=element_text(size=16),
+        legend.title=element_text(size=16))
+
+
+
 ```
 #temperature all sites effort
 ```{r}
