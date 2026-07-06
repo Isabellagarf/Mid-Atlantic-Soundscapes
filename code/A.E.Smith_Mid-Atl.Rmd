@@ -1216,6 +1216,8 @@ all_site_temps <- DB01_temps %>%
   full_join(CB03_temps)
 all_site_temps$Datetime_UTC <- as.POSIXct(all_site_temps$Datetime_UTC, format= "%Y-%m-%d %H:%M:%S", tz = "GMT")
 
+all_site_temps$calibrated <- all_site_temps$Internal_temp_C - (-0.060*all_site_temps$Internal_temp_C - 1.26)
+
 ```
 #old temp plotting 
 ```{r}
