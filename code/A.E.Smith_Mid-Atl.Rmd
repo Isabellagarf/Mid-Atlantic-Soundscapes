@@ -12002,7 +12002,7 @@ ggplot(all_unknownPulse_onsetSummary, aes(x = median_month_date, y = med_500, co
 #temp and onset date scatter####
 allSite_dailyTemps <- all_site_temps %>%
   group_by(Date, site) %>%
- summarize(temp= median(Internal_temp_C))
+ summarize(temp= median(calibrated))
 colnames(allSite_dailyTemps)[1] <- "UTC_date" 
 
 ES_unknownPulse_onsets <- ES01_unknownPulse_onsets %>%
