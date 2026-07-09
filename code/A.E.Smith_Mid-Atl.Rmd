@@ -1178,7 +1178,7 @@ chorus2000_plot <- ggplot(DB01_2000SunPresent, aes(x= date, y= OL_2000, color= s
 chorus500_plot/chorus1000_plot/chorus2000_plot +plot_layout(guides = "collect", axis_titles = "collect")
 
 ```
-##temp data loading
+#temp data loading
 ```{r}
 #DB sites
 DB01_temps <- read.csv(here("data/Temp_data/DB01_temps.csv"))
