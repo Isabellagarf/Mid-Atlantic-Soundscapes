@@ -9653,11 +9653,11 @@ DB01Unknown_minOLMed <- DB01_unknownPulse_minOL%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
     med_500= median(OL_500, na.rm= TRUE))
-quants= c(0.05, 0.95)
+quants= c(0.1, 0.9)
 DB01Unknown_minOLQuants <- DB01_unknownPulse_minOL %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
-            quant95_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
+  summarize(quant10_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
+            quant90_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
 DB01Unknown_minOLMedQuants <- DB01Unknown_minOLMed %>%
   full_join(DB01Unknown_minOLQuants)
 DB01Unknown_minOLMedQuants$site <- "DB01"
@@ -9679,11 +9679,11 @@ ES01Unknown_minOLMed <- ES01_unknownPulse_minOL%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
     med_500= median(OL_500, na.rm= TRUE))
-quants= c(0.05, 0.95)
+quants= c(0.1, 0.9)
 ES01Unknown_minOLQuants <- ES01_unknownPulse_minOL %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
-            quant95_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
+  summarize(quant10_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
+            quant90_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
 ES01Unknown_minOLMedQuants <- ES01Unknown_minOLMed %>%
   full_join(ES01Unknown_minOLQuants)
 ES01Unknown_minOLMedQuants$site <- "ES01"
@@ -9704,11 +9704,11 @@ CB01Unknown_minOLMed <- CB01_unknownPulse_minOL%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
     med_500= median(OL_500, na.rm= TRUE))
-quants= c(0.05, 0.95)
+quants= c(0.1, 0.9)
 CB01Unknown_minOLQuants <- CB01_unknownPulse_minOL %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
-            quant95_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
+  summarize(quant10_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
+            quant90_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
 CB01Unknown_minOLMedQuants <- CB01Unknown_minOLMed %>%
   full_join(CB01Unknown_minOLQuants)
 CB01Unknown_minOLMedQuants$site <- "CB01"
@@ -9726,8 +9726,8 @@ all_inUnknown_minOL$site = factor(all_inUnknown_minOL$site,
 all_inUnknown_minOL$UTC_hour = as.POSIXct(strptime(all_inUnknown_minOL$UTC_hour,"%H:%M:%S", tz= "GMT"))
 
 ggplot(all_inUnknown_minOL, aes(x= UTC_hour, y= med_500, group= site, color= site))+
-  geom_ribbon(aes(ymin= quant05_500,
-                  ymax= quant95_500,
+  geom_ribbon(aes(ymin= quant10_500,
+                  ymax= quant90_500,
                   fill= site, color= site), linetype= 0, linewidth= 0.2, alpha= 0.1)+
   scale_fill_manual(values= c("#00797F",  "#003087",  "#B71300"))+
   guides(fill= guide_legend(title= "Site"))+
@@ -9778,11 +9778,11 @@ DB02Unknown_minOLMed <- DB02_unknownPulse_minOL%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
     med_500= median(OL_500, na.rm= TRUE))
-quants= c(0.05, 0.95)
+quants= c(0.1, 0.9)
 DB02Unknown_minOLQuants <- DB02_unknownPulse_minOL %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
-            quant95_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
+  summarize(quant10_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
+            quant90_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
 DB02Unknown_minOLMedQuants <- DB02Unknown_minOLMed %>%
   full_join(DB02Unknown_minOLQuants)
 DB02Unknown_minOLMedQuants$site <- "DB02"
@@ -9804,11 +9804,11 @@ ES02Unknown_minOLMed <- ES02_unknownPulse_minOL%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
     med_500= median(OL_500, na.rm= TRUE))
-quants= c(0.05, 0.95)
+quants= c(0.1, 0.9)
 ES02Unknown_minOLQuants <- ES02_unknownPulse_minOL %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
-            quant95_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
+  summarize(quant10_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
+            quant90_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
 ES02Unknown_minOLMedQuants <- ES02Unknown_minOLMed %>%
   full_join(ES02Unknown_minOLQuants)
 ES02Unknown_minOLMedQuants$site <- "ES02"
@@ -9829,11 +9829,11 @@ CB02Unknown_minOLMed <- CB02_unknownPulse_minOL%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
     med_500= median(OL_500, na.rm= TRUE))
-quants= c(0.05, 0.95)
+quants= c(0.1, 0.9)
 CB02Unknown_minOLQuants <- CB02_unknownPulse_minOL %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
-            quant95_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
+  summarize(quant10_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
+            quant90_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
 CB02Unknown_minOLMedQuants <- CB02Unknown_minOLMed %>%
   full_join(CB02Unknown_minOLQuants)
 CB02Unknown_minOLMedQuants$site <- "CB02"
@@ -9854,11 +9854,11 @@ CB03Unknown_minOLMed <- CB03_unknownPulse_minOL%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
     med_500= median(OL_500, na.rm= TRUE))
-quants= c(0.05, 0.95)
+quants= c(0.1, 0.9)
 CB03Unknown_minOLQuants <- CB03_unknownPulse_minOL %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
-            quant95_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
+  summarize(quant10_500 = quantile(OL_500, probs= quants[1], na.rm= TRUE),
+            quant90_500 = quantile(OL_500, probs= quants[2], na.rm= TRUE))
 CB03Unknown_minOLMedQuants <- CB03Unknown_minOLMed %>%
   full_join(CB03Unknown_minOLQuants)
 CB03Unknown_minOLMedQuants$site <- "CB03"
@@ -9874,8 +9874,8 @@ all_midUnknown_minOL$site = factor(all_midUnknown_minOL$site,
 all_midUnknown_minOL$UTC_hour = as.POSIXct(strptime(all_midUnknown_minOL$UTC_hour,"%H:%M:%S", tz= "GMT"))
 
 ggplot(all_midUnknown_minOL, aes(x= UTC_hour, y= med_500, group= site, color= site))+
-  geom_ribbon(aes(ymin= quant05_500,
-                  ymax= quant95_500,
+  geom_ribbon(aes(ymin= quant10_500,
+                  ymax= quant90_500,
                   fill= site, color= site), linetype= 0, linewidth= 0.2, alpha= 0.1)+
   scale_fill_manual(values= c("#00797F",  "#003087",  "#B71300", "#E84A5FFF"))+
   guides(fill= guide_legend(title= "Site"))+
@@ -9921,11 +9921,11 @@ DB01cuskEel_minOLMed <- DB01_cuskEel_minOL%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
     med_2000= median(OL_2000, na.rm= TRUE))
-quants= c(0.05, 0.95)
+quants= c(0.1, 0.9)
 DB01cuskEel_minOLQuants <- DB01_cuskEel_minOL %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_2000 = quantile(OL_2000, probs= quants[1], na.rm= TRUE),
-            quant95_2000 = quantile(OL_2000, probs= quants[2], na.rm= TRUE))
+  summarize(quant10_2000 = quantile(OL_2000, probs= quants[1], na.rm= TRUE),
+            quant90_2000 = quantile(OL_2000, probs= quants[2], na.rm= TRUE))
 DB01cuskEel_minOLMedQuants <- DB01cuskEel_minOLMed %>%
   full_join(DB01cuskEel_minOLQuants)
 DB01cuskEel_minOLMedQuants$site <- "DB01"
@@ -9947,11 +9947,11 @@ ES01cuskEel_minOLMed <- ES01_cuskEel_minOL%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
     med_2000= median(OL_2000, na.rm= TRUE))
-quants= c(0.05, 0.95)
+quants= c(0.1, 0.9)
 ES01cuskEel_minOLQuants <- ES01_cuskEel_minOL %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_2000 = quantile(OL_2000, probs= quants[1], na.rm= TRUE),
-            quant95_2000 = quantile(OL_2000, probs= quants[2], na.rm= TRUE))
+  summarize(quant10_2000 = quantile(OL_2000, probs= quants[1], na.rm= TRUE),
+            quant90_2000 = quantile(OL_2000, probs= quants[2], na.rm= TRUE))
 ES01cuskEel_minOLMedQuants <- ES01cuskEel_minOLMed %>%
   full_join(ES01cuskEel_minOLQuants)
 ES01cuskEel_minOLMedQuants$site <- "ES01"
@@ -9972,11 +9972,11 @@ CB01cuskEel_minOLMed <- CB01_cuskEel_minOL%>%
   dplyr::group_by(UTC_hour)%>%
   dplyr::summarise(
     med_2000= median(OL_2000, na.rm= TRUE))
-quants= c(0.05, 0.95)
+quants= c(0.1, 0.90)
 CB01cuskEel_minOLQuants <- CB01_cuskEel_minOL %>%
    group_by(UTC_hour) %>%
-  summarize(quant05_2000 = quantile(OL_2000, probs= quants[1], na.rm= TRUE),
-            quant95_2000 = quantile(OL_2000, probs= quants[2], na.rm= TRUE))
+  summarize(quant10_2000 = quantile(OL_2000, probs= quants[1], na.rm= TRUE),
+            quant90_2000 = quantile(OL_2000, probs= quants[2], na.rm= TRUE))
 CB01cuskEel_minOLMedQuants <- CB01cuskEel_minOLMed %>%
   full_join(CB01cuskEel_minOLQuants)
 CB01cuskEel_minOLMedQuants$site <- "CB01"
@@ -9994,8 +9994,8 @@ all_incuskEel_minOL$site = factor(all_incuskEel_minOL$site,
 all_incuskEel_minOL$UTC_hour = as.POSIXct(strptime(all_incuskEel_minOL$UTC_hour,"%H:%M:%S", tz= "GMT"))
 
 ggplot(all_incuskEel_minOL, aes(x= UTC_hour, y= med_2000, group= site, color= site))+
-  geom_ribbon(aes(ymin= quant05_2000,
-                  ymax= quant95_2000,
+  geom_ribbon(aes(ymin= quant10_2000,
+                  ymax= quant90_2000,
                   fill= site, color= site), linetype= 0, linewidth= 0.2, alpha= 0.1)+
   scale_fill_manual(values= c("#00797F",  "#003087",  "#B71300"))+
   guides(fill= guide_legend(title= "Site"))+
@@ -11548,7 +11548,7 @@ CB01_cuskEel_peaks <- CB01_cuskEel_minOL %>%
   #DB01 peak days:9/16/2022 (23:30), 9/10/2023 (23:45), 9/11/2024 (23:45)
   #ES01 peak day: 9/19/2024
   #CB01 peak days: 9/9/2022 (23:30), 9/5/2023 (23:45), 9/10/2024 (0)
-#DB01####
+  #DB01####
 DB01_91622 <-  format(seq(ymd_hms("2022-09-16 00:00:00"), ymd_hms("2022-09-16 23:45:00"), by = "15 min")) 
 DB01_91622df <- data.frame(UTC= DB01_91622)
 DB01_91622df$UTC <- as.POSIXct(DB01_91622df$UTC)
@@ -11603,7 +11603,7 @@ DB01_cuskEel_peaks$month_day <- paste(DB01_cuskEel_peaks$month, DB01_cuskEel_pea
 DB01_cuskEel_peaks$shore <- "Inshore"
 DB01_cuskEel_peaks$lat <- "Delaware"
 
-#ES01####
+  #ES01####
 ES01_91924 <-  format(seq(ymd_hms("2024-09-19 00:00:00"), ymd_hms("2024-09-19 23:45:00"), by = "15 min")) 
 ES01_91924df <- data.frame(UTC= ES01_91924)
 ES01_91924df$UTC <- as.POSIXct(ES01_91924df$UTC)
@@ -11628,7 +11628,7 @@ ES01_cuskEel_peaks$month_day <- paste(ES01_cuskEel_peaks$month, ES01_cuskEel_pea
 ES01_cuskEel_peaks$shore <- "Inshore"
 ES01_cuskEel_peaks$lat <- "Eastern"
 
-#CB01####
+  #CB01####
 CB01_9922 <-  format(seq(ymd_hms("2022-09-09 00:00:00"), ymd_hms("2022-09-09 23:45:00"), by = "15 min")) 
 CB01_9922df <- data.frame(UTC= CB01_9922)
 CB01_9922df$UTC <- as.POSIXct(CB01_9922df$UTC)
@@ -12204,7 +12204,7 @@ ggplot(all_unknownPulse_peakSummary, aes(x = median_month_date, y = med_500, col
 #temp and peak dates scatter####
 allSite_dailyTemps <- all_site_temps %>%
   group_by(Date, site) %>%
- summarize(temp= median(Internal_temp_C))
+ summarize(temp= median(calibrated))
 colnames(allSite_dailyTemps)[1] <- "UTC_date" 
 
 ES_unknownPulse_peaks <- ES01_unknownPulse_peaks %>%
@@ -12405,7 +12405,7 @@ ggplot(all_cuskEel_onsetSummary, aes(x = median_month_date, y = med_2000, color 
 #temp and onset date scatter####
 allSite_dailyTemps <- all_site_temps %>%
   group_by(Date, site) %>%
- summarize(temp= median(Internal_temp_C))
+ summarize(temp= median(calibrated))
 colnames(allSite_dailyTemps)[1] <- "UTC_date" 
 
 ES_cuskEel_onsets <- ES01_cuskEel_onsets
@@ -12577,7 +12577,7 @@ ggplot(all_cuskEel_peakSummary, aes(x = median_month_date, y = med_2000, color =
 #temp and peak date scatter####
 allSite_dailyTemps <- all_site_temps %>%
   group_by(Date, site) %>%
- summarize(temp= median(Internal_temp_C))
+ summarize(temp= median(calibrated))
 colnames(allSite_dailyTemps)[1] <- "UTC_date" 
 
 ES_cuskEel_peaks <- ES01_cuskEel_peaks
