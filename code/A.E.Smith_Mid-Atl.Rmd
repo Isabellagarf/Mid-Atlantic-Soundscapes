@@ -9877,7 +9877,7 @@ ggplot(all_midUnknown_minOL, aes(x= UTC_hour, y= med_500, group= site, color= si
   geom_ribbon(aes(ymin= quant10_500,
                   ymax= quant90_500,
                   fill= site, color= site), linetype= 0, linewidth= 0.2, alpha= 0.1)+
-  scale_fill_manual(values= c("#00797F",  "#003087",  "#B71300", "#E84A5FFF"))+
+  scale_fill_manual(values= c("#00797F",  "#003087",  "#B71300", "purple"))+
   guides(fill= guide_legend(title= "Site"))+
   scale_x_datetime(breaks = breaks_width("1 hour"),labels=date_format("%H:%M"), minor_breaks = NULL)+
   geom_point(size= 1.5) + geom_line()+
@@ -9885,7 +9885,7 @@ ggplot(all_midUnknown_minOL, aes(x= UTC_hour, y= med_500, group= site, color= si
   xlab("Hour (UTC)")+
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   ggtitle("Unknown pulse full effort")+
-  scale_color_manual(values= c("#00797F",  "#003087",  "#B71300", "#E84A5FFF"))+
+  scale_color_manual(values= c("#00797F",  "#003087",  "#B71300", "purple"))+
   guides(color= guide_legend(title= "Site"))+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
         axis.title= element_text(size= 18),
@@ -10393,23 +10393,22 @@ CB01_51223Med <- CB01_51223df%>%
 CB01_51223Med$site <- "CB01"
 CB01_51223Med$season <- "Spring"
 
-CB01_52324 <-  format(seq(ymd_hms("2024-05-23 00:00:00"), ymd_hms("2024-05-23 23:45:00"), by = "15 min")) #weird timezone things so shift by 4 hours
-CB01_52324df <- data.frame(UTC= CB01_52324)
-CB01_52324df$UTC <- as.POSIXct(CB01_52324df$UTC)
-CB01_52324df <-CB01_52324df %>%
-  left_join(CB01_unknownPulse_minOL, by= "UTC")
-CB01_52324df$hour <- hour(CB01_52324df$UTC)
-CB01_52324df <- CB01_52324df %>%
-  filter(CB01_52324df$hour== c("1"))
-CB01_52324Med <- CB01_52324df%>%
-  dplyr::group_by(hour, UTC_date)%>%
-  dplyr::summarise(
-    med_500= median(OL_500, na.rm= TRUE))
-CB01_52324Med$site <- "CB01"
-CB01_52324Med$season <- "Spring"
+#CB01_52324 <-  format(seq(ymd_hms("2024-05-23 00:00:00"), ymd_hms("2024-05-23 23:45:00"), by = "15 min")) #weird timezone things so shift by 4 hours
+#CB01_52324df <- data.frame(UTC= CB01_52324)
+#CB01_52324df$UTC <- as.POSIXct(CB01_52324df$UTC)
+#CB01_52324df <-CB01_52324df %>%
+ # left_join(CB01_unknownPulse_minOL, by= "UTC")
+#CB01_52324df$hour <- hour(CB01_52324df$UTC)
+#CB01_52324df <- CB01_52324df %>%
+#  filter(CB01_52324df$hour== c("1"))
+#CB01_52324Med <- CB01_52324df%>%
+#  dplyr::group_by(hour, UTC_date)%>%
+#  dplyr::summarise(
+ #   med_500= median(OL_500, na.rm= TRUE))
+#CB01_52324Med$site <- "CB01"
+#CB01_52324Med$season <- "Spring"
 
-CB01_unknownPulse_onsets <- CB01_51223Med %>%
-  full_join(CB01_52324Med)
+CB01_unknownPulse_onsets <- CB01_51223Med 
 
 CB01_unknownPulse_onsets <- CB01_unknownPulse_onsets %>%
   mutate(year = str_split(UTC_date,"-", simplify = T)[,1])%>%
@@ -10684,20 +10683,20 @@ guides(shape= guide_legend(title= "Site"), color= guide_legend(title= "Year"))+
 
 #Cusk eel####
   #DB01- onset days:8/17/2022, 6/28/2023, 8/19/2024####
-DB01_81722 <-  format(seq(ymd_hms("2022-08-17 00:00:00"), ymd_hms("2022-08-17 23:45:00"), by = "15 min")) #weird timezone things so shift by 4 hours
-DB01_81722df <- data.frame(UTC= DB01_81722)
-DB01_81722df$UTC <- as.POSIXct(DB01_81722df$UTC)
-DB01_81722df <-DB01_81722df %>%
-  left_join(DB01_cuskEel_minOL, by= "UTC")
-DB01_81722df$hour <- hour(DB01_81722df$UTC)
-DB01_81722df <- DB01_81722df %>%
-  filter(DB01_81722df$hour== c("23"))
-DB01_81722Med <- DB01_81722df%>%
-  dplyr::group_by(hour, UTC_date)%>%
-  dplyr::summarise(
-    med_2000= median(OL_2000, na.rm= TRUE))
-DB01_81722Med$site <- "DB01"
-DB01_81722Med$season <- "Summer"
+#DB01_81722 <-  format(seq(ymd_hms("2022-08-17 00:00:00"), ymd_hms("2022-08-17 23:45:00"), by = "15 min")) #weird timezone things so shift by 4 hours
+#DB01_81722df <- data.frame(UTC= DB01_81722)
+#DB01_81722df$UTC <- as.POSIXct(DB01_81722df$UTC)
+#DB01_81722df <-DB01_81722df %>%
+#  left_join(DB01_cuskEel_minOL, by= "UTC")
+#DB01_81722df$hour <- hour(DB01_81722df$UTC)
+#DB01_81722df <- DB01_81722df %>%
+ # filter(DB01_81722df$hour== c("23"))
+#DB01_81722Med <- DB01_81722df%>%
+#  dplyr::group_by(hour, UTC_date)%>%
+ # dplyr::summarise(
+ #   med_2000= median(OL_2000, na.rm= TRUE))
+#DB01_81722Med$site <- "DB01"
+#DB01_81722Med$season <- "Summer"
 
 DB01_62823 <-  format(seq(ymd_hms("2023-06-28 00:00:00"), ymd_hms("2023-06-28 23:45:00"), by = "15 min")) 
 DB01_62823df <- data.frame(UTC= DB01_62823)
@@ -10729,8 +10728,7 @@ DB01_81924Med <- DB01_81924df%>%
 DB01_81924Med$site <- "DB01"
 DB01_81924Med$season <- "Summer"
 
-DB01_cuskEel_onsets <- DB01_81722Med %>%
-  full_join(DB01_62823Med) %>%
+DB01_cuskEel_onsets <- DB01_62823Med %>%
   full_join(DB01_81924Med)
 
 DB01_cuskEel_onsets <- DB01_cuskEel_onsets %>%
@@ -10769,20 +10767,20 @@ ES01_cuskEel_onsets$shore <- "Inshore"
 ES01_cuskEel_onsets$lat <- "Eastern"
 
   #CB01- onset days:8/18/2022, 6/2/2023, 7/26/2024####
-CB01_81822 <-  format(seq(ymd_hms("2022-08-18 00:00:00"), ymd_hms("2022-08-18 23:45:00"), by = "15 min")) #weird timezone things so shift by 4 hours
-CB01_81822df <- data.frame(UTC= CB01_81822)
-CB01_81822df$UTC <- as.POSIXct(CB01_81822df$UTC)
-CB01_81822df <-CB01_81822df %>%
-  left_join(CB01_cuskEel_minOL, by= "UTC")
-CB01_81822df$hour <- hour(CB01_81822df$UTC)
-CB01_81822df <- CB01_81822df %>%
-  filter(CB01_81822df$hour== c("23"))
-CB01_81822Med <- CB01_81822df%>%
-  dplyr::group_by(hour, UTC_date)%>%
-  dplyr::summarise(
-    med_2000= median(OL_2000, na.rm= TRUE))
-CB01_81822Med$site <- "CB01"
-CB01_81822Med$season <- "Summer"
+#CB01_81822 <-  format(seq(ymd_hms("2022-08-18 00:00:00"), ymd_hms("2022-08-18 23:45:00"), by = "15 min")) #weird timezone things so shift by 4 hours
+#CB01_81822df <- data.frame(UTC= CB01_81822)
+#CB01_81822df$UTC <- as.POSIXct(CB01_81822df$UTC)
+#CB01_81822df <-CB01_81822df %>%
+#  left_join(CB01_cuskEel_minOL, by= "UTC")
+#CB01_81822df$hour <- hour(CB01_81822df$UTC)
+#CB01_81822df <- CB01_81822df %>%
+#  filter(CB01_81822df$hour== c("23"))
+#CB01_81822Med <- CB01_81822df%>%
+#  dplyr::group_by(hour, UTC_date)%>%
+#  dplyr::summarise(
+#    med_2000= median(OL_2000, na.rm= TRUE))
+#CB01_81822Med$site <- "CB01"
+#CB01_81822Med$season <- "Summer"
 
 CB01_6223 <-  format(seq(ymd_hms("2023-06-02 00:00:00"), ymd_hms("2023-06-02 23:45:00"), by = "15 min")) 
 CB01_6223df <- data.frame(UTC= CB01_6223)
@@ -10814,8 +10812,7 @@ CB01_72624Med <- CB01_72624df%>%
 CB01_72624Med$site <- "CB01"
 CB01_72624Med$season <- "Summer"
 
-CB01_cuskEel_onsets <- CB01_81822Med %>%
-  full_join(CB01_6223Med) %>%
+CB01_cuskEel_onsets <- CB01_6223Med %>%
   full_join(CB01_72624Med)
 
 CB01_cuskEel_onsets <- CB01_cuskEel_onsets %>%
@@ -11549,19 +11546,19 @@ CB01_cuskEel_peaks <- CB01_cuskEel_minOL %>%
   #ES01 peak day: 9/19/2024
   #CB01 peak days: 9/9/2022 (23:30), 9/5/2023 (23:45), 9/10/2024 (0)
   #DB01####
-DB01_91622 <-  format(seq(ymd_hms("2022-09-16 00:00:00"), ymd_hms("2022-09-16 23:45:00"), by = "15 min")) 
-DB01_91622df <- data.frame(UTC= DB01_91622)
-DB01_91622df$UTC <- as.POSIXct(DB01_91622df$UTC)
-DB01_91622df <-DB01_91622df %>%
-  left_join(DB01_cuskEel_minOL, by= "UTC")
-DB01_91622df$hour <- hour(DB01_91622df$UTC)
-DB01_91622df <- DB01_91622df %>%
-  filter(DB01_91622df$hour== c("23"))
-DB01_91622Med <- DB01_91622df%>%
-  dplyr::group_by(hour, UTC_date)%>%
-  dplyr::summarise(
-    med_2000= median(OL_2000, na.rm= TRUE))
-DB01_91622Med$site <- "DB01"
+#DB01_91622 <-  format(seq(ymd_hms("2022-09-16 00:00:00"), ymd_hms("2022-09-16 23:45:00"), by = "15 min")) 
+#DB01_91622df <- data.frame(UTC= DB01_91622)
+#DB01_91622df$UTC <- as.POSIXct(DB01_91622df$UTC)
+#DB01_91622df <-DB01_91622df %>%
+#  left_join(DB01_cuskEel_minOL, by= "UTC")
+#DB01_91622df$hour <- hour(DB01_91622df$UTC)
+#DB01_91622df <- DB01_91622df %>%
+#  filter(DB01_91622df$hour== c("23"))
+#DB01_91622Med <- DB01_91622df%>%
+ # dplyr::group_by(hour, UTC_date)%>%
+#  dplyr::summarise(
+#    med_2000= median(OL_2000, na.rm= TRUE))
+#DB01_91622Med$site <- "DB01"
 
 DB01_91023 <-  format(seq(ymd_hms("2023-09-10 00:00:00"), ymd_hms("2023-09-10 23:45:00"), by = "15 min")) 
 DB01_91023df <- data.frame(UTC= DB01_91023)
@@ -11591,8 +11588,7 @@ DB01_91124Med <- DB01_91124df%>%
     med_2000= median(OL_2000, na.rm= TRUE))
 DB01_91124Med$site <- "DB01"
 
-DB01_cuskEel_peaks <- DB01_91622Med %>%
-  full_join(DB01_91023Med) %>%
+DB01_cuskEel_peaks <- DB01_91023Med %>%
   full_join(DB01_91124Med)
 
 DB01_cuskEel_peaks <- DB01_cuskEel_peaks %>%
@@ -11629,19 +11625,19 @@ ES01_cuskEel_peaks$shore <- "Inshore"
 ES01_cuskEel_peaks$lat <- "Eastern"
 
   #CB01####
-CB01_9922 <-  format(seq(ymd_hms("2022-09-09 00:00:00"), ymd_hms("2022-09-09 23:45:00"), by = "15 min")) 
-CB01_9922df <- data.frame(UTC= CB01_9922)
-CB01_9922df$UTC <- as.POSIXct(CB01_9922df$UTC)
-CB01_9922df <-CB01_9922df %>%
-  left_join(CB01_cuskEel_minOL, by= "UTC")
-CB01_9922df$hour <- hour(CB01_9922df$UTC)
-CB01_9922df <- CB01_9922df %>%
-  filter(CB01_9922df$hour== c("0"))
-CB01_9922Med <- CB01_9922df%>%
-  dplyr::group_by(hour, UTC_date)%>%
-  dplyr::summarise(
-    med_2000= median(OL_2000, na.rm= TRUE))
-CB01_9922Med$site <- "CB01"
+#CB01_9922 <-  format(seq(ymd_hms("2022-09-09 00:00:00"), ymd_hms("2022-09-09 23:45:00"), by = "15 min")) 
+#CB01_9922df <- data.frame(UTC= CB01_9922)
+#CB01_9922df$UTC <- as.POSIXct(CB01_9922df$UTC)
+#CB01_9922df <-CB01_9922df %>%
+#  left_join(CB01_cuskEel_minOL, by= "UTC")
+#CB01_9922df$hour <- hour(CB01_9922df$UTC)
+#CB01_9922df <- CB01_9922df %>%
+#  filter(CB01_9922df$hour== c("0"))
+#CB01_9922Med <- CB01_9922df%>%
+#  dplyr::group_by(hour, UTC_date)%>%
+#  dplyr::summarise(
+ #   med_2000= median(OL_2000, na.rm= TRUE))
+#CB01_9922Med$site <- "CB01"
 
 CB01_9523 <-  format(seq(ymd_hms("2023-09-05 00:00:00"), ymd_hms("2023-09-05 23:45:00"), by = "15 min")) 
 CB01_9523df <- data.frame(UTC= CB01_9523)
@@ -11671,8 +11667,7 @@ CB01_91024Med <- CB01_91024df%>%
     med_2000= median(OL_2000, na.rm= TRUE))
 CB01_91024Med$site <- "CB01"
 
-CB01_cuskEel_peaks <- CB01_9922Med %>%
-  full_join(CB01_9523Med) %>%
+CB01_cuskEel_peaks <- CB01_9523Med %>%
   full_join(CB01_91024Med)
 
 CB01_cuskEel_peaks <- CB01_cuskEel_peaks %>%
@@ -11999,6 +11994,9 @@ ggplot(all_unknownPulse_onsetSummary, aes(x = median_month_date, y = med_500, co
         legend.title=element_text(size=16))
 
 
+all_unknownPulse_onsetSummary$delta <- (all_unknownPulse_onsetSummary$max_500 - all_unknownPulse_onsetSummary$min_500)
+
+
 #temp and onset date scatter####
 allSite_dailyTemps <- all_site_temps %>%
   group_by(Date, site) %>%
@@ -12201,6 +12199,10 @@ ggplot(all_unknownPulse_peakSummary, aes(x = median_month_date, y = med_500, col
         legend.text=element_text(size=16),
         legend.title=element_text(size=16))
 
+all_unknownPulse_peakSummary$delta <- (all_unknownPulse_peakSummary$max_500 - all_unknownPulse_peakSummary$min_500)
+
+
+
 #temp and peak dates scatter####
 allSite_dailyTemps <- all_site_temps %>%
   group_by(Date, site) %>%
@@ -12215,6 +12217,11 @@ all_unknownPulse_peakTemps <- all_unknownPulse_peaks %>%
 
 ES_unknownPulse_peakTemps <- ES_unknownPulse_peaks %>%
   left_join(allSite_dailyTemps, join_by(UTC_date, site))
+
+#comment out after work
+
+all_unknownPulse_peakTemps_Yearly <- all_unknownPulse_peakTemps %>%
+  full_join(ES_unknownPulse_peakTemps)
 
 all_unknownPulse_peakMedTemps <- all_unknownPulse_peakTemps %>%
   group_by(site) %>%
@@ -12286,20 +12293,22 @@ ggplot(all_unknownPulse_peakTempSummary, aes(x = med_temp, y = median_month_date
         legend.text=element_text(size=16),
         legend.title=element_text(size=16))
 
+all_unknownPulse_peakTempSummary$delta <- (all_unknownPulse_peakTempSummary$max_temp - all_unknownPulse_peakTempSummary$min_temp)
+
 
 #keeping years separate
-ggplot(all_unknownPulse_peakTemps, aes(x = temp, y = UTC_date, color = site, shape= year)) +
+ggplot(all_unknownPulse_peakTemps_Yearly, aes(x = temp, y = UTC_date, color = site, shape= year)) +
   geom_point(size = 5, stroke= 1.75) +
   scale_shape_manual(values= c(16, 1))+
 #  geom_errorbar(aes(ymin = min_date, ymax = max_date), width = 0.05) + # Vertical error bars
 #  geom_errorbar(aes(xmin = min_temp, xmax = max_temp), height = 0.05, orientation = "y") + # Horizontal error bars
-  scale_color_manual(values=c("DB01" = "#00797F",
+  scale_color_manual(values=c("DB01" = "#001743",
                               "DB02" = "#B71300",
-                              "ES01" = "#003087",
-                              "ES02" = "maroon",
-                              "CB01" = "#1EBEC7",
-                              "CB02" = "#DB2207",
-                              "CB03" = "#FF6C57"),
+                              "ES01" = "#0085CA",
+                              "ES02" = "#DB6015",
+                              "CB01" = "#5EB6D9",
+                              "CB02" = "#FFAB28",
+                              "CB03" = "#FFDD6A"),
                      name = "Site") +
   labs(x = "Temp (°C)", y= "Date", title= "Unknown Pulse: peak by site") +
   theme_bw() +
@@ -12408,11 +12417,12 @@ allSite_dailyTemps <- all_site_temps %>%
  summarize(temp= median(calibrated))
 colnames(allSite_dailyTemps)[1] <- "UTC_date" 
 
-ES_cuskEel_onsets <- ES01_cuskEel_onsets
+ES_cuskEel_onsets <- ES01_cuskEel_onsets  #BEFORE THIS STEP: go back to spatial/temporal trends section and re-load ES01_cuskEel_onsets so it's reset to all columns. SPL and onset plot messes it up for that plot
 
 all_cuskEel_onsetTemps <- all_cuskEel_onsets %>%
   left_join(allSite_dailyTemps, join_by(UTC_date, site))
 
+#colnames(ES_cuskEel_onsets )[3] <- "UTC_date"
 ES_cuskEel_onsetTemps <- ES_cuskEel_onsets %>%
   left_join(allSite_dailyTemps, join_by(UTC_date, site))
 
