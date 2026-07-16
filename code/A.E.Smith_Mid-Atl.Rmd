@@ -9408,9 +9408,15 @@ ggplot(CB03toadfish_medDiels, aes(x= UTC, group= year(UTC), y= med_1000, group= 
 
 #NOW CAN JUST LOAD IN CSV FILES IF NEEDED- BUT THESE ARE USED TO LOAD IN MINUTE-LEVEL DATA THAT MEETS THRESHOLD FOR EACH CHORUS AT EACH SITE
 
-DB01_unknownPulse_threshold <- read.csv(here("data/DB01_unknownPulse_threshold.csv"))
-ES01_unknownPulse_threshold <- read.csv(here("data/ES01_unknownPulse_threshold.csv"))
-CB01_unknownPulse_threshold <- read.csv(here("data/CB01_unknownPulse_threshold.csv"))
+DB01_unknownPulse_threshold <- read.csv(here("data/OLD_data/DB01_unknownPulse_threshold.csv"))
+ES01_unknownPulse_threshold <- read.csv(here("data/OLD_data/ES01_unknownPulse_threshold.csv"))
+CB01_unknownPulse_threshold <- read.csv(here("data/OLD_data/CB01_unknownPulse_threshold.csv"))
+
+DB02_unknownPulse_threshold <- read.csv(here("data/DB02_unknownPulse_threshold.csv"))
+ES02_unknownPulse_threshold <- read.csv(here("data/ES02_unknownPulse_threshold.csv"))
+CB02_unknownPulse_threshold <- read.csv(here("data/CB02_unknownPulse_threshold.csv"))
+CB03_unknownPulse_threshold <- read.csv(here("data/CB03_unknownPulse_threshold.csv"))
+
 
 DB01_cuskEel_threshold <- read.csv(here("data/DB01_cuskEel_threshold.csv"))
 ES01_cuskEel_threshold <- read.csv(here("data/ES01_cuskEel_threshold.csv"))
