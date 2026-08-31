@@ -90,6 +90,96 @@ CB03_HMD <- read.csv(here("data/CB03_HMD.csv"))
 CB03_HMD$UTC <- as.POSIXct(CB03_HMD$UTC, format= "%Y-%m-%dT%H:%M:%SZ", tz = "GMT")
 CB03_HMD$PLATFORM = "CB03"
 ```
+# OCTAVE LEVEL FILES
+```{r}
+DB01_OL <- read.csv(here("data/DB01_OL.csv"))
+DB01_OL <- DB01_OL[-c(1)]
+DB01_OL$UTC_fixed <- paste(DB01_OL$UTC_date, DB01_OL$UTC_hour, sep = " ")
+DB01_OL$UTC_fixed <- as.POSIXct(DB01_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+DB01_OL$PLATFORM = "DB01"
+DB01_OL$shore = "Inshore"
+DB01_OL$Lat = "Delaware"
+
+DB02_OL <- read.csv(here("data/DB02_OL.csv"))
+DB02_OL <- DB02_OL[-c(1)]
+DB02_OL$UTC_fixed <- paste(DB02_OL$UTC_date, DB02_OL$UTC_hour, sep = " ")
+DB02_OL$UTC_fixed <- as.POSIXct(DB02_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+DB02_OL$PLATFORM = "DB02"
+DB02_OL$shore = "Mid-shore"
+DB02_OL$Lat = "Delaware"
+
+DB03_OL <- read.csv(here("data/DB03_OL.csv"))
+DB03_OL <- DB03_OL[-c(1)]
+DB03_OL$UTC_fixed <- paste(DB03_OL$UTC_date, DB03_OL$UTC_hour, sep = " ")
+DB03_OL$UTC_fixed <- as.POSIXct(DB03_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+DB03_OL$PLATFORM = "DB03"
+DB03_OL$shore = "Offshore"
+DB03_OL$Lat = "Delaware"
+
+ES01_OL <- read.csv(here("data/ES01_OL.csv"))
+ES01_OL <- ES01_OL[-c(1)]
+ES01_OL$UTC_fixed <- paste(ES01_OL$UTC_date, ES01_OL$UTC_hour, sep = " ")
+ES01_OL$UTC_fixed <- as.POSIXct(ES01_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+ES01_OL$PLATFORM = "ES01"
+ES01_OL$shore = "Inshore"
+ES01_OL$Lat = "Eastern"
+
+ES02_OL <- read.csv(here("data/ES02_OL.csv"))
+ES02_OL <- ES02_OL[-c(1)]
+ES02_OL$UTC_fixed <- paste(ES02_OL$UTC_date, ES02_OL$UTC_hour, sep = " ")
+ES02_OL$UTC_fixed <- as.POSIXct(ES02_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+ES02_OL$PLATFORM = "ES02"
+ES02_OL$shore = "Mid-shore"
+ES02_OL$Lat = "Eastern"
+
+ES03_OL <- read.csv(here("data/ES03_OL.csv"))
+ES03_OL <- ES03_OL[-c(1)]
+ES03_OL$UTC_fixed <- paste(ES03_OL$UTC_date, ES03_OL$UTC_hour, sep = " ")
+ES03_OL$UTC_fixed <- as.POSIXct(ES03_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+ES03_OL$PLATFORM = "ES03"
+ES03_OL$shore = "Offshore"
+ES03_OL$Lat = "Eastern"
+
+CB01_OL <- read.csv(here("data/CB01_OL.csv"))
+CB01_OL <- CB01_OL[-c(1)]
+CB01_OL$UTC_fixed <- paste(CB01_OL$UTC_date, CB01_OL$UTC_hour, sep = " ")
+CB01_OL$UTC_fixed <- as.POSIXct(CB01_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+CB01_OL$PLATFORM = "CB01"
+CB01_OL$shore = "Inshore"
+CB01_OL$Lat = "Chesapeake"
+
+
+CB02_OL <- read.csv(here("data/CB02_OL.csv"))
+str_split(CB02_OL$UTC[2]," ", simplify = T)[,1]
+str_split(CB02_OL$UTC[2]," ", simplify = T)[,2]
+CB02_OL <- CB02_OL %>%
+  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
+  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2]) %>%
+  mutate(UTC_fixed = NA)
+CB02_OL %>% filter(UTC_hour == "")
+CB02_OL %>% filter(UTC_hour == "") %>% nrow # 843 rows having missing hour
+# Find empty rows in new columns and fill in 
+for (c in 1:nrow(CB02_OL)) { # for each row
+  if (CB02_OL$UTC_hour[c] == "") { # if the hour column was left empty
+    CB02_OL$UTC_hour[c] <- "00:00:00" # manually add midnight
+  }
+}
+CB02_OL$UTC_fixed <- paste(CB02_OL$UTC_date, CB02_OL$UTC_hour, sep = " ")
+CB02_OL$UTC_fixed <- as.POSIXct(CB02_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+CB02_OL <- CB02_OL[-c(1)]
+CB02_OL$PLATFORM = "CB02"
+CB02_OL$shore = "Mid-shore"
+CB02_OL$Lat = "Chesapeake"
+
+CB03_OL <- read.csv(here("data/CB03_OL.csv"))
+CB03_OL <- CB03_OL[-c(1)]
+CB03_OL$UTC_fixed <- paste(CB03_OL$UTC_date, CB03_OL$UTC_hour, sep = " ")
+CB03_OL$UTC_fixed <- as.POSIXct(CB03_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
+CB03_OL$PLATFORM = "CB03"
+CB03_OL$shore = "Mid-shore"
+CB03_OL$Lat = "Chesapeake"
+
+```
 #USING- plotPSD
 ```{r}
  all_sites <- DB01_HMD%>%
@@ -933,96 +1023,7 @@ inshore_july_plot +
    theme_bw()
 
 ```
-## OCTAVE LEVEL FILES
-```{r}
-DB01_OL <- read.csv(here("data/DB01_OL.csv"))
-DB01_OL <- DB01_OL[-c(1)]
-DB01_OL$UTC_fixed <- paste(DB01_OL$UTC_date, DB01_OL$UTC_hour, sep = " ")
-DB01_OL$UTC_fixed <- as.POSIXct(DB01_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
-DB01_OL$PLATFORM = "DB01"
-DB01_OL$shore = "Inshore"
-DB01_OL$Lat = "Delaware"
 
-DB02_OL <- read.csv(here("data/DB02_OL.csv"))
-DB02_OL <- DB02_OL[-c(1)]
-DB02_OL$UTC_fixed <- paste(DB02_OL$UTC_date, DB02_OL$UTC_hour, sep = " ")
-DB02_OL$UTC_fixed <- as.POSIXct(DB02_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
-DB02_OL$PLATFORM = "DB02"
-DB02_OL$shore = "Mid-shore"
-DB02_OL$Lat = "Delaware"
-
-DB03_OL <- read.csv(here("data/DB03_OL.csv"))
-DB03_OL <- DB03_OL[-c(1)]
-DB03_OL$UTC_fixed <- paste(DB03_OL$UTC_date, DB03_OL$UTC_hour, sep = " ")
-DB03_OL$UTC_fixed <- as.POSIXct(DB03_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
-DB03_OL$PLATFORM = "DB03"
-DB03_OL$shore = "Offshore"
-DB03_OL$Lat = "Delaware"
-
-ES01_OL <- read.csv(here("data/ES01_OL.csv"))
-ES01_OL <- ES01_OL[-c(1)]
-ES01_OL$UTC_fixed <- paste(ES01_OL$UTC_date, ES01_OL$UTC_hour, sep = " ")
-ES01_OL$UTC_fixed <- as.POSIXct(ES01_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
-ES01_OL$PLATFORM = "ES01"
-ES01_OL$shore = "Inshore"
-ES01_OL$Lat = "Eastern"
-
-ES02_OL <- read.csv(here("data/ES02_OL.csv"))
-ES02_OL <- ES02_OL[-c(1)]
-ES02_OL$UTC_fixed <- paste(ES02_OL$UTC_date, ES02_OL$UTC_hour, sep = " ")
-ES02_OL$UTC_fixed <- as.POSIXct(ES02_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
-ES02_OL$PLATFORM = "ES02"
-ES02_OL$shore = "Mid-shore"
-ES02_OL$Lat = "Eastern"
-
-ES03_OL <- read.csv(here("data/ES03_OL.csv"))
-ES03_OL <- ES03_OL[-c(1)]
-ES03_OL$UTC_fixed <- paste(ES03_OL$UTC_date, ES03_OL$UTC_hour, sep = " ")
-ES03_OL$UTC_fixed <- as.POSIXct(ES03_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
-ES03_OL$PLATFORM = "ES03"
-ES03_OL$shore = "Offshore"
-ES03_OL$Lat = "Eastern"
-
-CB01_OL <- read.csv(here("data/CB01_OL.csv"))
-CB01_OL <- CB01_OL[-c(1)]
-CB01_OL$UTC_fixed <- paste(CB01_OL$UTC_date, CB01_OL$UTC_hour, sep = " ")
-CB01_OL$UTC_fixed <- as.POSIXct(CB01_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
-CB01_OL$PLATFORM = "CB01"
-CB01_OL$shore = "Inshore"
-CB01_OL$Lat = "Chesapeake"
-
-
-CB02_OL <- read.csv(here("data/CB02_OL.csv"))
-str_split(CB02_OL$UTC[2]," ", simplify = T)[,1]
-str_split(CB02_OL$UTC[2]," ", simplify = T)[,2]
-CB02_OL <- CB02_OL %>%
-  mutate(UTC_date = str_split(UTC," ", simplify = T)[,1]) %>%
-  mutate(UTC_hour =  str_split(UTC," ", simplify = T)[,2]) %>%
-  mutate(UTC_fixed = NA)
-CB02_OL %>% filter(UTC_hour == "")
-CB02_OL %>% filter(UTC_hour == "") %>% nrow # 843 rows having missing hour
-# Find empty rows in new columns and fill in 
-for (c in 1:nrow(CB02_OL)) { # for each row
-  if (CB02_OL$UTC_hour[c] == "") { # if the hour column was left empty
-    CB02_OL$UTC_hour[c] <- "00:00:00" # manually add midnight
-  }
-}
-CB02_OL$UTC_fixed <- paste(CB02_OL$UTC_date, CB02_OL$UTC_hour, sep = " ")
-CB02_OL$UTC_fixed <- as.POSIXct(CB02_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
-CB02_OL <- CB02_OL[-c(1)]
-CB02_OL$PLATFORM = "CB02"
-CB02_OL$shore = "Mid-shore"
-CB02_OL$Lat = "Chesapeake"
-
-CB03_OL <- read.csv(here("data/CB03_OL.csv"))
-CB03_OL <- CB03_OL[-c(1)]
-CB03_OL$UTC_fixed <- paste(CB03_OL$UTC_date, CB03_OL$UTC_hour, sep = " ")
-CB03_OL$UTC_fixed <- as.POSIXct(CB03_OL$UTC_fixed, format = "%Y-%m-%d %H:%M:%S")
-CB03_OL$PLATFORM = "CB03"
-CB03_OL$shore = "Mid-shore"
-CB03_OL$Lat = "Chesapeake"
-
-```
 #loading in chorus presence files
 ```{r}
 #DB01
@@ -7018,8 +7019,8 @@ ggplot(ALLpulse_medDiels, aes(x= UTC, group= year(UTC), y= dt_ma, group= X500_ch
   facet_grid(factor(site, levels = c('DB01', 'ES01', 'CB01'))~.,)+
   scale_color_manual(labels= c("Absent","Present"), values= c("grey75", "#00797F75"))+
   scale_fill_manual(values= c("grey75", "#00797F75"))+
-#  guides(color= guide_legend(title= "Unknown pulses: chorus presence"))+
-#  ggtitle("+/- 1 hour nautical dusk")+
+  guides(color= guide_legend(title= "Unknown pulses: chorus presence"))+
+  ggtitle("+/- 1 hour nautical dusk")+
   theme(axis.title= element_text(size= 18),
         axis.text.y= element_text(size= 16),
         axis.text.x= element_text(size= 16),
@@ -7440,8 +7441,8 @@ ALLpulse_medDiels <- DB02pulse_medDiels %>%
   full_join(CB02pulse_medDiels) %>%
   full_join(CB03pulse_medDiels)
 ALLpulse_medDiels$site = factor(ALLpulse_medDiels$site,
-                                        levels= c('DB02', 'ES02', 'CB02'),
-                                        labels= c('DB02', 'ES02', 'CB02'))
+                                        levels= c('DB02', 'ES02', 'CB02', 'CB03'),
+                                        labels= c('DB02', 'ES02', 'CB02', 'CB03'))
 
 all500_midshoreDiels <- DB02_sunset_diels %>%
   full_join(ES02_sunset_diels)%>%
@@ -7472,7 +7473,7 @@ ggplot(CB03pulse_medDiels, aes(x= UTC, group= year(UTC), y= med_500, group= X500
         strip.text= element_text(size= 16))
 
 #rolling avg
-ggplot(ALLpulse_medDiels, aes(x= UTC, group= year(UTC), y= dt_ma, group= X500_chorus, color= X500_chorus))+
+ggplot(all500_midshoreDiels, aes(x= UTC, group= year(UTC), y= dt_ma, group= X500_chorus, color= X500_chorus))+
   geom_line(linewidth= 0.75, na.rm= TRUE)+
   theme_bw()+
 #  geom_line(data= DB02pulse_medDiels, aes(y= dt_ma), color= "black")+
@@ -7482,7 +7483,7 @@ ggplot(ALLpulse_medDiels, aes(x= UTC, group= year(UTC), y= dt_ma, group= X500_ch
   facet_grid(factor(site, levels = c('DB02', 'ES02', 'CB02'))~.,)+
   scale_color_manual(labels= c("Absent","Present"), values= c("grey75", "#00797F75"))+
   scale_fill_manual(values= c("grey75", "#00797F75"))+
-#  guides(color= guide_legend(title= "Unknown pulses: chorus presence"))+
+  guides(color= guide_legend(title= "Unknown pulses: chorus presence"))+
 #  ggtitle("+/- 1 hour nautical dusk")+
   theme(axis.title= element_text(size= 18),
         axis.text.y= element_text(size= 16),
