@@ -677,7 +677,7 @@ ALLpulse_medDiels$site_label = factor(ALLpulse_medDiels$site_label,
 
 #rolling avg
 inshore_unknownFullEffort <- ggplot(ALLpulse_medDiels, aes(x= UTC, group= year(UTC), y= dt_ma, group= X500_chorus, color= X500_chorus))+
-  geom_line(linewidth= 0.75, na.rm= TRUE)+
+  geom_line(linewidth= 1.25, na.rm= TRUE)+
   theme_bw()+
 #  geom_line(data= DB01pulse_medDiels, aes(y= dt_ma), color= "black")+
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
@@ -685,8 +685,8 @@ inshore_unknownFullEffort <- ggplot(ALLpulse_medDiels, aes(x= UTC, group= year(U
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   ylim(75, 145)+
   facet_grid(factor(site_label, levels = c('Delaware', 'Eastern', 'Chesapeake'))~.,)+
-  scale_color_manual(labels= c("Absent","Present"), values= c("grey75", "#00797F75"))+
-  scale_fill_manual(values= c("grey75", "#00797F75"))+
+  scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#A12A19FF"))+
+  scale_fill_manual(values= c("grey", "#A12A19FF"))+
   guides(color= guide_legend(title= "Unknown pulse: chorus presence"))+
   ggtitle("Inshore +/- 1 hour nautical dusk")+
   theme(axis.title= element_text(size= 18),
@@ -1157,7 +1157,7 @@ ALLpulse_medDiels$site_label = factor(ALLpulse_medDiels$site_label,
 
 #rolling avg
 midshore_unknownFullEffort <- ggplot(ALLpulse_medDiels, aes(x= UTC, group= year(UTC), y= dt_ma, group= X500_chorus, color= X500_chorus))+
-  geom_line(linewidth= 0.75, na.rm= TRUE)+
+  geom_line(linewidth= 1.25, na.rm= TRUE)+
   theme_bw()+
 #  geom_line(data= DB02pulse_medDiels, aes(y= dt_ma), color= "black")+
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
@@ -1165,8 +1165,8 @@ midshore_unknownFullEffort <- ggplot(ALLpulse_medDiels, aes(x= UTC, group= year(
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
     ylim(75, 145)+
   facet_grid(factor(site_label, levels = c('Delaware', 'Eastern', 'Chesapeake 1'))~.,)+
-  scale_color_manual(labels= c("Absent","Present"), values= c("grey75", "#00797F75"))+
-  scale_fill_manual(values= c("grey75", "#00797F75"))+
+  scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#003087"))+
+  scale_fill_manual(values= c("grey", "#003087"))+
   guides(color= guide_legend(title= "Unknown pulse: chorus presence"))+
   ggtitle("Midshore +/- 1 hour sunset ")+
   theme(axis.title= element_text(size= 18),
@@ -1179,15 +1179,15 @@ midshore_unknownFullEffort <- ggplot(ALLpulse_medDiels, aes(x= UTC, group= year(
 
 #CB03
 CB03_unknownFullEffort <- ggplot(CB03pulse_medDiels, aes(x= UTC, group= year(UTC), y= dt_ma, group= X500_chorus, color= X500_chorus))+
-  geom_line(linewidth= 0.75, na.rm= TRUE)+
+  geom_line(linewidth= 1.25, na.rm= TRUE)+
   theme_bw()+
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   xlab("Date")+
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
     ylim(75, 145)+
     facet_grid(factor(site_label, levels = c('Chesapeake 2'))~.,)+
-  scale_color_manual(labels= c("Absent","Present"), values= c("grey75", "#00797F75"))+
-  scale_fill_manual(values= c("grey75", "#00797F75"))+
+  scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#003087"))+
+  scale_fill_manual(values= c("grey", "#003087"))+
   guides(color= guide_legend(title= "Unknown pulse: chorus presence"))+
   ggtitle("Midshore +/- 1 hour civil dusk ")+
   theme(axis.title= element_text(size= 18),
@@ -1202,7 +1202,7 @@ plot(CB03_unknownFullEffort)
 unknown_fullEffortPlot <- inshore_unknownFullEffort/midshore_unknownFullEffort/CB03_unknownFullEffort +plot_layout(guides = "collect", axis_titles = "collect", axes= "collect")
 
 plot(unknown_fullEffortPlot)
-ggsave(here("figs", "unknown_fullEffortPlot.png"), unknown_fullEffortPlot, width= 16, height=14, dpi= 600)
+ggsave(here("figs", "unknown_fullEffortPlot.png"), unknown_fullEffortPlot, width= 20, height=10, dpi= 600)
 
 ```
 #Cusk eel chorus presence full effort timeseries- inshore at peak diel time
@@ -1514,15 +1514,15 @@ ALLcusk_medDiels$site_label = factor(ALLcusk_medDiels$site_label,
 
 
 cuskFullEffort <- ggplot(ALLcusk_medDiels, aes(x= UTC, group= year(UTC), y= dt_ma, group= cusk_chorus, color= cusk_chorus))+
-  geom_line(linewidth= 0.75, na.rm= TRUE)+
+  geom_line(linewidth= 1.25, na.rm= TRUE)+
   theme_bw()+
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   xlab("Date")+
   ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   ylim(75, 145)+
   facet_grid(factor(site_label, levels = c('Delaware', 'Eastern', 'Chesapeake'))~.,)+
-  scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#00308795"))+
-  scale_fill_manual(values= c("grey", "#00308795"))+
+  scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#A12A19FF"))+
+  scale_fill_manual(values= c("grey", "#A12A19FF"))+
   guides(color= guide_legend(title= "Cusk eel: chorus presence"))+
   ggtitle("Inshore +/- 1 hour sunset")+
   theme(axis.title= element_text(size= 18),
@@ -1534,7 +1534,7 @@ cuskFullEffort <- ggplot(ALLcusk_medDiels, aes(x= UTC, group= year(UTC), y= dt_m
         strip.text= element_text(size= 14))
 
 plot(cuskFullEffort)
-ggsave(here("figs", "cuskFullEffort.png"), cuskFullEffort, width= 16, height=14, dpi= 600)
+ggsave(here("figs", "cuskFullEffort.png"), cuskFullEffort, width= 18, height=8, dpi= 600)
 
 ```
 #Diel plot- using 15minute-level threshold data
@@ -3148,7 +3148,7 @@ Lat_plot <- ggplot(all_unknownPulse_onsetSummary, aes(x= median_month_date, y= l
   labs(x= "Median onset date of chorusing", y= "Latitude")+
 #  scale_x_date(limits= as.Date(c("05-01", "10-01"), format= "%m-%d"), date_breaks= "1 month", date_labels = "%m/%d")+
   guides(color= guide_legend(title= "Proximity to shore"))+
-  scale_color_manual(values= c("#5761C0", "#FFAB38"))
+  scale_color_manual(values= c("#A12A19FF", "#003087"))
 
 
 Long_plot <- ggplot(all_unknownPulse_onsetSummary, aes(x= long, y= median_month_date, color= shore))+
@@ -3160,7 +3160,7 @@ Long_plot <- ggplot(all_unknownPulse_onsetSummary, aes(x= long, y= median_month_
   labs(x= "Longitude", y= "Median onset date of chorusing")+
 #  scale_y_date(limits= as.Date(c("05-01", "10-01"), format= "%m-%d"), date_breaks= "1 month", date_labels = "%m/%d")+
   guides(color= guide_legend(title= "Proximity to shore"))+
-  scale_color_manual(values= c("#5761C0", "#FFAB38"))
+  scale_color_manual(values= c("#A12A19FF", "#003087"))
 
 depth_plot <- ggplot(all_unknownPulse_onsetSummary, aes(x= median_month_date, y= depth, color= shore))+
   geom_point(size= 5)+
@@ -3168,10 +3168,10 @@ depth_plot <- ggplot(all_unknownPulse_onsetSummary, aes(x= median_month_date, y=
     scale_y_discrete(limits= rev)+
   directlabels::geom_dl(aes(label = site), method = "smart.grid")+
   theme_bw()+
-#  labs(x= "Depth", y= "Median onset date of chorusing")+
+  labs(y= "Depth", x= "Median onset date of chorusing")+
 #  scale_y_date(limits= as.Date(c("05-01", "10-01"), format= "%m-%d"), date_breaks= "1 month", date_labels = "%m/%d")+
   guides(color= guide_legend(title= "Proximity to shore"))+
-  scale_color_manual(values= c("#5761C0", "#FFAB38"))
+  scale_color_manual(values= c("#A12A19FF", "#003087"))
 
 Lat_plot/Long_plot + plot_layout(guides= "collect")
 depth_plot
@@ -3442,7 +3442,7 @@ Lat_plot <- ggplot(all_cuskEel_onsetSummary, aes(x= median_month_date, y= lat, c
   labs(x= "Median onset date of chorusing", y= "Latitude")+
 #  scale_x_date(limits= as.Date(c("05-01", "10-01"), format= "%m-%d"), date_breaks= "1 month", date_labels = "%m/%d")+
   theme(legend.position="none")+
-  scale_color_manual(values= c("#5761C0"))
+  scale_color_manual(values= c("#003087"))
 
 
 Long_plot <- ggplot(all_cuskEel_onsetSummary, aes(x= long, y= median_month_date, color= shore))+
@@ -3454,7 +3454,7 @@ Long_plot <- ggplot(all_cuskEel_onsetSummary, aes(x= long, y= median_month_date,
   labs(x= "Longitude", y= "Median onset date of chorusing")+
 #  scale_y_date(limits= as.Date(c("05-01", "10-01"), format= "%m-%d"), date_breaks= "1 month", date_labels = "%m/%d")+
   theme(legend.position="none")+
-  scale_color_manual(values= c("#5761C0"))
+  scale_color_manual(values= c("#003087"))
 
 Long_plot
 
@@ -3464,10 +3464,10 @@ depth_plot <- ggplot(all_cuskEel_onsetSummary, aes(x= median_month_date, y= dept
     scale_y_discrete(limits= rev)+
   directlabels::geom_dl(aes(label = site), method = "smart.grid")+
   theme_bw()+
-#  labs(x= "Depth", y= "Median onset date of chorusing")+
+  labs(y= "Depth", x= "Median onset date of chorusing")+
 #  scale_y_date(limits= as.Date(c("05-01", "10-01"), format= "%m-%d"), date_breaks= "1 month", date_labels = "%m/%d")+
   guides(color= guide_legend(title= "Proximity to shore"))+
-  scale_color_manual(values= c("#5761C0", "#FFAB38"))
+  scale_color_manual(values= c("#003087", "#FFAB38"))
 
 depth_plot
 
