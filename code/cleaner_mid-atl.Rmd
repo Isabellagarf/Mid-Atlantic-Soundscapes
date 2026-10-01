@@ -680,18 +680,26 @@ inshore_unknownFullEffort <- ggplot(ALLpulse_medDiels, aes(x= UTC, group= year(U
   geom_line(linewidth= 1.25, na.rm= TRUE)+
   theme_bw()+
 #  geom_line(data= DB01pulse_medDiels, aes(y= dt_ma), color= "black")+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
-  xlab("Date")+
-  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+#  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  scale_x_datetime(date_breaks = "3 months", minor_breaks = NULL)+  
+#  xlab("Date")+
+#  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   ylim(75, 145)+
   facet_grid(factor(site_label, levels = c('Delaware', 'Eastern', 'Chesapeake'))~.,)+
   scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#A12A19FF"))+
   scale_fill_manual(values= c("grey", "#A12A19FF"))+
   guides(color= guide_legend(title= "Unknown pulse: chorus presence"))+
   ggtitle("Inshore +/- 1 hour nautical dusk")+
-  theme(axis.title= element_text(size= 18),
+  # theme(axis.title= element_text(size= 18),
+  #       axis.text.y= element_text(size= 16),
+  #       axis.text.x= element_text(size= 16),
+  #       legend.title= element_text(size= 18),
+  #       legend.text = element_text(size= 16),
+  #       plot.title = element_text(size= 20, hjust= 0.5),
+  #       strip.text= element_text(size= 11))+
+   theme(axis.title= element_blank(),
         axis.text.y= element_text(size= 16),
-        axis.text.x= element_text(size= 16),
+        axis.text.x= element_blank(),
         legend.title= element_text(size= 18),
         legend.text = element_text(size= 16),
         plot.title = element_text(size= 20, hjust= 0.5),
@@ -1160,18 +1168,19 @@ midshore_unknownFullEffort <- ggplot(ALLpulse_medDiels, aes(x= UTC, group= year(
   geom_line(linewidth= 1.25, na.rm= TRUE)+
   theme_bw()+
 #  geom_line(data= DB02pulse_medDiels, aes(y= dt_ma), color= "black")+
-  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
-  xlab("Date")+
-  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+#  scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+  scale_x_datetime(date_breaks = "3 months", minor_breaks = NULL)+  
+#  xlab("Date")+
+#  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
     ylim(75, 145)+
   facet_grid(factor(site_label, levels = c('Delaware', 'Eastern', 'Chesapeake 1'))~.,)+
   scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#003087"))+
   scale_fill_manual(values= c("grey", "#003087"))+
   guides(color= guide_legend(title= "Unknown pulse: chorus presence"))+
   ggtitle("Midshore +/- 1 hour sunset ")+
-  theme(axis.title= element_text(size= 18),
+  theme(axis.title= element_blank(),
         axis.text.y= element_text(size= 16),
-        axis.text.x= element_text(size= 16),
+        axis.text.x= element_blank(),
         legend.title= element_text(size= 18),
         legend.text = element_text(size= 16),
         plot.title = element_text(size= 20, hjust= 0.5),
@@ -1183,14 +1192,15 @@ CB03_unknownFullEffort <- ggplot(CB03pulse_medDiels, aes(x= UTC, group= year(UTC
   theme_bw()+
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
   xlab("Date")+
-  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+#  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
     ylim(75, 145)+
     facet_grid(factor(site_label, levels = c('Chesapeake 2'))~.,)+
   scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#003087"))+
   scale_fill_manual(values= c("grey", "#003087"))+
   guides(color= guide_legend(title= "Unknown pulse: chorus presence"))+
   ggtitle("Midshore +/- 1 hour civil dusk ")+
-  theme(axis.title= element_text(size= 18),
+  theme(axis.title.x= element_text(size= 18),
+        axis.title.y= element_blank(),
         axis.text.y= element_text(size= 16),
         axis.text.x= element_text(size= 16),
         legend.title= element_text(size= 18),
@@ -1199,10 +1209,13 @@ CB03_unknownFullEffort <- ggplot(CB03pulse_medDiels, aes(x= UTC, group= year(UTC
         strip.text= element_text(size= 12))
 plot(CB03_unknownFullEffort)
 
-unknown_fullEffortPlot <- inshore_unknownFullEffort/midshore_unknownFullEffort/CB03_unknownFullEffort +plot_layout(guides = "collect", axis_titles = "collect", axes= "collect")
+# unknown_fullEffortPlot <- inshore_unknownFullEffort/midshore_unknownFullEffort/CB03_unknownFullEffort +plot_layout(guides = "collect", axis_titles = "collect", axes= "collect")
 
-plot(unknown_fullEffortPlot)
-ggsave(here("figs", "unknown_fullEffortPlot.png"), unknown_fullEffortPlot, width= 20, height=10, dpi= 600)
+unknown_fullEffortPlot <- ggarrange(inshore_unknownFullEffort,midshore_unknownFullEffort, CB03_unknownFullEffort, 
+          ncol = 1, nrow = 3, heights = c(1.0, 1.0, .5), common.legend= TRUE, legend= "right")
+
+ plot(unknown_fullEffortPlot)
+ ggsave(here("figs", "unknown_fullEffortPlot.png"), unknown_fullEffortPlot, width= 20, height=10, dpi= 600)
 
 ```
 #Cusk eel chorus presence full effort timeseries- inshore at peak diel time
