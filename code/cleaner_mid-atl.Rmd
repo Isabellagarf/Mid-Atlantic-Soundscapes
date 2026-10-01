@@ -3192,6 +3192,7 @@ depth_plot
 ```
 #Error bar plot: unknown pulse peak
 ```{r}
+#separating dates out
 all_unknownPulse_peakDateSummary <- all_unknownPulse_peaks %>%
   mutate(
     date= ymd(UTC_date),
@@ -3237,24 +3238,17 @@ ES_unknownPulse_peaksDateMin <- ES_unknownPulse_peaks %>%
 ES_unknownPulse_peaksDateMax <- ES_unknownPulse_peaks %>%
   group_by(site)%>%
   summarize(max_date= max(month_day))
-ES_unknownPulse_peaks <- ES_unknownPulse_peaks [-c(1,5:7, 9, 10)]
-colnames(ES_unknownPulse_peaks )[4] <- "median_month_date"
+ES_unknownPulse_peaks <- ES_unknownPulse_peaks [-c(1,2,5:7, 9, 10)]
+colnames(ES_unknownPulse_peaks )[3] <- "median_month_date"
 ES_unknownPulse_peaks <- ES_unknownPulse_peaks %>%
   full_join(ES_unknownPulse_peaksDateMax) %>%
   full_join(ES_unknownPulse_peaksDateMin)
+
 all_unknownPulse_peakSummary <- all_unknownPulse_peakSummary %>%
   full_join(ES_unknownPulse_peaks)
 
 all_unknownPulse_peakSummary$site = factor(all_unknownPulse_peakSummary$site,
                                         levels= c('DB01', 'DB02', 'ES01', 'ES02', 'CB01', 'CB02', 'CB03'))
-# all_unknownPulse_peakSummary$lat = case_when(all_unknownPulse_peakSummary$site == "DB01" ~ "Delaware",
-#                             all_unknownPulse_peakSummary$site == "DB02" ~ "Delaware",
-#                             all_unknownPulse_peakSummary$site == "ES01" ~ "Eastern",
-#                             all_unknownPulse_peakSummary$site == "ES02" ~ "Eastern",
-#                             all_unknownPulse_peakSummary$site == "CB01" ~ "Chesapeake",
-#                             all_unknownPulse_peakSummary$site == "CB02" ~ "Chesapeake",
-#                             all_unknownPulse_peakSummary$site == "CB03" ~ "Chesapeake")
-
 all_unknownPulse_peakSummary$lat = case_when(all_unknownPulse_peakSummary$site == "DB01" ~ "38.71",
                             all_unknownPulse_peakSummary$site == "DB02" ~ "38.48",
                             all_unknownPulse_peakSummary$site == "ES01" ~ "37.69",
@@ -3262,6 +3256,9 @@ all_unknownPulse_peakSummary$lat = case_when(all_unknownPulse_peakSummary$site =
                             all_unknownPulse_peakSummary$site == "CB01" ~ "36.98",
                             all_unknownPulse_peakSummary$site == "CB02" ~ "36.98",
                             all_unknownPulse_peakSummary$site == "CB03" ~ "36.51")
+
+# all_unknownPulse_peakSummary$lat = factor(all_unknownPulse_peakSummary$lat,
+#                                         levels= c('Delaware', 'Eastern', 'Chesapeake'))
 
 all_unknownPulse_peakSummary$long = case_when(all_unknownPulse_peakSummary$site == "DB01" ~ "-74.82",
                             all_unknownPulse_peakSummary$site == "DB02" ~ "-74.47",
@@ -3279,8 +3276,13 @@ all_unknownPulse_peakSummary$shore = case_when(all_unknownPulse_peakSummary$site
                             all_unknownPulse_peakSummary$site == "CB02" ~ "Mid-shore",
                             all_unknownPulse_peakSummary$site == "CB03" ~ "Mid-shore")
 
-# all_unknownPulse_peakSummary$lat = factor(all_unknownPulse_peakSummary$lat,
-#                                         levels= c('Delaware', 'Eastern', 'Chesapeake'))
+all_unknownPulse_peakSummary$depth = case_when(all_unknownPulse_peakSummary$site == "DB01" ~ "17.1",
+                            all_unknownPulse_peakSummary$site == "DB02" ~ "38.1",
+                            all_unknownPulse_peakSummary$site == "ES01" ~ "20",
+                            all_unknownPulse_peakSummary$site == "ES02" ~ "40.5",
+                            all_unknownPulse_peakSummary$site == "CB01" ~ "18.6",
+                            all_unknownPulse_peakSummary$site == "CB02" ~ "34.1",
+                            all_unknownPulse_peakSummary$site == "CB03" ~ "22.6")
 
 ggplot(all_unknownPulse_peakSummary, aes(x = median_month_date, y = med_500, color = site, shape= lat)) +
   geom_point(size = 5) +
@@ -3294,7 +3296,7 @@ ggplot(all_unknownPulse_peakSummary, aes(x = median_month_date, y = med_500, col
                               "CB02" = "#FFAB28",
                               "CB03" = "#FFDD6A"),
                      name = "Site") +
-  guides(shape= guide_legend(title= "Latitude"), color= guide_legend(title= "Site"))+
+ guides(shape= guide_legend(title= "Latitude"), color= guide_legend(title= "Site"))+
   labs(x = "peak Date", title= "Unknown Pulse: peak by site") +
   ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   theme_bw() +
@@ -3305,7 +3307,6 @@ ggplot(all_unknownPulse_peakSummary, aes(x = median_month_date, y = med_500, col
         strip.text=element_text(size=18),
         legend.text=element_text(size=16),
         legend.title=element_text(size=16))
-
 
 all_unknownPulse_peakSummary$median_month_date <- as.Date(all_unknownPulse_peakSummary$median_month_date, format= "%m-%d")
 all_unknownPulse_peakSummary$min_date <- as.Date(all_unknownPulse_peakSummary$min_date, format= "%m-%d")
@@ -3320,7 +3321,7 @@ Lat_plot <- ggplot(all_unknownPulse_peakSummary, aes(x= median_month_date, y= la
   labs(x= "Median peak date of chorusing", y= "Latitude")+
 #  scale_x_date(limits= as.Date(c("05-01", "10-01"), format= "%m-%d"), date_breaks= "1 month", date_labels = "%m/%d")+
   guides(color= guide_legend(title= "Proximity to shore"))+
-  scale_color_manual(values= c("#5761C0", "#FFAB38"))
+  scale_color_manual(values= c("#A12A19FF", "#003087"))
 
 
 Long_plot <- ggplot(all_unknownPulse_peakSummary, aes(x= long, y= median_month_date, color= shore))+
@@ -3332,9 +3333,22 @@ Long_plot <- ggplot(all_unknownPulse_peakSummary, aes(x= long, y= median_month_d
   labs(x= "Longitude", y= "Median peak date of chorusing")+
 #  scale_y_date(limits= as.Date(c("05-01", "10-01"), format= "%m-%d"), date_breaks= "1 month", date_labels = "%m/%d")+
   guides(color= guide_legend(title= "Proximity to shore"))+
-  scale_color_manual(values= c("#5761C0", "#FFAB38"))
+  scale_color_manual(values= c("#A12A19FF", "#003087"))
+
+depth_plot <- ggplot(all_unknownPulse_peakSummary, aes(x= median_month_date, y= depth, color= shore))+
+  geom_point(size= 5)+
+  geom_errorbar(aes(xmin = min_date, xmax = max_date), width= 0.05) + 
+    scale_y_discrete(limits= rev)+
+  directlabels::geom_dl(aes(label = site), method = "smart.grid")+
+  theme_bw()+
+  labs(y= "Depth", x= "Median peak date of chorusing")+
+#  scale_y_date(limits= as.Date(c("05-01", "10-01"), format= "%m-%d"), date_breaks= "1 month", date_labels = "%m/%d")+
+  guides(color= guide_legend(title= "Proximity to shore"))+
+  scale_color_manual(values= c("#A12A19FF", "#003087"))
 
 Lat_plot/Long_plot + plot_layout(guides= "collect")
+depth_plot
+
 ```
 #Error bar plot: cusk eel onset
 ```{r}
@@ -3487,7 +3501,6 @@ depth_plot
 ```
 #Error bar plot" cusk eel peak
 ```{r}
-
 #separating dates out
 all_cuskEel_peakDateSummary <- all_cuskEel_peaks %>%
   mutate(
@@ -3544,12 +3557,7 @@ all_cuskEel_peakSummary <- all_cuskEel_peakSummary %>%
 
 all_cuskEel_peakSummary$site = factor(all_cuskEel_peakSummary$site,
                                         levels= c('DB01', 'ES01',  'CB01'))
-all_cuskEel_peakSummary$lat = case_when(all_cuskEel_peakSummary$site == "DB01" ~ "Delaware",
-                            all_cuskEel_peakSummary$site == "ES01" ~ "Eastern",
-                            all_cuskEel_peakSummary$site == "CB01" ~ "Chesapeake")
 
-all_cuskEel_peakSummary$lat = factor(all_cuskEel_peakSummary$lat,
-                                        levels= c('Delaware', 'Eastern', 'Chesapeake'))
 
 all_cuskEel_peakSummary$lat = case_when(all_cuskEel_peakSummary$site == "DB01" ~ "38.71",
                             all_cuskEel_peakSummary$site == "ES01" ~ "37.69",
@@ -3568,21 +3576,25 @@ all_cuskEel_peakSummary$shore = case_when(all_cuskEel_peakSummary$site == "DB01"
                             all_cuskEel_peakSummary$site == "CB02" ~ "Mid-shore",
                             all_cuskEel_peakSummary$site == "CB03" ~ "Mid-shore")
 
+all_cuskEel_peakSummary$depth = case_when(all_cuskEel_peakSummary$site == "DB01" ~ "17.1",
+                            all_cuskEel_peakSummary$site == "DB02" ~ "38.1",
+                            all_cuskEel_peakSummary$site == "ES01" ~ "20",
+                            all_cuskEel_peakSummary$site == "ES02" ~ "40.5",
+                            all_cuskEel_peakSummary$site == "CB01" ~ "18.6",
+                            all_cuskEel_peakSummary$site == "CB02" ~ "34.1",
+                            all_cuskEel_peakSummary$site == "CB03" ~ "22.6")
+
 
 ggplot(all_cuskEel_peakSummary, aes(x = median_month_date, y = med_2000, color = site, shape= lat)) +
   geom_point(size = 5) +
   geom_errorbar(aes(ymin = min_2000, ymax = max_2000), width = 0.05) + # Vertical error bars
   geom_errorbar(aes(xmin = min_date, xmax = max_date), height = 0.05, orientation = "y") + 
   scale_color_manual(values=c("DB01" = "#001743",
-                              "DB02" = "#B71300",
                               "ES01" = "#0085CA",
-                              "ES02" = "#DB6015",
-                              "CB01" = "#5EB6D9",
-                              "CB02" = "#FFAB28",
-                              "CB03" = "#FFDD6A"),
+                              "CB01" = "#5EB6D9"),
                      name = "Site") +
- guides(color= guide_legend(title= "Site"), shape= guide_legend(title= "Latitude"))+
-  labs(x = "Peak Date", title= "Cusk Eel: Peak by site") +
+ guides(shape= guide_legend(title= "Latitude"), color= guide_legend(title= "Site"))+
+  labs(x = "peak Date", title= "Cusk Eel: peak by site") +
   ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   theme_bw() +
   theme(axis.title.y=element_text(size=16),
@@ -3606,7 +3618,7 @@ Lat_plot <- ggplot(all_cuskEel_peakSummary, aes(x= median_month_date, y= lat, co
   labs(x= "Median peak date of chorusing", y= "Latitude")+
 #  scale_x_date(limits= as.Date(c("05-01", "10-01"), format= "%m-%d"), date_breaks= "1 month", date_labels = "%m/%d")+
   theme(legend.position="none")+
-  scale_color_manual(values= c("#5761C0"))
+  scale_color_manual(values= c("#003087"))
 
 
 Long_plot <- ggplot(all_cuskEel_peakSummary, aes(x= long, y= median_month_date, color= shore))+
@@ -3618,8 +3630,21 @@ Long_plot <- ggplot(all_cuskEel_peakSummary, aes(x= long, y= median_month_date, 
   labs(x= "Longitude", y= "Median peak date of chorusing")+
 #  scale_y_date(limits= as.Date(c("05-01", "10-01"), format= "%m-%d"), date_breaks= "1 month", date_labels = "%m/%d")+
   theme(legend.position="none")+
-  scale_color_manual(values= c("#5761C0"))
+  scale_color_manual(values= c("#003087"))
 
 Long_plot
+
+depth_plot <- ggplot(all_cuskEel_peakSummary, aes(x= median_month_date, y= depth, color= shore))+
+  geom_point(size= 5)+
+  geom_errorbar(aes(xmin = min_date, xmax = max_date), width= 0.05) + 
+    scale_y_discrete(limits= rev)+
+  directlabels::geom_dl(aes(label = site), method = "smart.grid")+
+  theme_bw()+
+  labs(y= "Depth", x= "Median peak date of chorusing")+
+#  scale_y_date(limits= as.Date(c("05-01", "10-01"), format= "%m-%d"), date_breaks= "1 month", date_labels = "%m/%d")+
+  guides(color= guide_legend(title= "Proximity to shore"))+
+  scale_color_manual(values= c("#003087", "#FFAB38"))
+
+depth_plot
 
 ```
