@@ -3915,3 +3915,56 @@ cusk_fullEffortPlot <- ggarrange(inshore_cuskFullEffort,ES01_cuskFullEffort,
 plot(cusk_fullEffortPlot)
 #ggsave(here("figs", "cuskFullEffort.png"), cuskFullEffort, width= 18, height=8, dpi= 600)
 ```
+#cusk eel- threshold data
+```{r}
+#DB01
+DB01cusk_medDiels$dt_ma <- data.table::frollmean(DB01cusk_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
+DB01_cuskEel <- DB01cusk_medDiels %>%
+ filter(cusk_chorus== "1")
+DB01_cuskEel <- DB01_cuskEel %>%
+ filter(dt_ma >= 94)
+#write.csv(DB01_cuskEel, here("data", "DB01_cuskEel_threshold.csv"))
+
+NEFSC_DE_Folders <- (c('Z:/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202207_DB01/NC', 'Z:/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202301_DB01/NC', 'Z:/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202306_DB01/NC', 'Z:/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202311_DB01/NC', 'Z:/DETECTOR_OUTPUT/PYTHON_SOUNDSCAPE_PYPAM/Raw/NEFSC_DE/NEFSC_DE_202405_DB01/NC'))
+
+DB01_cusk_threshold$UTC <- as.character(DB01_cusk_threshold$UTC)
+DB01_cusk_threshold <- DB01_cusk_threshold[-c(1, 3:5)]
+DB01_cusk_threshold <- DB01_cusk_threshold %>%
+  mutate(deployment= case_when(
+    UTC < "2023-05-24" ~ "NEFSC_DE_202207_DB01_",
+    UTC < "2023-06-17" & UTC > "2022-10-04" ~ "NEFSC_DE_202301_DB01_",
+    UTC < "2023-11-16" & UTC > "2023-06-16" ~ "NEFSC_DE_202306_DB01_",
+    UTC < "2023-11-15" & UTC > "2024-05-01" ~ "NEFSC_DE_202311_DB01_",
+    UTC > "2024-05-16" ~ "NEFSC_DE_202405_DB01_"
+  ))
+
+DB01_cusk_threshold <- DB01_cusk_threshold %>%
+  mutate_at("UTC", str_replace, "-", "") #lazy workaround: run twice to get both - sep removed
+
+DB01_cusk_threshold$meetsThreshold <- paste(DB01_cusk_threshold$deployment, DB01_cusk_threshold$UTC, sep = "")
+
+DB01_cusk_threshold <- DB01_cusk_threshold[-c(1, 2)]
+colnames(DB01_cusk_threshold)[1] <- "meetsThreshold"
+DB01_cusk_threshold$nc <- ".nc"
+DB01_cusk_threshold$meetsThreshold <- paste(DB01_cusk_threshold$meetsThreshold, DB01_cusk_threshold$nc, sep = "")
+DB01_cusk_threshold <- DB01_cusk_threshold[-c(2)]
+
+
+#TAIKI'S CODE SUGGESTIONS
+all_DB01Files <- list.files(NEFSC_DE_Folders, pattern="nc$", recursive=TRUE, full.names=TRUE)
+threshold_nc <- all_DB01Files[basename(all_DB01Files) %in% DB01_cuskEel_threshold$meetsThreshold]
+DB01_cuskData<- loadSoundscapeData(threshold_nc, timeBin= "15minute")
+
+
+#CB01
+CB01cusk_medDiels$dt_ma <- data.table::frollmean(CB01cusk_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
+CB01_cuskEel <- CB01cusk_medDiels %>%
+ filter(cusk_chorus== "1")
+CB01_cuskEel <- CB01_cuskEel %>%
+ filter(dt_ma >= 94)
+#write.csv(CB01_cuskEel, here("data", "CB01_cuskEel_threshold.csv"))
+
+
+
+
+```
