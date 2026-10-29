@@ -249,22 +249,26 @@ all_sites$season = factor(all_sites$season,
 
 all_sites$PLATFORM = factor(all_sites$PLATFORM,
                                         levels= c("DB01", "DB02", "DB03", "ES01", "ES02", "ES03", "CB01", "CB02", "CB03"),
-                                        labels= c("DB01", "DB02", "DB03", "ES01", "ES02", "ES03", "CB01", "CB02", "CB03"))
+                                        labels= c("Delaware-Inshore", "Delaware-Midshore", "Delaware-Offshore", "Maryland-Inshore", "Maryland-Midshore", "Maryland-Offshore", "Chesapeake-Inshore", "Chesapeake-Midshore 1", "Chesapeake-Midshore 2"))
 
 #by season
-plotPSD(x=all_sites, style='quantile', q= 0.1, by='season', facet='PLATFORM', quantileBorder= TRUE)+
+seasonalPSD <- plotPSD(x=all_sites, style='quantile', q= 0.1, by='season', facet='PLATFORM', quantileBorder= TRUE)+
   labs(y= (expression(paste("Power Spectral Density dB re 1 \u00b5Pa" ^ "2", "/Hz"))))+
-  theme(axis.text= element_text(size= 10),
-        axis.title= element_text(size= 14),
-        legend.text = element_text(size= 13),
-        legend.title= element_text(size= 13.5),
-        strip.text= element_text(size= 12))+
   scale_color_manual(labels= c("Winter", "Spring", "Summer", "Fall" ), values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
   scale_fill_manual(values= c("#5761C0", "#4B8320", "#DB2207","#FFAB38"))+
   theme_bw()+
   guides(color= guide_legend(title= "Season"))
 
+seasonalPSDFinal <- seasonalPSD+ theme(axis.text.x = element_text(angle = 20, vjust = 0.5,size= 16),
+        axis.title= element_text(size= 18),
+        axis.text.y= element_text(size= 16),
+        legend.text = element_text(size= 16),
+        legend.title= element_text(size=18),
+       strip.text= element_text(size= 16))  
 
+plot(seasonalPSDFinal)
+
+#ggsave(here("figs", "seasonalPSD.png"), seasonalPSDFinal, width= 20, height= 14, units= "in", dpi= 600)
 
 ```
 #LTSA- supplemental
@@ -303,12 +307,12 @@ speciesCols=c('Unknown pulses', 'Unknown knocks', 'Cusk eel chorus', 'Toadfish c
 
 allSite_chorusPresenceFormatted$site = factor(allSite_chorusPresenceFormatted$site,
                                               levels= c("DB01", "DB02", "DB03", "ES01", "ES02", "ES03", "CB01", "CB02", "CB03"),
-                                              labels= c("Delaware-Inshore", "Delaware-Midshore", "Delaware-Offshore", "Eastern-Inshore", "Eastern-Midshore", "Eastern-Offshore", "Chesapeake-Inshore", "Chesapeake-Midshore 1", "Chesapeake-Midshore 2"))
+                                              labels= c("Delaware-Inshore", "Delaware-Midshore", "Delaware-Offshore", "Maryland-Inshore", "Maryland-Midshore", "Maryland-Offshore", "Chesapeake-Inshore", "Chesapeake-Midshore 1", "Chesapeake-Midshore 2"))
 
   
 plotAcousticScene(x=allSite_chorusPresenceFormatted, by='site', combineYears=FALSE, freqMap=data.frame(species=c('Unknown knocks', 'Unknown pulses', 'Unknown offshore', 'Cusk eel chorus', 'Toadfish chorus'), freqMin=c(140, 60, 310, 1200, 150), freqMax=c(6500, 930, 5335, 2600, 3650)), alpha= .85)+
   theme_bw()+
-  facet_wrap(factor(site, levels = c("Delaware-Inshore", "Delaware-Midshore", "Delaware-Offshore", "Eastern-Inshore", "Eastern-Midshore", "Eastern-Offshore", "Chesapeake-Inshore", "Chesapeake-Midshore 1", "Chesapeake-Midshore 2"))~., ncol= 3)+
+  facet_wrap(factor(site, levels = c("Delaware-Inshore", "Delaware-Midshore", "Delaware-Offshore", "Maryland-Inshore", "Maryland-Midshore", "Maryland-Offshore", "Chesapeake-Inshore", "Chesapeake-Midshore 1", "Chesapeake-Midshore 2"))~., ncol= 3)+
   ylim(15, 7500)+
   scale_fill_manual(values= c("#4B8320", "#00008B", "purple", "#DB2207","#FFAB38","grey"))+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size= 16),
@@ -318,13 +322,13 @@ plotAcousticScene(x=allSite_chorusPresenceFormatted, by='site', combineYears=FAL
         legend.title= element_text(size=18),
        strip.text= element_text(size= 16))+
   scale_x_datetime(date_breaks = "3 months", date_labels= "%b-%Y", minor_breaks = NULL)+
-  geom_rect(data=data.frame(site= factor("Eastern-Inshore")), aes(xmin = as_datetime("2022-06-10"), xmax = as_datetime("2023-10-12"), 
+  geom_rect(data=data.frame(site= factor("Maryland-Inshore")), aes(xmin = as_datetime("2022-06-10"), xmax = as_datetime("2023-10-12"), 
                                            ymin = -Inf, ymax = Inf, fill = ""),
                                            alpha = 0.3, inherit.aes = FALSE, show.legend= "none")+
-  geom_rect(data=data.frame(site= factor("Eastern-Midshore")), aes(xmin = as_datetime("2022-06-10"), xmax = as_datetime("2023-10-12"), 
+  geom_rect(data=data.frame(site= factor("Maryland-Midshore")), aes(xmin = as_datetime("2022-06-10"), xmax = as_datetime("2023-10-12"), 
                                            ymin = -Inf, ymax = Inf, fill = ""),
                                            alpha = 0.3, inherit.aes = FALSE, show.legend= "none")+
-  geom_rect(data=data.frame(site= factor("Eastern-Offshore")), aes(xmin = as_datetime("2022-06-10"), xmax = as_datetime("2023-10-12"), 
+  geom_rect(data=data.frame(site= factor("Maryland-Offshore")), aes(xmin = as_datetime("2022-06-10"), xmax = as_datetime("2023-10-12"), 
                                            ymin = -Inf, ymax = Inf, fill = ""),
                                            alpha = 0.3, inherit.aes = FALSE, show.legend= "none")+
   geom_rect(data=data.frame(site= factor("Chesapeake-Midshore 2")), aes(xmin = as_datetime("2023-11-24"), xmax = as_datetime("2024-05-22"), 
@@ -335,6 +339,7 @@ plotAcousticScene(x=allSite_chorusPresenceFormatted, by='site', combineYears=FAL
 ```
 #Unknown pulse chorus presence full effort timeseries- inshore at peak diel time
 ```{r}
+
 #DB01
 DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
 DB01500_fullEffort_date_time <- seq(ymd_hms("2022-07-07 00:00:00"), ymd_hms("2024-11-03 23:00:00"), by = "1 hour")
@@ -645,7 +650,7 @@ ALLpulse_medDiels$site = factor(ALLpulse_medDiels$site,
                                         labels= c('DB01', 'ES01', 'CB01'))
 ALLpulse_medDiels$site_label = factor(ALLpulse_medDiels$site_label,
                                         levels= c('Delaware', 'Eastern', 'Chesapeake'),
-                                        labels= c('Delaware', 'Eastern', 'Chesapeake'))
+                                        labels= c('Delaware', 'Maryland', 'Chesapeake'))
 
 # all500_inshoreDiels <- DB01_nautdusk_diels %>%
 #   full_join(ES01_nautdusk_diels)%>%
@@ -676,6 +681,11 @@ ALLpulse_medDiels$site_label = factor(ALLpulse_medDiels$site_label,
 #         strip.text= element_text(size= 16))
 
 #rolling avg
+onset_dates <- data.frame(
+  onset= c("2023-05-25", "2024-05-21", "2024-07-23", "2023-05-12", "2024-05-23"),
+  site_label= c("Delaware", "Delaware", "Maryland", "Chesapeake", "Chesapeake")
+)
+
 inshore_unknownFullEffort <- ggplot(ALLpulse_medDiels, aes(x= UTC, group= year(UTC), y= dt_ma, group= X500_chorus, color= X500_chorus))+
   geom_line(linewidth= 1.25, na.rm= TRUE)+
   theme_bw()+
@@ -685,25 +695,20 @@ inshore_unknownFullEffort <- ggplot(ALLpulse_medDiels, aes(x= UTC, group= year(U
 #  xlab("Date")+
 #  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
   ylim(75, 145)+
-  facet_grid(factor(site_label, levels = c('Delaware', 'Eastern', 'Chesapeake'))~.,)+
-  scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#A12A19FF"))+
-  scale_fill_manual(values= c("grey", "#A12A19FF"))+
+  facet_grid(factor(site_label, levels = c('Delaware', 'Maryland', 'Chesapeake'))~.,)+
+  scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#00008B"))+
+  scale_fill_manual(values= c("grey", "#00008B"))+
   guides(color= guide_legend(title= "Unknown pulse: chorus presence"))+
   ggtitle("Inshore +/- 1 hour nautical dusk")+
-  # theme(axis.title= element_text(size= 18),
-  #       axis.text.y= element_text(size= 16),
-  #       axis.text.x= element_text(size= 16),
-  #       legend.title= element_text(size= 18),
-  #       legend.text = element_text(size= 16),
-  #       plot.title = element_text(size= 20, hjust= 0.5),
-  #       strip.text= element_text(size= 11))+
    theme(axis.title= element_blank(),
         axis.text.y= element_text(size= 16),
         axis.text.x= element_blank(),
         legend.title= element_text(size= 18),
         legend.text = element_text(size= 16),
         plot.title = element_text(size= 20, hjust= 0.5),
-        strip.text= element_text(size= 11))
+        strip.text= element_text(size= 11))+
+  geom_vline(data= onset_dates,
+             mapping= aes(xintercept= as.Date(onset)), linetype= "dashed", color= "#00008B")
 
 
 plot(inshore_unknownFullEffort)
@@ -1133,7 +1138,7 @@ ALLpulse_medDiels$site = factor(ALLpulse_medDiels$site,
                                         labels= c('DB02', 'ES02', 'CB02'))
 ALLpulse_medDiels$site_label = factor(ALLpulse_medDiels$site_label,
                                         levels= c('Delaware', 'Eastern', 'Chesapeake 1'),
-                                        labels= c('Delaware', 'Eastern', 'Chesapeake 1'))
+                                        labels= c('Delaware', 'Maryland', 'Chesapeake 1'))
 
 # all500_midshoreDiels <- DB02_sunset_diels %>%
 #   full_join(ES02_sunset_diels)%>%
@@ -1164,6 +1169,11 @@ ALLpulse_medDiels$site_label = factor(ALLpulse_medDiels$site_label,
 #         strip.text= element_text(size= 12))
 
 #rolling avg
+onset_dates <- data.frame(
+  onset= c("2023-09-24", "2024-09-18", "2024-09-20", "2023-09-16", "2024-09-18"),
+  site_label= c("Delaware", "Delaware", "Maryland", "Chesapeake 1", "Chesapeake 1")
+) 
+
 midshore_unknownFullEffort <- ggplot(ALLpulse_medDiels, aes(x= UTC, group= year(UTC), y= dt_ma, group= X500_chorus, color= X500_chorus))+
   geom_line(linewidth= 1.25, na.rm= TRUE)+
   theme_bw()+
@@ -1173,7 +1183,7 @@ midshore_unknownFullEffort <- ggplot(ALLpulse_medDiels, aes(x= UTC, group= year(
 #  xlab("Date")+
 #  ylab(expression(paste('Median 500Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
     ylim(75, 145)+
-  facet_grid(factor(site_label, levels = c('Delaware', 'Eastern', 'Chesapeake 1'))~.,)+
+  facet_grid(factor(site_label, levels = c('Delaware', 'Maryland', 'Chesapeake 1'))~.,)+
   scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#003087"))+
   scale_fill_manual(values= c("grey", "#003087"))+
   guides(color= guide_legend(title= "Unknown pulse: chorus presence"))+
@@ -1184,9 +1194,17 @@ midshore_unknownFullEffort <- ggplot(ALLpulse_medDiels, aes(x= UTC, group= year(
         legend.title= element_text(size= 18),
         legend.text = element_text(size= 16),
         plot.title = element_text(size= 20, hjust= 0.5),
-        strip.text= element_text(size= 11))
+        strip.text= element_text(size= 11))+
+  geom_vline(data= onset_dates,
+             mapping= aes(xintercept= as.Date(onset)), linetype= "dashed", color= "#00008B")
+plot(midshore_unknownFullEffort)
 
 #CB03
+onset_dates <- data.frame(
+  onset= c("2023-09-15", "2024-09-16"),
+  site_label= c("Chesapeake 2", "Chesapeake 2")
+) 
+
 CB03_unknownFullEffort <- ggplot(CB03pulse_medDiels, aes(x= UTC, group= year(UTC), y= dt_ma, group= X500_chorus, color= X500_chorus))+
   geom_line(linewidth= 1.25, na.rm= TRUE)+
   theme_bw()+
@@ -1206,7 +1224,10 @@ CB03_unknownFullEffort <- ggplot(CB03pulse_medDiels, aes(x= UTC, group= year(UTC
         legend.title= element_text(size= 18),
         legend.text = element_text(size= 16),
         plot.title = element_text(size= 20, hjust= 0.5),
-        strip.text= element_text(size= 12))
+        strip.text= element_text(size= 10))+
+  geom_vline(data= onset_dates,
+             mapping= aes(xintercept= as.Date(onset)), linetype= "dashed", color= "#00008B") 
+
 plot(CB03_unknownFullEffort)
 
 # unknown_fullEffortPlot <- inshore_unknownFullEffort/midshore_unknownFullEffort/CB03_unknownFullEffort +plot_layout(guides = "collect", axis_titles = "collect", axes= "collect")
@@ -1221,98 +1242,98 @@ unknown_fullEffortPlot <- ggarrange(inshore_unknownFullEffort,midshore_unknownFu
 #Cusk eel chorus presence full effort timeseries- inshore at peak diel time
 ```{r}
 #DB01
-# DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
-# DB01_fullEffort_date_time <- seq(ymd_hms("2022-07-07 00:00:00"), ymd_hms("2024-11-04 23:00:00"), by = "1 hour")
-# 
-# DB01_fullEffort_sunset <- sunriset(crds = DB01_location, dateTime = DB01_fullEffort_date_time, direction = "sunset", POSIXct.out = TRUE)
-# 
-# DB01_fullEffort_sunsetDate<- DB01_fullEffort_sunset %>%
-#   mutate(UTC_date = date(time))%>%
-#   mutate(sunset_UTC_hour = hour(time))
-# 
-# DB01_fullEffort_sunsetDate <- DB01_fullEffort_sunsetDate %>%
-#   group_by(UTC_date, sunset_UTC_hour)%>%
-#   summarize(n = n())
-# DB01_fullEffort_sunsetDate <- DB01_fullEffort_sunsetDate[-c(3)]
-# 
-# #put back as characters so can make date column easier
-# DB01_fullEffort_sunsetDate$UTC_date <- as.character(DB01_fullEffort_sunsetDate$UTC_date)
-# 
-# DB01_fullEffort_sunsetDate$sunset_UTC_hour <- as.character(DB01_fullEffort_sunsetDate$sunset_UTC_hour)
-# 
-# #make new columns combining date and 3 hours- should have 3 data points per day (with overlap on days if around midnight)-
-# DB01_fullEffort_sunsetDate$UTC_fixed <- paste(DB01_fullEffort_sunsetDate$UTC_date, DB01_fullEffort_sunsetDate$sunset_UTC_hour, sep = " ")
-# DB01_fullEffort_sunsetDate$UTC_fixed = as.POSIXct(DB01_fullEffort_sunsetDate$UTC_fixed, format = "%Y-%m-%d %H")
-# 
-# DB01_fullEffort_sunsetDate$UTC_minus <- DB01_fullEffort_sunsetDate$UTC_fixed - hours(1)
-# DB01_fullEffort_sunsetDate$UTC_plus <- DB01_fullEffort_sunsetDate$UTC_fixed + hours(1)
-# 
-# #this works but hard to then join with OL data, so separate out and then join again after they are all matched
-# DB01_fullEffort_sunsetMinus <- DB01_fullEffort_sunsetDate[, c("UTC_date", "sunset_UTC_hour", "UTC_minus")]
-# DB01_fullEffort_sunsetPlus <- DB01_fullEffort_sunsetDate[, c("UTC_date", "sunset_UTC_hour", "UTC_plus")]
-# 
-# #remove from original for now
-# DB01_fullEffort_sunsetDate <- DB01_fullEffort_sunsetDate[-c(4:5)]
-# 
-# #have to rename minus/plus columns to 'UTC_fixed' so it can join with the chorus presence and OL files
-# colnames(DB01_fullEffort_sunsetMinus)[3] <- "UTC_fixed"
-# colnames(DB01_fullEffort_sunsetPlus)[3] <- "UTC_fixed"
-# 
-# #now join each date dataframe individually
-# DB01_fullEffort_sunsetDate$UTC_date <- as.Date(DB01_fullEffort_sunsetDate$UTC_date)
-# 
-# DB01_fullEffort_sunsetMinus$UTC_date <- as.Date(DB01_fullEffort_sunsetMinus$UTC_date)
-# DB01_sunsetMinus <- DB01_OL %>%
-#   right_join(DB01_fullEffort_sunsetMinus, join_by(UTC_fixed))
-# 
-# DB01_fullEffort_sunsetPlus$UTC_date <- as.Date(DB01_fullEffort_sunsetPlus$UTC_date)
-# DB01_sunsetPlus <- DB01_OL %>%
-#   right_join(DB01_fullEffort_sunsetPlus, join_by(UTC_fixed))
-# 
-# DB01_sunset <- DB01_OL %>%
-#   right_join(DB01_fullEffort_sunsetDate, join_by(UTC_fixed))
-# 
-# #remove columns not needed for full join
-# DB01_sunset <- DB01_sunset[-c(1, 5:10, 12:15, 18)]
-# colnames(DB01_sunset)[9] <- "UTC_date"
-# DB01_sunset$diel <- "sunset"
-# DB01_sunsetPlus <- DB01_sunsetPlus[-c(1:10, 12:14, 16, 18:20, 22)]
-# colnames(DB01_sunsetPlus)[4] <- "UTC_date"
-# DB01_sunsetPlus$diel <- "plus"
-# DB01_sunsetMinus <- DB01_sunsetMinus[-c(1:10, 12:14, 16, 18:20, 22)]
-# colnames(DB01_sunsetMinus)[4] <- "UTC_date"
-# DB01_sunsetMinus$diel <- "minus"
-# 
-# DB01_sunsetMinusPlus <- DB01_sunsetMinus %>%
-#   full_join(DB01_sunsetPlus)
-# DB01_sunset_diels <- DB01_sunset %>%
-#   full_join(DB01_sunsetMinusPlus)
-# 
-# DB01_chorusPresence <- DB01_chorusPresence %>%
-#   mutate(UTC_date = date(UTC))
-# DB01_sunset_diels <- DB01_chorusPresence %>%
-#   right_join(DB01_sunset_diels, join_by(UTC_date))
-# 
-# DB01_sunset_diels <- DB01_sunset_diels[-c(2:3, 5, 18)]
-# 
-# DB01_sunset_diels <- DB01_sunset_diels %>%
-# dplyr::mutate(cusk_chorus = factor(cusk_chorus,
-#                                     levels = c(0, 1),
-#                                     labels = c("Absent", "Present")))
-# DB01_sunset_diels <- DB01_sunset_diels %>%
-#   drop_na(cusk_chorus)
-# DB01_sunset_diels$site <- "DB01"
-# 
-# DB01cusk_medDiels <- DB01_sunset_diels %>%
-#   group_by(UTC_date, site) %>%
-#   dplyr::summarize(med_2000 = median(OL_2000, na.rm=TRUE))
-# DB01cusk_medDiels <- DB01_chorusPresence %>%
-#   right_join(DB01cusk_medDiels, join_by(UTC_date))
-# DB01cusk_medDiels <- DB01cusk_medDiels[-c(2,3,5:7)]
-# colnames(DB01cusk_medDiels)[3] <- "site"
-# 
-# DB01cusk_medDiels$dt_ma <- data.table::frollmean(DB01cusk_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
-# DB01cusk_medDiels$site_label <- "Delaware"
+ DB01_location <- matrix(c(-74.82, 38.71), nrow = 1)
+ DB01_fullEffort_date_time <- seq(ymd_hms("2022-07-07 00:00:00"), ymd_hms("2024-11-04 23:00:00"), by = "1 hour")
+ 
+ DB01_fullEffort_sunset <- sunriset(crds = DB01_location, dateTime = DB01_fullEffort_date_time, direction = "sunset", POSIXct.out = TRUE)
+ 
+DB01_fullEffort_sunsetDate<- DB01_fullEffort_sunset %>%
+   mutate(UTC_date = date(time))%>%
+   mutate(sunset_UTC_hour = hour(time))
+ 
+ DB01_fullEffort_sunsetDate <- DB01_fullEffort_sunsetDate %>%
+   group_by(UTC_date, sunset_UTC_hour)%>%
+  summarize(n = n())
+ DB01_fullEffort_sunsetDate <- DB01_fullEffort_sunsetDate[-c(3)]
+
+ #put back as characters so can make date column easier
+ DB01_fullEffort_sunsetDate$UTC_date <- as.character(DB01_fullEffort_sunsetDate$UTC_date)
+ 
+ DB01_fullEffort_sunsetDate$sunset_UTC_hour <- as.character(DB01_fullEffort_sunsetDate$sunset_UTC_hour)
+ 
+ #make new columns combining date and 3 hours- should have 3 data points per day (with overlap on days if around midnight)-
+ DB01_fullEffort_sunsetDate$UTC_fixed <- paste(DB01_fullEffort_sunsetDate$UTC_date, DB01_fullEffort_sunsetDate$sunset_UTC_hour, sep = " ")
+ DB01_fullEffort_sunsetDate$UTC_fixed = as.POSIXct(DB01_fullEffort_sunsetDate$UTC_fixed, format = "%Y-%m-%d %H")
+ 
+ DB01_fullEffort_sunsetDate$UTC_minus <- DB01_fullEffort_sunsetDate$UTC_fixed - hours(1)
+ DB01_fullEffort_sunsetDate$UTC_plus <- DB01_fullEffort_sunsetDate$UTC_fixed + hours(1)
+ 
+ #this works but hard to then join with OL data, so separate out and then join again after they are all matched
+ DB01_fullEffort_sunsetMinus <- DB01_fullEffort_sunsetDate[, c("UTC_date", "sunset_UTC_hour", "UTC_minus")]
+ DB01_fullEffort_sunsetPlus <- DB01_fullEffort_sunsetDate[, c("UTC_date", "sunset_UTC_hour", "UTC_plus")]
+ 
+ #remove from original for now
+ DB01_fullEffort_sunsetDate <- DB01_fullEffort_sunsetDate[-c(4:5)]
+ 
+ #have to rename minus/plus columns to 'UTC_fixed' so it can join with the chorus presence and OL files
+ colnames(DB01_fullEffort_sunsetMinus)[3] <- "UTC_fixed"
+ colnames(DB01_fullEffort_sunsetPlus)[3] <- "UTC_fixed"
+ 
+ #now join each date dataframe individually
+ DB01_fullEffort_sunsetDate$UTC_date <- as.Date(DB01_fullEffort_sunsetDate$UTC_date)
+ 
+ DB01_fullEffort_sunsetMinus$UTC_date <- as.Date(DB01_fullEffort_sunsetMinus$UTC_date)
+ DB01_sunsetMinus <- DB01_OL %>%
+  right_join(DB01_fullEffort_sunsetMinus, join_by(UTC_fixed))
+ 
+ DB01_fullEffort_sunsetPlus$UTC_date <- as.Date(DB01_fullEffort_sunsetPlus$UTC_date)
+ DB01_sunsetPlus <- DB01_OL %>%
+   right_join(DB01_fullEffort_sunsetPlus, join_by(UTC_fixed))
+ 
+ DB01_sunset <- DB01_OL %>%
+   right_join(DB01_fullEffort_sunsetDate, join_by(UTC_fixed))
+ 
+ #remove columns not needed for full join
+ DB01_sunset <- DB01_sunset[-c(1, 5:10, 12:15, 18)]
+ colnames(DB01_sunset)[9] <- "UTC_date"
+ DB01_sunset$diel <- "sunset"
+ DB01_sunsetPlus <- DB01_sunsetPlus[-c(1:10, 12:14, 16, 18:20, 22)]
+ colnames(DB01_sunsetPlus)[4] <- "UTC_date"
+ DB01_sunsetPlus$diel <- "plus"
+ DB01_sunsetMinus <- DB01_sunsetMinus[-c(1:10, 12:14, 16, 18:20, 22)]
+ colnames(DB01_sunsetMinus)[4] <- "UTC_date"
+ DB01_sunsetMinus$diel <- "minus"
+ 
+ DB01_sunsetMinusPlus <- DB01_sunsetMinus %>%
+   full_join(DB01_sunsetPlus)
+ DB01_sunset_diels <- DB01_sunset %>%
+   full_join(DB01_sunsetMinusPlus)
+ 
+ DB01_chorusPresence <- DB01_chorusPresence %>%
+   mutate(UTC_date = date(UTC))
+ DB01_sunset_diels <- DB01_chorusPresence %>%
+   right_join(DB01_sunset_diels, join_by(UTC_date))
+ 
+ DB01_sunset_diels <- DB01_sunset_diels[-c(2:3, 5, 18)]
+ 
+ DB01_sunset_diels <- DB01_sunset_diels %>%
+ dplyr::mutate(cusk_chorus = factor(cusk_chorus,
+                                     levels = c(0, 1),
+                                     labels = c("Absent", "Present")))
+ DB01_sunset_diels <- DB01_sunset_diels %>%
+   drop_na(cusk_chorus)
+ DB01_sunset_diels$site <- "DB01"
+
+ DB01cusk_medDiels <- DB01_sunset_diels %>%
+  group_by(UTC_date, site) %>%
+   dplyr::summarize(med_2000 = median(OL_2000, na.rm=TRUE))
+ DB01cusk_medDiels <- DB01_chorusPresence %>%
+   right_join(DB01cusk_medDiels, join_by(UTC_date))
+ DB01cusk_medDiels <- DB01cusk_medDiels[-c(2,3,5:7)]
+ colnames(DB01cusk_medDiels)[3] <- "site"
+ 
+ DB01cusk_medDiels$dt_ma <- data.table::frollmean(DB01cusk_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
+ DB01cusk_medDiels$site_label <- "Delaware"
 
 
 #ES01
@@ -1409,145 +1430,151 @@ ES01cusk_medDiels$dt_ma <- data.table::frollmean(ES01cusk_medDiels[, 4], n = 3, 
 ES01cusk_medDiels$site_label <- "Eastern"
 
 #CB01
-# CB01_location <- matrix(c(-75.67, 36.98), nrow = 1)
-# CB01_fullEffort_date_time  <- seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2024-11-08 16:00:00"), by = "1 hour")
-# 
-# CB01_fullEffort_sunset <- sunriset(crds = CB01_location, dateTime = CB01_fullEffort_date_time, direction = "sunset", POSIXct.out = TRUE)
-# 
-# CB01_fullEffort_sunsetDate<- CB01_fullEffort_sunset %>%
-#   mutate(UTC_date = date(time))%>%
-#   mutate(sunset_UTC_hour = hour(time))
-# 
-# CB01_fullEffort_sunsetDate <- CB01_fullEffort_sunsetDate %>%
-#   group_by(UTC_date, sunset_UTC_hour)%>%
-#   summarize(n = n())
-# CB01_fullEffort_sunsetDate <- CB01_fullEffort_sunsetDate[-c(3)]
-# 
-# #put back as characters so can make date column easier
-# CB01_fullEffort_sunsetDate$UTC_date <- as.character(CB01_fullEffort_sunsetDate$UTC_date)
-# 
-# CB01_fullEffort_sunsetDate$sunset_UTC_hour <- as.character(CB01_fullEffort_sunsetDate$sunset_UTC_hour)
-# 
-# #make new columns combining date and 3 hours- should have 3 data points per day (with overlap on days if around midnight)- 
-# CB01_fullEffort_sunsetDate$UTC_fixed <- paste(CB01_fullEffort_sunsetDate$UTC_date, CB01_fullEffort_sunsetDate$sunset_UTC_hour, sep = " ")
-# CB01_fullEffort_sunsetDate$UTC_fixed = as.POSIXct(CB01_fullEffort_sunsetDate$UTC_fixed, format = "%Y-%m-%d %H")
-# 
-# CB01_fullEffort_sunsetDate$UTC_minus <- CB01_fullEffort_sunsetDate$UTC_fixed - hours(1)
-# CB01_fullEffort_sunsetDate$UTC_plus <- CB01_fullEffort_sunsetDate$UTC_fixed + hours(1)
-# 
-# #this works but hard to then join with OL data, so separate out and then join again after they are all matched
-# CB01_fullEffort_sunsetMinus <- CB01_fullEffort_sunsetDate[, c("UTC_date", "sunset_UTC_hour", "UTC_minus")]
-# CB01_fullEffort_sunsetPlus <- CB01_fullEffort_sunsetDate[, c("UTC_date", "sunset_UTC_hour", "UTC_plus")]
-# 
-# #remove from original for now
-# CB01_fullEffort_sunsetDate <- CB01_fullEffort_sunsetDate[-c(4:5)]
-# 
-# #have to rename minus/plus columns to 'UTC_fixed' so it can join with the chorus presence and OL files
-# colnames(CB01_fullEffort_sunsetMinus)[3] <- "UTC_fixed"
-# colnames(CB01_fullEffort_sunsetPlus)[3] <- "UTC_fixed"
-# 
-# #now join each date dataframe individually
-# CB01_fullEffort_sunsetDate$UTC_date <- as.Date(CB01_fullEffort_sunsetDate$UTC_date)
-# 
-# CB01_fullEffort_sunsetMinus$UTC_date <- as.Date(CB01_fullEffort_sunsetMinus$UTC_date)
-# CB01_sunsetMinus <- CB01_OL %>%
-#   right_join(CB01_fullEffort_sunsetMinus, join_by(UTC_fixed))
-# 
-# CB01_fullEffort_sunsetPlus$UTC_date <- as.Date(CB01_fullEffort_sunsetPlus$UTC_date)
-# CB01_sunsetPlus <- CB01_OL %>%
-#   right_join(CB01_fullEffort_sunsetPlus, join_by(UTC_fixed))
-# 
-# CB01_sunset <- CB01_OL %>%
-#   right_join(CB01_fullEffort_sunsetDate, join_by(UTC_fixed))
-# 
-# #remove columns not needed for full join
-# CB01_sunset <- CB01_sunset[-c(1, 5:10, 12:15, 18)]
-# colnames(CB01_sunset)[9] <- "UTC_date"
-# CB01_sunset$diel <- "sunset"
-# CB01_sunsetPlus <- CB01_sunsetPlus[-c(1:10, 12:14, 16, 18:20, 22)]
-# colnames(CB01_sunsetPlus)[4] <- "UTC_date"
-# CB01_sunsetPlus$diel <- "plus"
-# CB01_sunsetMinus <- CB01_sunsetMinus[-c(1:10, 12:14, 16, 18:20, 22)]
-# colnames(CB01_sunsetMinus)[4] <- "UTC_date"
-# CB01_sunsetMinus$diel <- "minus"
-# 
-# CB01_sunsetMinusPlus <- CB01_sunsetMinus %>%
-#   full_join(CB01_sunsetPlus)
-# CB01_sunset_diels <- CB01_sunset %>%
-#   full_join(CB01_sunsetMinusPlus)
-# 
-# CB01_chorusPresence <- CB01_chorusPresence %>%
-#   mutate(UTC_date = date(UTC))
-# CB01_sunset_diels <- CB01_chorusPresence %>%
-#   right_join(CB01_sunset_diels, join_by(UTC_date))
-# 
-# CB01_sunset_diels <- CB01_sunset_diels[-c(2:3, 5, 18)]
-#  
-# CB01_sunset_diels <- CB01_sunset_diels %>%
-# dplyr::mutate(cusk_chorus = factor(cusk_chorus,
-#                                     levels = c(0, 1),
-#                                     labels = c("Absent", "Present")))
-# CB01_sunset_diels <- CB01_sunset_diels %>%
-#   drop_na(cusk_chorus)
-# CB01_sunset_diels$site <- "CB01"
-# 
-# 
-# CB01cusk_medDiels <- CB01_sunset_diels %>%
-#   group_by(UTC_date, site) %>%
-#   dplyr::summarize(med_2000 = median(OL_2000, na.rm=TRUE))
-# CB01cusk_medDiels <- CB01_chorusPresence %>%
-#   right_join(CB01cusk_medDiels, join_by(UTC_date))
-# CB01cusk_medDiels <- CB01cusk_medDiels[-c(2,3,5:7)]
-# colnames(CB01cusk_medDiels)[3] <- "site"
-# CB01cusk_medDiels$dt_ma <- data.table::frollmean(CB01cusk_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
-# CB01cusk_medDiels$site_label <- "Chesapeake"
+ CB01_location <- matrix(c(-75.67, 36.98), nrow = 1)
+ CB01_fullEffort_date_time  <- seq(ymd_hms("2022-06-10 00:00:00"), ymd_hms("2024-11-08 16:00:00"), by = "1 hour")
+
+ CB01_fullEffort_sunset <- sunriset(crds = CB01_location, dateTime = CB01_fullEffort_date_time, direction = "sunset", POSIXct.out = TRUE)
+
+ CB01_fullEffort_sunsetDate<- CB01_fullEffort_sunset %>%
+   mutate(UTC_date = date(time))%>%
+   mutate(sunset_UTC_hour = hour(time))
+
+ CB01_fullEffort_sunsetDate <- CB01_fullEffort_sunsetDate %>%
+   group_by(UTC_date, sunset_UTC_hour)%>%
+   summarize(n = n())
+ CB01_fullEffort_sunsetDate <- CB01_fullEffort_sunsetDate[-c(3)]
+
+ #put back as characters so can make date column easier
+ CB01_fullEffort_sunsetDate$UTC_date <- as.character(CB01_fullEffort_sunsetDate$UTC_date)
+
+ CB01_fullEffort_sunsetDate$sunset_UTC_hour <- as.character(CB01_fullEffort_sunsetDate$sunset_UTC_hour)
+
+ #make new columns combining date and 3 hours- should have 3 data points per day (with overlap on days if around midnight)-
+ CB01_fullEffort_sunsetDate$UTC_fixed <- paste(CB01_fullEffort_sunsetDate$UTC_date, CB01_fullEffort_sunsetDate$sunset_UTC_hour, sep = " ")
+ CB01_fullEffort_sunsetDate$UTC_fixed = as.POSIXct(CB01_fullEffort_sunsetDate$UTC_fixed, format = "%Y-%m-%d %H")
+
+ CB01_fullEffort_sunsetDate$UTC_minus <- CB01_fullEffort_sunsetDate$UTC_fixed - hours(1)
+ CB01_fullEffort_sunsetDate$UTC_plus <- CB01_fullEffort_sunsetDate$UTC_fixed + hours(1)
+
+ #this works but hard to then join with OL data, so separate out and then join again after they are all matched
+ CB01_fullEffort_sunsetMinus <- CB01_fullEffort_sunsetDate[, c("UTC_date", "sunset_UTC_hour", "UTC_minus")]
+ CB01_fullEffort_sunsetPlus <- CB01_fullEffort_sunsetDate[, c("UTC_date", "sunset_UTC_hour", "UTC_plus")]
+
+ #remove from original for now
+ CB01_fullEffort_sunsetDate <- CB01_fullEffort_sunsetDate[-c(4:5)]
+
+ #have to rename minus/plus columns to 'UTC_fixed' so it can join with the chorus presence and OL files
+ colnames(CB01_fullEffort_sunsetMinus)[3] <- "UTC_fixed"
+ colnames(CB01_fullEffort_sunsetPlus)[3] <- "UTC_fixed"
+
+ #now join each date dataframe individually
+ CB01_fullEffort_sunsetDate$UTC_date <- as.Date(CB01_fullEffort_sunsetDate$UTC_date)
+
+ CB01_fullEffort_sunsetMinus$UTC_date <- as.Date(CB01_fullEffort_sunsetMinus$UTC_date)
+CB01_sunsetMinus <- CB01_OL %>%
+   right_join(CB01_fullEffort_sunsetMinus, join_by(UTC_fixed))
+
+ CB01_fullEffort_sunsetPlus$UTC_date <- as.Date(CB01_fullEffort_sunsetPlus$UTC_date)
+ CB01_sunsetPlus <- CB01_OL %>%
+   right_join(CB01_fullEffort_sunsetPlus, join_by(UTC_fixed))
+
+ CB01_sunset <- CB01_OL %>%
+   right_join(CB01_fullEffort_sunsetDate, join_by(UTC_fixed))
+
+ #remove columns not needed for full join
+ CB01_sunset <- CB01_sunset[-c(1, 5:10, 12:15, 18)]
+ colnames(CB01_sunset)[9] <- "UTC_date"
+ CB01_sunset$diel <- "sunset"
+ CB01_sunsetPlus <- CB01_sunsetPlus[-c(1:10, 12:14, 16, 18:20, 22)]
+ colnames(CB01_sunsetPlus)[4] <- "UTC_date"
+ CB01_sunsetPlus$diel <- "plus"
+ CB01_sunsetMinus <- CB01_sunsetMinus[-c(1:10, 12:14, 16, 18:20, 22)]
+ colnames(CB01_sunsetMinus)[4] <- "UTC_date"
+ CB01_sunsetMinus$diel <- "minus"
+
+ CB01_sunsetMinusPlus <- CB01_sunsetMinus %>%
+   full_join(CB01_sunsetPlus)
+ CB01_sunset_diels <- CB01_sunset %>%
+   full_join(CB01_sunsetMinusPlus)
+
+ CB01_chorusPresence <- CB01_chorusPresence %>%
+   mutate(UTC_date = date(UTC))
+ CB01_sunset_diels <- CB01_chorusPresence %>%
+   right_join(CB01_sunset_diels, join_by(UTC_date))
+
+ CB01_sunset_diels <- CB01_sunset_diels[-c(2:3, 5, 18)]
+
+ CB01_sunset_diels <- CB01_sunset_diels %>%
+ dplyr::mutate(cusk_chorus = factor(cusk_chorus,
+                                     levels = c(0, 1),
+                                     labels = c("Absent", "Present")))
+ CB01_sunset_diels <- CB01_sunset_diels %>%
+   drop_na(cusk_chorus)
+ CB01_sunset_diels$site <- "CB01"
+
+
+ CB01cusk_medDiels <- CB01_sunset_diels %>%
+   group_by(UTC_date, site) %>%
+   dplyr::summarize(med_2000 = median(OL_2000, na.rm=TRUE))
+ CB01cusk_medDiels <- CB01_chorusPresence %>%
+   right_join(CB01cusk_medDiels, join_by(UTC_date))
+ CB01cusk_medDiels <- CB01cusk_medDiels[-c(2,3,5:7)]
+ colnames(CB01cusk_medDiels)[3] <- "site"
+ CB01cusk_medDiels$dt_ma <- data.table::frollmean(CB01cusk_medDiels[, 4], n = 3, align = "right", fill = NA, algo = "fast")
+ CB01cusk_medDiels$site_label <- "Chesapeake"
 
 #COMBINING AND PLOTTING
-# ALLcusk_medDiels <- DB01cusk_medDiels %>%
-#   full_join(ES01cusk_medDiels)%>%
-#   full_join(CB01cusk_medDiels)
-# ALLcusk_medDiels$site = factor(ALLcusk_medDiels$site,
-#                                         levels= c('DB01', 'ES01', 'CB01'),
-#                                         labels= c('DB01', 'ES01', 'CB01'))
-# ALLcusk_medDiels <- ALLcusk_medDiels %>%
-# dplyr::mutate(cusk_chorus = factor(cusk_chorus,
-#                                     levels = c(0, 1),
-#                                     labels = c("Absent", "Present")))
+ ALLcusk_medDiels <- DB01cusk_medDiels %>%
+   full_join(ES01cusk_medDiels)%>%
+   full_join(CB01cusk_medDiels)
+ALLcusk_medDiels$site = factor(ALLcusk_medDiels$site,
+                                        levels= c('DB01', 'ES01', 'CB01'),
+                                         labels= c('DB01', 'ES01', 'CB01'))
+ ALLcusk_medDiels <- ALLcusk_medDiels %>%
+ dplyr::mutate(cusk_chorus = factor(cusk_chorus,
+                                    levels = c(0, 1),
+                                     labels = c("Absent", "Present")))
 
-# allCusk_inshoreDiels <- DB01_sunset_diels %>%
-#   full_join(ES01_sunset_diels)%>%
-#   full_join(CB01_sunset_diels)
-# 
-# allCusk_inshoreDiels$site = factor(allCusk_inshoreDiels$site,
-#                                         levels= c('DB01', 'ES01', 'CB01'),
-#                                         labels= c('DB01', 'ES01', 'CB01'))
-# ALLcusk_medDiels$site_label = factor(ALLcusk_medDiels$site_label,
-#                                         levels= c('Delaware', 'Eastern', 'Chesapeake'),
-#                                         labels= c('Delaware', 'Eastern', 'Chesapeake'))
-# 
-# 
-# cuskFullEffort <- ggplot(ALLcusk_medDiels, aes(x= UTC, group= year(UTC), y= dt_ma, group= cusk_chorus, color= cusk_chorus))+
-#   geom_line(linewidth= 1.25, na.rm= TRUE)+
-#   theme_bw()+
-#   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
-#   xlab("Date")+
-#   ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
-#   ylim(75, 145)+
-#   facet_grid(factor(site_label, levels = c('Delaware', 'Eastern', 'Chesapeake'))~.,)+
-#   scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#A12A19FF"))+
-#   scale_fill_manual(values= c("grey", "#A12A19FF"))+
-#   guides(color= guide_legend(title= "Cusk eel: chorus presence"))+
-#   ggtitle("Inshore +/- 1 hour sunset")+
-#   theme(axis.title= element_text(size= 18),
-#         axis.text.y= element_text(size= 16),
-#         axis.text.x= element_text(size= 16),
-#         legend.title= element_text(size= 18),
-#         legend.text = element_text(size= 16),
-#         plot.title = element_text(size= 20, hjust= 0.5),
-#         strip.text= element_text(size= 14))
+ allCusk_inshoreDiels <- DB01_sunset_diels %>%
+   full_join(ES01_sunset_diels)%>%
+   full_join(CB01_sunset_diels)
 
-# plot(cuskFullEffort)
-# ggsave(here("figs", "cuskFullEffort.png"), cuskFullEffort, width= 18, height=8, dpi= 600)
+ allCusk_inshoreDiels$site = factor(allCusk_inshoreDiels$site,
+                                         levels= c('DB01', 'ES01', 'CB01'),
+                                         labels= c('DB01', 'ES01', 'CB01'))
+ ALLcusk_medDiels$site_label = factor(ALLcusk_medDiels$site_label,
+                                         levels= c('Delaware', 'Eastern', 'Chesapeake'),
+                                         labels= c('Delaware', 'Maryland', 'Chesapeake'))
+onset_dates <- data.frame(
+  onset= c("2023-06-28", "2024-08-19", "2024-08-31", "2023-06-02", "2024-07-26"),
+  site_label= c("Delaware", "Delaware", "Maryland", "Chesapeake", "Chesapeake")
+) 
+
+cuskFullEffort <- ggplot(ALLcusk_medDiels, aes(x= UTC, group= year(UTC), y= dt_ma, group= cusk_chorus, color= cusk_chorus))+
+   geom_line(linewidth= 1.25, na.rm= TRUE)+
+   theme_bw()+
+   scale_x_datetime(date_breaks = "3 months", date_labels= "%b %Y", minor_breaks = NULL)+
+   xlab("Date")+
+   ylab(expression(paste('Median 2000Hz Octave Level SPL (db re 1 \u00b5Pa)')))+
+   ylim(75, 145)+
+   facet_grid(factor(site_label, levels = c('Delaware', 'Maryland', 'Chesapeake'))~.,)+
+   scale_color_manual(labels= c("Absent","Present"), values= c("grey", "#DB2207"))+
+   scale_fill_manual(values= c("grey", "#DB2207"))+
+   guides(color= guide_legend(title= "Cusk eel: chorus presence"))+
+   ggtitle("Inshore +/- 1 hour sunset")+
+   theme(axis.title= element_text(size= 18),
+         axis.text.y= element_text(size= 16),
+         axis.text.x= element_text(size= 16),
+         legend.title= element_text(size= 18),
+         legend.text = element_text(size= 16),
+         plot.title = element_text(size= 20, hjust= 0.5),
+        strip.text= element_text(size= 14))+
+  geom_vline(data= onset_dates,
+             mapping= aes(xintercept= as.Date(onset)), linetype= "dashed", color= "#DB2207")
+
+
+ plot(cuskFullEffort)
+ ggsave(here("figs", "cuskFullEffort.png"), cuskFullEffort, width= 18, height=8, dpi= 600)
 
 ```
 #Diel plot- using 15minute-level threshold data
@@ -1649,8 +1676,11 @@ all_inUnknown_minOL <- DB01Unknown_minOLMedQuants %>%
 
 all_inUnknown_minOL$site = factor(all_inUnknown_minOL$site,
                                         levels= c("DB01", "ES01", "CB01"),
-                                        labels= c("Delaware", "Eastern", "Chesapeake"))
+                                        labels= c("Delaware", "Maryland", "Chesapeake"))
 all_inUnknown_minOL$UTC_hour = as.POSIXct(strptime(all_inUnknown_minOL$UTC_hour,"%H:%M:%S", tz= "GMT"))
+
+lims <- as.POSIXct(strptime(c("2026-10-28 20:00","2026-10-29 20:45"), format = "%Y-%m-%d %H:%M")) 
+
 
 unknownInshore <- ggplot(all_inUnknown_minOL, aes(x= UTC_hour, y= med_500, group= site, color= site))+
   geom_ribbon(aes(ymin= quant10_500,
@@ -1659,6 +1689,7 @@ unknownInshore <- ggplot(all_inUnknown_minOL, aes(x= UTC_hour, y= med_500, group
   ylim(85, 136)+
   scale_fill_manual(values= c("#00797F",  "#003087",  "#A12A19FF"))+
   guides(fill= guide_legend(title= "Inshore"))+
+#  scale_x_continuous(breaks = seq(0, 22, by = 2), labels=date_format("%H:%M"))+
   scale_x_datetime(breaks = breaks_width("1 hour"),labels=date_format("%H:%M"), minor_breaks = NULL)+
   geom_point(size= 1.5) + geom_line()+
   theme_bw()+
@@ -1673,6 +1704,8 @@ unknownInshore <- ggplot(all_inUnknown_minOL, aes(x= UTC_hour, y= med_500, group
         plot.title = element_text(size= 19),
         legend.title= element_text(size= 18),
         legend.text= element_text(size= 16))
+
+plot(unknownInshore)
 
 #Mid-shore unknown pulse####
 DB02_unknownPulse_min <- read.csv(here("data/DB02_unknownPulse_minData.csv"))
@@ -1798,7 +1831,7 @@ all_midUnknown_minOL <- DB02Unknown_minOLMedQuants %>%
 
 all_midUnknown_minOL$site = factor(all_midUnknown_minOL$site,
                                         levels= c("DB02", "ES02", "CB02", "CB03"),
-                                        labels= c("Delaware", "Eastern", "Chesapeake 1", "Chesapeake 2"))
+                                        labels= c("Delaware", "Maryland", "Chesapeake 1", "Chesapeake 2"))
 all_midUnknown_minOL$UTC_hour = as.POSIXct(strptime(all_midUnknown_minOL$UTC_hour,"%H:%M:%S", tz= "GMT"))
 
 unknownMidshore <- ggplot(all_midUnknown_minOL, aes(x= UTC_hour, y= med_500, group= site, color= site))+
@@ -1924,7 +1957,7 @@ all_incuskEel_minOL <- DB01cuskEel_minOLMedQuants %>%
 
 all_incuskEel_minOL$site = factor(all_incuskEel_minOL$site,
                                         levels= c("DB01", "ES01", "CB01"),
-                                        labels= c("Delaware", "Eastern", "Chesapeake"))
+                                        labels= c("Delaware", "Maryland", "Chesapeake"))
 all_incuskEel_minOL$UTC_hour = as.POSIXct(strptime(all_incuskEel_minOL$UTC_hour,"%H:%M:%S", tz= "GMT"))
 
 ggplot(all_incuskEel_minOL, aes(x= UTC_hour, y= med_2000, group= site, color= site))+
@@ -1977,7 +2010,7 @@ ggplot(all_incuskEel_minOL, aes(x= UTC_hour, y= med_2000, group= site, color= si
 #DB01_81622Med$site <- "DB01"
 #DB01_81622Med$season <- "Summer"
 
-DB01_52523 <-  format(seq(ymd_hms("2023-05-25 00:00:00"), ymd_hms("2023-05-25 23:45:00"), by = "15 min")) #weird timezone things so shift by 4 hours
+DB01_52523 <-  format(seq(ymd_hms("2023-05-25 00:00:00"), ymd_hms("2023-05-25 23:45:00"), by = "15 min")) #weird timezone things so shift by 4 hours if not working on cloud
 DB01_52523df <- data.frame(UTC= DB01_52523)
 DB01_52523df$UTC <- as.POSIXct(DB01_52523df$UTC)
 DB01_52523df <-DB01_52523df %>%
