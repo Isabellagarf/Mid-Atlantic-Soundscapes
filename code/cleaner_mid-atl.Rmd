@@ -271,6 +271,39 @@ plot(seasonalPSDFinal)
 #ggsave(here("figs", "seasonalPSD.png"), seasonalPSDFinal, width= 20, height= 14, units= "in", dpi= 600)
 
 ```
+#broadband summaries
+```{r}
+#Broadband dB differences
+all_BB <- createOctaveLevel(all_sites, type= 'bb', freqRange= c(20, 23961), normalized= TRUE)
+colnames(all_BB)[9] <- "BB"
+
+all_BB$shore = case_when(all_BB$PLATFORM == "CB01" ~ "Inshore",
+                            all_BB$PLATFORM == "CB02" ~ "Midshore",
+                            all_BB$PLATFORM == "CB03" ~ "Midshore",
+                            all_BB$PLATFORM == "ES01" ~ "Inshore",
+                            all_BB$PLATFORM == "ES02" ~ "Midshore",
+                            all_BB$PLATFORM == "ES03" ~ "Offshore",
+                            all_BB$PLATFORM == "DB01" ~ "Inshore",
+                            all_BB$PLATFORM == "DB02" ~ "Midshore",
+                            all_BB$PLATFORM == "DB03" ~ "Offshore")
+
+shore_summary <- all_BB %>%
+  group_by(shore) %>%
+  summarize(med_dB= median(BB, na.rm= TRUE))
+seasonal_summary <- all_BB %>%
+  group_by(season) %>%
+  summarize(med_dB= median(BB, na.rm= TRUE))
+shore_seasonal <- all_BB %>%
+  group_by(shore, season) %>%
+  summarize(med_dB= median(BB, na.rm= TRUE))
+
+ggplot(all_BB, aes(x= UTC, y =`BB_20-23961`))+
+  geom_line()+
+  facet_wrap(factor(PLATFORM, levels = c('DB01', 'DB02', 'DB03', 'ES01', 'ES02', 'ES03', 'CB01', 'CB02', 'CB03'))~., ncol= 3)+
+  theme_bw()
+
+
+```
 #LTSA- supplemental
 ```{r}
 allSites_LTSA = plotLTSA(x=all_sites, facet= 'PLATFORM', units= expression(paste("dB re 1 \u00b5Pa" ^ "2", "/Hz"))) +
